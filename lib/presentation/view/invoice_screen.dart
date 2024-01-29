@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/RupeesConverter.dart';
+import 'package:swastik/presentation/view/multipleImageScreen.dart';
 import '../../model/responses/invoice_model.dart';
 import '../../model/responses/project_model.dart';
 import '../bloc/bloc_logic/invoice_bloc.dart';
@@ -112,6 +113,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             return const Center(child: CircularProgressIndicator());
           },
           listener: (context, state) {},
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MultiImageScreen()),
+            );
+          },
+          child: const Icon(Icons.camera_alt),
         ),
       ),
     );
