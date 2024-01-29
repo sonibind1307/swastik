@@ -1,10 +1,8 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
 
 class FromGalleryPage extends StatefulWidget {
   const FromGalleryPage({super.key});
@@ -33,42 +31,47 @@ class _FromGalleryPageState extends State<FromGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: (){
-              getCameraImage();
-            },
-            child: Container(
-                color: Colors.red,
-                child: const Text("Select Image by camera")),
-          ),
-          const SizedBox(height: 20,),
-          GestureDetector(
-            onTap: (){
-              _uploadImage();
-            },
-            child: Container(
-                color: Colors.yellow,
-                child: const Text("Select Image By Gallery")),
-          ),
-          const SizedBox(height: 20,),
-          drawing_img == null ? const Text("") : ClipRRect(
-            child: Image.file(
-              File(drawing_img!.path),
-              height: 100,
-              width: 200,
-            ),
-          ),
-        ],
-      )
-    );
+        body: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () {
+            getCameraImage();
+          },
+          child: Container(
+              color: Colors.red, child: const Text("Select Image by camera")),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        GestureDetector(
+          onTap: () {
+            _uploadImage();
+          },
+          child: Container(
+              color: Colors.yellow,
+              child: const Text("Select Image By Gallery")),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        drawing_img == null
+            ? const Text("")
+            : ClipRRect(
+                child: Image.file(
+                  File(drawing_img!.path),
+                  height: 100,
+                  width: 200,
+                ),
+              ),
+      ],
+    ));
   }
 
   Future getCameraImage() async {
-    var pickedFile = await _picker.pickImage(source: ImageSource.camera,imageQuality: 35);
+    var pickedFile =
+        await _picker.pickImage(source: ImageSource.camera, imageQuality: 35);
     if (pickedFile != null) {
       pickedImageFile = pickedFile;
       File selectedImg = File(pickedImageFile.path);
@@ -78,7 +81,7 @@ class _FromGalleryPageState extends State<FromGalleryPage> {
 
   Future<void> _uploadImage() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         pickedImageFile = pickedFile;
@@ -111,7 +114,7 @@ class _FromGalleryPageState extends State<FromGalleryPage> {
     if (croppedFile != null) {
       setState(() {
         drawing_img = File(croppedFile.path);
-       // isIconSelected= true;
+        // isIconSelected= true;
       });
     }
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'presentation/view/scanner.dart';
+import 'package:swastik/presentation/view/multipleImageScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: FromGalleryPage(),
+      home: MultiImageScreen(),
     );
   }
 }
