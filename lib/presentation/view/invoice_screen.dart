@@ -2,12 +2,13 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/RupeesConverter.dart';
-import 'package:swastik/presentation/view/multipleImageScreen.dart';
+
 import '../../model/responses/invoice_model.dart';
 import '../../model/responses/project_model.dart';
 import '../bloc/bloc_logic/invoice_bloc.dart';
 import '../bloc/state/invoice_state.dart';
 import '../widget/custom_text_style.dart';
+import 'multipleImageScreen.dart';
 
 class InvoiceScreen extends StatefulWidget {
   @override
@@ -17,7 +18,13 @@ class InvoiceScreen extends StatefulWidget {
 class _InvoiceScreenState extends State<InvoiceScreen> {
   String _selectedStatus = "0";
   String? selectedProject;
-  List<String> listOfStatus = ["0", "1", "2", "3", "4"];
+  List<String> listOfStatus = [
+    "0",
+    "PENDING",
+    "APPROVED",
+    "REJECTED",
+    "VERIFIED"
+  ];
   Widget appBarTitle = const Text(
     "Invoice",
     style: TextStyle(color: Colors.white),
@@ -69,45 +76,53 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             if (state is LoadingState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is LoadedState) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  dropDownList(context, state.dataProject.data!),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Wrap(
-                      spacing: 8.0,
-                      children: listOfStatus.map((status) {
-                        return ChoiceChip(
-                          labelPadding:
-                              const EdgeInsets.only(left: 8, right: 8),
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          selectedColor: Colors.blue,
-                          label: Text(_getStatusText(status)),
-                          selected: _selectedStatus == status,
-                          onSelected: (isSelected) {
-                            if (isSelected) {
-                              _selectedStatus = status;
-                            }
-                            context.read<InvoiceBloc>().chipChoiceCardSelected(
-                                _selectedStatus.toString());
-                          },
-                        );
-                      }).toList(),
+              return InkWell(
+                onTap: () {
+                  openBottomSheet(context);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 8,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  listBuilder(context, state.dataInvoice)
-                ],
+                    dropDownList(context, state.dataProject.data),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        children: listOfStatus.map((status) {
+                          return ChoiceChip(
+                            labelPadding:
+                                const EdgeInsets.only(left: 8, right: 8),
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            selectedColor: Colors.blue,
+                            label: Text(_getChipStatusText(status)),
+                            selected: _selectedStatus == status,
+                            onSelected: (isSelected) {
+                              if (isSelected) {
+                                _selectedStatus = status;
+                              }
+                              print(_selectedStatus);
+                              context
+                                  .read<InvoiceBloc>()
+                                  .chipChoiceCardSelected(
+                                      _selectedStatus.toString());
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    listBuilder(context, state.dataInvoice)
+                  ],
+                ),
               );
             }
             return const Center(child: CircularProgressIndicator());
@@ -127,20 +142,37 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
+  String _getChipStatusText(String status) {
+    switch (status) {
+      case "0":
+        return 'ALl';
+      case "PENDING":
+        return 'Pending';
+      case "VERIFIED":
+        return 'Verified';
+      case "APPROVED":
+        return 'Approved';
+      case "REJECTED":
+        return 'Rejected';
+      default:
+        return 'NA';
+    }
+  }
+
   String _getStatusText(String status) {
     switch (status) {
       case "0":
         return 'ALl';
-      case "1":
+      case "PENDING":
         return 'Pending';
-      case "2":
+      case "VERIFIED":
         return 'Verified';
-      case "3":
+      case "APPROVED":
         return 'Approved';
-      case "4":
+      case "REJECTED":
         return 'Rejected';
       default:
-        return 'Unknown';
+        return 'NA';
     }
   }
 
@@ -161,7 +193,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
   }
 
-  Widget dropDownList(BuildContext context, List<ProjectData> listProject) {
+  Widget dropDownList(BuildContext context, List<ProjectData>? listProject) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: DropdownButtonHideUnderline(
@@ -174,17 +206,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               color: Theme.of(context).hintColor,
             ),
           ),
-          items: listProject!
-              .map((item) => DropdownMenuItem(
-                    value: item.projectname,
-                    child: Text(
-                      item.projectname!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ))
-              .toList(),
+          items: listProject == null
+              ? []
+              : listProject!
+                  .map((item) => DropdownMenuItem(
+                        value: item.projectname,
+                        child: Text(
+                          item.projectname!,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
+                  .toList(),
           value: selectedProject,
           onChanged: (value) {
             selectedProject = value;
@@ -261,7 +295,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                               color: Colors.grey.shade300,
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(4))),
-                          child: getIcon(invoiceList.data![index].status!)),
+                          child:
+                              getIcon(invoiceList.data![index].invoiceStatus!)),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -315,8 +350,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                 .inRupeesFormat()),
                         const SizedBox(height: 50),
                         CustomTextStyle.regular(
-                            text: _getStatusText(
-                                invoiceList.data![index].status.toString())),
+                            text: _getStatusText(invoiceList
+                                .data![index].invoiceStatus
+                                .toString())),
                       ],
                     )
                   ],
@@ -391,22 +427,22 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget? getIcon(String status) {
     switch (status) {
-      case "0":
+      case "PENDING":
         return Icon(
           Icons.watch_later,
           color: Colors.orange,
         );
-      case "1":
+      case "APPROVED":
         return Icon(
           Icons.check_circle,
           color: Colors.green,
         );
-      case "2":
+      case "VERIFIED":
         return Icon(
           Icons.check_circle,
           color: Colors.blueAccent,
         );
-      case "3":
+      case "REJECTED":
         return Icon(
           Icons.cancel,
           color: Colors.red,
@@ -474,5 +510,81 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       _IsSearching = false;
       _searchQuery.clear();
     });
+  }
+
+  Future openBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+          height: MediaQuery.of(context).size.height * 0.3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                title: Text("Share"),
+                leading: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      child: Icon(Icons.share)),
+                ),
+              ),
+              ListTile(
+                title: Text("Get Link"),
+                leading: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      child: Icon(Icons.link)),
+                ),
+              ),
+              ListTile(
+                title: Text("Edit"),
+                leading: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      child: Icon(Icons.edit)),
+                ),
+              ),
+              ListTile(
+                title: Text("Delete"),
+                leading: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      child: const Icon(Icons.delete)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

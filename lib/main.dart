@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:swastik/config/colorConstant.dart';
 
-import 'presentation/view/invoice_screen.dart';
+import 'presentation/view/scanner.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: InvoiceScreen(),
+      home: FromGalleryPage(),
     );
   }
 }
