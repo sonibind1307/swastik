@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:swastik/presentation/view/pdfexport/pdfpreview.dart';
 
 import '../../model/invoice.dart';
 
@@ -15,11 +14,11 @@ class DetailPage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PdfPreviewPage(invoice: invoice),
-            ),
-          );
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => PdfPreviewPage(invoice: invoice),
+          //   ),
+          // );
           // rootBundle.
         },
         child: Icon(Icons.picture_as_pdf),

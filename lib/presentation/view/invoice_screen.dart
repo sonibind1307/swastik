@@ -503,7 +503,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         Icons.search,
         color: Colors.white,
       );
-      this.appBarTitle = new Text(
+      this.appBarTitle = Text(
         "Search Sample",
         style: new TextStyle(color: Colors.white),
       );
@@ -517,7 +517,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8), topRight: Radius.circular(8))),
           height: MediaQuery.of(context).size.height * 0.3,
@@ -526,7 +526,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                title: Text("Share"),
+                title: const Text("Share"),
                 leading: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: Container(
@@ -536,11 +536,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           color: Colors.grey.shade300,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
-                      child: Icon(Icons.share)),
+                      child: const Icon(Icons.share)),
                 ),
               ),
               ListTile(
-                title: Text("Get Link"),
+                title: const Text("Get Link"),
                 leading: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: Container(
@@ -550,11 +550,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           color: Colors.grey.shade300,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
-                      child: Icon(Icons.link)),
+                      child: const Icon(Icons.link)),
                 ),
               ),
               ListTile(
-                title: Text("Edit"),
+                title: const Text("Edit"),
                 leading: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: Container(
@@ -564,11 +564,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           color: Colors.grey.shade300,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
-                      child: Icon(Icons.edit)),
+                      child: const Icon(Icons.edit)),
                 ),
               ),
               ListTile(
-                title: Text("Delete"),
+                title: const Text("Delete"),
                 leading: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: Container(

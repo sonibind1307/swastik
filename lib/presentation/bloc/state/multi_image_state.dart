@@ -1,5 +1,4 @@
-import '../../../model/responses/invoice_model.dart';
-import '../../../model/responses/project_model.dart';
+import 'dart:io';
 
 abstract class MultiImageState {}
 
@@ -24,8 +23,7 @@ class ErrorState extends MultiImageState {
 }
 
 class LoadedState extends MultiImageState {
-  final ProjectModel dataProject;
-  final InvoiceModel dataInvoice;
+  List<File> imageList;
 
-  LoadedState(this.dataProject, this.dataInvoice);
+  LoadedState(this.imageList);
 }
