@@ -45,7 +45,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       // Here we have initialized the stepper widget
       body: Stepper(
         physics: ScrollPhysics(),
-        type: StepperType.vertical,
+        type: StepperType.horizontal,
         currentStep: _activeCurrentStep,
         steps: stepList(),
 
@@ -315,7 +315,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     return Step(
       state: _activeCurrentStep <= 0 ? StepState.editing : StepState.complete,
       isActive: _activeCurrentStep >= 0,
-      title: const Text('Vendor Details'),
+      title: const Text('Step 1'),
       content: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -371,8 +371,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomTextStyle.bold(text: title1, fontSize: 18),
-                  CustomTextStyle.regular(text: value1, fontSize: 12),
+                  CustomTextStyle.bold(text: title1, fontSize: 16),
+                  CustomTextStyle.regular(text: value1, fontSize: 14),
                 ],
               ),
             ),
@@ -382,8 +382,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
               child: Column(
                 children: [
-                  CustomTextStyle.bold(text: title2, fontSize: 18),
-                  CustomTextStyle.regular(text: value2, fontSize: 12)
+                  CustomTextStyle.bold(text: title2, fontSize: 16),
+                  CustomTextStyle.regular(text: value2, fontSize: 14)
                 ],
               ),
             ),
@@ -397,7 +397,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     return Step(
         state: _activeCurrentStep <= 1 ? StepState.editing : StepState.complete,
         isActive: _activeCurrentStep >= 1,
-        title: const Text('Invoice Details'),
+        title: const Text('Step 2'),
         content: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,26 +506,82 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     return Step(
         state: StepState.complete,
         isActive: _activeCurrentStep >= 2,
-        title: const Text('Add Invoice'),
-        content: ListView.builder(
-          scrollDirection: Axis.vertical,
-          physics: ScrollPhysics(),
-          itemCount: 5,
-          itemBuilder: (BuildContext context, int index) {
-            return Text("data");
-            return Container(
+        title: const Text('Step 3'),
+        content: Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            physics: ScrollPhysics(),
+            itemCount: 5,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('Name: ${name.text}'),
-                Text('Email: ${email.text}'),
-                Text('Password: ${pass.text}'),
-                Text('Address : ${address.text}'),
-                Text('PinCode : ${pincode.text}'),
-              ],
-            ));
-          },
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CustomTextStyle.bold(text: '883883 - Description'),
+                      ],
+                    ),
+                    ListTile(
+                      title: CustomTextStyle.regular(text: "Amount"),
+                      trailing: CustomTextStyle.bold(text: "3sss03000"),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16),
+                      child: Row(
+                        children: [
+                          CustomTextStyle.regular(text: 'CGST ${email.text}'),
+                          Spacer(),
+                          CustomTextStyle.regular(text: '24'),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16),
+                      child: Row(
+                        children: [
+                          CustomTextStyle.regular(text: 'SGST ${email.text}'),
+                          Spacer(),
+                          CustomTextStyle.regular(text: '28'),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16),
+                      child: Row(
+                        children: [
+                          Text('IGSC ${email.text}'),
+                          Spacer(),
+                          Text('3'),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0, left: 16),
+                      child: Row(
+                        children: [
+                          CustomTextStyle.regular(text: 'GST  ${email.text}'),
+                          Spacer(),
+                          CustomTextStyle.regular(text: '8'),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    ListTile(
+                      title: CustomTextStyle.regular(text: "Total Amt"),
+                      trailing: CustomTextStyle.bold(
+                          text: "303000", color: AppColors.greenColor),
+                    ),
+                  ],
+                ),
+              ));
+            },
+          ),
         ));
   }
 }
