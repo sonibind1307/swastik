@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -30,4 +31,7 @@ class AppColors {
   static const Color grd1 = Color(0xFF4E1425);
   static const Color grd2 = Color(0xFF9D3754);
   static const Color dataCellColor = Color(0xFF595959);
+  static const Color hoverColor = Color(0xFF02A783);
+  static const Color btnBorderColor = Color(0xFFADBDB9);
+  static const Color disabledColor = Color(0xFFBABDBC);
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:swastik/config/colorConstant.dart';
 
 import '../../../config/constant.dart';
+import '../../../config/text-style.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
@@ -31,17 +32,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   TextEditingController amount = TextEditingController();
   TextEditingController quanity = TextEditingController();
 
-
-
   List<Step> stepList() => [
         stepOneUI(),
         stepTwoUI(),
         stepThreeUI(),
       ];
 
-  List<String> cgstList =["Tax 1","Tax 2"];
-  List<String> sgstList =["Tax 1","Tax 2"];
-  List<String> igstList =["Tax 1","Tax 2"];
+  List<String> cgstList = ["Tax 1", "Tax 2"];
+  List<String> sgstList = ["Tax 1", "Tax 2"];
+  List<String> igstList = ["Tax 1", "Tax 2"];
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +89,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
         tooltip: 'Add',
-        onPressed: (){
+        onPressed: () {
           showDialog(
               context: context,
-              builder: (BuildContext context){
+              builder: (BuildContext context) {
                 return leadDialog(context);
               });
         },
@@ -102,136 +101,225 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
-  Dialog leadDialog(BuildContext context){
-   return Dialog(
-      child: Container(
-        height: 520.0,
-        width: 400,
+  AlertDialog leadDialog(BuildContext context) {
+    return AlertDialog(
+      content: Container(
+        width: MediaQuery.of(context).size.width,
         color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  controller: TextEditingController(),
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "Item Description"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 5.0,),
-                TextFormField(
-                  controller: TextEditingController(),
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "HSN/SAC Code"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 5.0,),
-                TextFormField(
-                  controller: TextEditingController(),
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "Quantity"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 5.0,),
-                TextFormField(
-                  controller: TextEditingController(),
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "Amount"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 5.0,),
-                cgstDropDownList(context),
-                const SizedBox(height: 5.0,),
-                sgstDropDownList(context),
-                const SizedBox(height: 5.0,),
-                sgstDropDownList(context),
-                const SizedBox(height: 5.0,),
-                TextFormField(
-                  controller: TextEditingController(),
-                  readOnly: true,
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "Final Amount"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 5.0,),
-                TextFormField(
-                  controller: TextEditingController(),
-                  readOnly: true,
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: CustomTextDecoration.textFieldDecoration(
-                      labelText: "Tax Amount"),
-                  // inputFormatters: [
-                  //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                  // ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return Constant.enterTextError;
-                    }
-                    return null;
-                  },
-                ),
-
-              ],
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Add Invoice",
+                        style: AppTextStyles.modalTitleText,
+                      ),
+                    ],
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "Item Description"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "HSN/SAC Code"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "Quantity"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "Amount"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  cgstDropDownList(context),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  sgstDropDownList(context),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  sgstDropDownList(context),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    readOnly: true,
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "Final Amount"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(),
+                    readOnly: true,
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: CustomTextDecoration.textFieldDecoration(
+                        labelText: "Tax Amount"),
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                    // ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return Constant.enterTextError;
+                      }
+                      return null;
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.hovered)) {
+                                return AppColors.btnBorderColor; //<-- SEE HERE
+                              }
+                              return null; // Defer to the widget's default.
+                            },
+                          ),
+                          side: MaterialStateProperty.all(const BorderSide(
+                              color: AppColors.btnBorderColor)),
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 15),
+                          ),
+                          backgroundColor:
+                              MaterialStateProperty.all(AppColors.whiteColor),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(7.0),
+                          child: Text(
+                            "Cancel",
+                            //"strCancel".tr(),
+                            style: AppTextStyles.btn3TextStyle,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.hovered)) {
+                                return AppColors.hoverColor; //<-- SEE HERE
+                              }
+                              return null; // Defer to the widget's default.
+                            },
+                          ),
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 15),
+                          ),
+                          backgroundColor:
+                              MaterialStateProperty.all(AppColors.bgColor),
+                        ),
+                        child: Padding(
+                            padding: const EdgeInsets.all(7.0),
+                            child: Text(
+                              "Submit",
+                              style: AppTextStyles.btn1TextStyle,
+                            )),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
-
 
   Widget cgstDropDownList(BuildContext context) {
     return Padding(
@@ -249,15 +337,16 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   color: Theme.of(context).hintColor,
                 ),
               ),
-              items:cgstList.map((item) => DropdownMenuItem(
-                value: item,
-                child: Text(
-                  item,
-                  style: const TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
-              ))
+              items: cgstList
+                  .map((item) => DropdownMenuItem(
+                        value: item,
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
                   .toList(),
               value: selectedVendor,
               onChanged: (value) {
@@ -286,7 +375,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
               dropdownStyleData: DropdownStyleData(
                 maxHeight: 250,
-                width:150,
+                width: 150,
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -313,8 +402,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               controller: TextEditingController(),
               textInputAction: TextInputAction.done,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: CustomTextDecoration.textFieldDecoration(
-                  labelText: ""),
+              decoration:
+                  CustomTextDecoration.textFieldDecoration(labelText: ""),
               // inputFormatters: [
               //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
               // ],
@@ -349,14 +438,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
               items: sgstList
                   .map((item) => DropdownMenuItem(
-                value: item,
-                child: Text(
-                  item,
-                  style: const TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
-              ))
+                        value: item,
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
                   .toList(),
               value: selectedVendor,
               onChanged: (value) {
@@ -365,7 +454,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               },
               buttonStyleData: ButtonStyleData(
                 height: 45,
-                width: 150,
+                width: MediaQuery.of(context).size.width * 0.20,
                 padding: const EdgeInsets.only(left: 14, right: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
@@ -385,7 +474,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
               dropdownStyleData: DropdownStyleData(
                 maxHeight: 250,
-                width:150,
+                width: 150,
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -407,13 +496,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
           ),
           SizedBox(
-            width: 150,
+            width: MediaQuery.of(context).size.width * 0.20,
             child: TextFormField(
               controller: TextEditingController(),
               textInputAction: TextInputAction.done,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: CustomTextDecoration.textFieldDecoration(
-                  labelText: ""),
+              decoration:
+                  CustomTextDecoration.textFieldDecoration(labelText: ""),
               // inputFormatters: [
               //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
               // ],
@@ -448,14 +537,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
               items: igstList
                   .map((item) => DropdownMenuItem(
-                value: item,
-                child: Text(
-                  item,
-                  style: const TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
-              ))
+                        value: item,
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
                   .toList(),
               value: selectedVendor,
               onChanged: (value) {
@@ -484,7 +573,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
               dropdownStyleData: DropdownStyleData(
                 maxHeight: 250,
-                width:150,
+                width: 150,
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -511,8 +600,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               controller: TextEditingController(),
               textInputAction: TextInputAction.done,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: CustomTextDecoration.textFieldDecoration(
-                  labelText: ""),
+              decoration:
+                  CustomTextDecoration.textFieldDecoration(labelText: ""),
               // inputFormatters: [
               //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
               // ],
@@ -528,7 +617,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       ),
     );
   }
-
 
   Widget dropDownList(BuildContext context, List<ProjectData>? listProject) {
     return Padding(
@@ -974,60 +1062,144 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   children: [
                     Row(
                       children: [
-                        CustomTextStyle.bold(text: '883883 - Description'),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                              // color: Colors.red,
+                              child: CustomTextStyle.bold(
+                                  text: 'Cement bag', fontSize: 16)),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: CustomTextStyle.regular(
+                                text: 'Qty: ${index + 1}', fontSize: 12)),
+                        Expanded(
+                            child: CustomTextStyle.bold(
+                                text: '10000', fontSize: 16)),
                       ],
                     ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: CustomTextStyle.regular(text: ' 300344')),
+                        Expanded(
+                            flex: 1,
+                            child: CustomTextStyle.regular(
+                                text: 'Rate: 10000', fontSize: 12)),
+                        Expanded(
+                            child: Row(
+                          children: [
+                            CustomTextStyle.regular(
+                                text: 'Rs. 18 GST', fontSize: 12),
+                            Icon(
+                              Icons.info_rounded,
+                              color: Colors.grey,
+                            )
+                          ],
+                        )),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Expanded(
+                            child: CustomTextStyle.bold(
+                                text: 'RS.1018000', fontSize: 16)),
+                      ],
+                    ),
+
+                    /*Divider(),
                     ListTile(
                       title: CustomTextStyle.regular(text: "Amount"),
-                      trailing: CustomTextStyle.bold(text: "3sss03000"),
+                      trailing: CustomTextStyle.bold(text: "2000"),
                     ),
-                    Divider(),
+                    // Divider(),
+
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0, left: 16),
                       child: Row(
                         children: [
-                          CustomTextStyle.regular(text: 'CGST ${email.text}'),
-                          Spacer(),
+                          CustomTextStyle.regular(text: 'Qty: '),
                           CustomTextStyle.regular(text: '24'),
                         ],
                       ),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0, left: 16),
                       child: Row(
                         children: [
-                          CustomTextStyle.regular(text: 'SGST ${email.text}'),
-                          Spacer(),
-                          CustomTextStyle.regular(text: '28'),
+                          CustomTextStyle.regular(text: 'GST: '),
+                          CustomTextStyle.regular(text: '24'),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Icon(
+                            Icons.info_rounded,
+                            color: Colors.grey,
+                          )
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16),
-                      child: Row(
-                        children: [
-                          Text('IGSC ${email.text}'),
-                          Spacer(),
-                          Text('3'),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16),
-                      child: Row(
-                        children: [
-                          CustomTextStyle.regular(text: 'GST  ${email.text}'),
-                          Spacer(),
-                          CustomTextStyle.regular(text: '8'),
-                        ],
-                      ),
-                    ),
-                    Divider(),
-                    ListTile(
-                      title: CustomTextStyle.regular(text: "Total Amt"),
-                      trailing: CustomTextStyle.bold(
-                          text: "303000", color: AppColors.greenColor),
-                    ),
+
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
+                    //   child: Row(
+                    //     children: [
+                    //       CustomTextStyle.regular(text: 'CGST ${email.text}'),
+                    //       Spacer(),
+                    //       CustomTextStyle.regular(text: '24'),
+                    //     ],
+                    //   ),
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
+                    //   child: Row(
+                    //     children: [
+                    //       CustomTextStyle.regular(text: 'SGST ${email.text}'),
+                    //       Spacer(),
+                    //       CustomTextStyle.regular(text: '28'),
+                    //     ],
+                    //   ),
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
+                    //   child: Row(
+                    //     children: [
+                    //       Text('IGSC ${email.text}'),
+                    //       Spacer(),
+                    //       Text('3'),
+                    //     ],
+                    //   ),
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
+                    //   child: Row(
+                    //     children: [
+                    //       CustomTextStyle.regular(text: 'GST  ${email.text}'),
+                    //       Spacer(),
+                    //       CustomTextStyle.regular(text: '8'),
+                    //     ],
+                    //   ),
+                    // ),
+                    // Divider(),*/
+                    // ListTile(
+                    //   title: CustomTextStyle.regular(text: "Total Amt"),
+                    //   trailing: CustomTextStyle.bold(
+                    //       text: "303000", color: AppColors.greenColor),
+                    // ),
                   ],
                 ),
               ));
