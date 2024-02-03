@@ -4,11 +4,11 @@ class CustomDateTime {
   static DateTime now = DateTime.now();
 
   static Future<DateTime?> buildShowDatePicker(BuildContext context) {
-    int day = getDaysBeforeMonth(4);
+    // int day = getDaysBeforeMonth(2);
     return showDatePicker(
         context: context,
         initialDate: now,
-        firstDate: DateTime.now().subtract(Duration(days: day)),
+        firstDate: DateTime.now(),
         lastDate: now);
   }
 

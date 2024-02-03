@@ -1,7 +1,7 @@
 class VendorModel {
   String? status;
   String? message;
-  List<Data>? data;
+  List<VendorData>? data;
 
   VendorModel({this.status, this.message, this.data});
 
@@ -9,9 +9,9 @@ class VendorModel {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <VendorData>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new VendorData.fromJson(v));
       });
     }
   }
@@ -27,7 +27,7 @@ class VendorModel {
   }
 }
 
-class Data {
+class VendorData {
   String? id;
   String? companyId;
   String? projectId;
@@ -51,7 +51,7 @@ class Data {
   String? tradeName;
   String? ledger;
 
-  Data(
+  VendorData(
       {this.id,
       this.companyId,
       this.projectId,
@@ -75,7 +75,7 @@ class Data {
       this.tradeName,
       this.ledger});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  VendorData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     companyId = json['company_id'];
     projectId = json['project_id'];

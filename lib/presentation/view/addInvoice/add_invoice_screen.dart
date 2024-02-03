@@ -5,7 +5,10 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/colorConstant.dart';
+import 'package:swastik/model/responses/vendor_model.dart';
 import 'package:swastik/presentation/bloc/bloc_logic/add_invoice_bloc.dart';
+import 'package:swastik/presentation/bloc/state/add_invoice_state.dart';
+import 'package:swastik/repository/api_call.dart';
 
 import '../../../config/constant.dart';
 import '../../../config/text-style.dart';
@@ -35,18 +38,19 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   TextEditingController itemDesc = TextEditingController();
   TextEditingController hCode = TextEditingController();
   TextEditingController amount = TextEditingController();
+  TextEditingController amountTax = TextEditingController();
+  TextEditingController amountFinal = TextEditingController();
   TextEditingController quanity = TextEditingController();
 
-  List<Step> stepList() => [
-        stepOneUI(),
-        stepTwoUI(),
-        stepThreeUI(),
-      ];
-
-  List<String> cgstList = ["Tax 1", "Tax 2"];
-  List<String> sgstList = ["Tax 1", "Tax 2"];
-  List<String> igstList = ["Tax 1", "Tax 2"];
   final _addInvoiceFormKey = GlobalKey<FormState>();
+  List<VendorData> listofVenderData = [];
+  List<ProjectData> projectData = [];
+  List<String> cgstList = ["0%", "2.5%", "6%", "9%", "14%"];
+  List<String> sgstList = ["0%", "2.5%", "6%", "9%", "14%"];
+  List<String> igstList = ["0%", "5%", "12%", "18%", "28%"];
+
+  @override
+  void initState() {}
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +69,18 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           physics: const ScrollPhysics(),
           type: StepperType.horizontal,
           currentStep: _activeCurrentStep,
-          steps: stepList(),
+          steps: [
+            stepOneUI(),
+            stepTwoUI(),
+            stepThreeUI(),
+          ],
 
           // onStepContinue takes us to the next step
           onStepContinue: () {
-            if (_activeCurrentStep < (stepList().length - 1)) {
+            if (_activeCurrentStep < (3 - 1)) {
               setState(() {
                 _activeCurrentStep += 1;
+                getProjectList();
               });
             }
           },
@@ -110,6 +119,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
+  Future<void> getProjectList() async {
+    ProjectModel projectModel = await ApiRepo.getProjectList();
+    projectData = projectModel.data!;
+  }
+
   AlertDialog leadDialog(BuildContext context) {
     return AlertDialog(
       content: Container(
@@ -136,7 +150,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 16.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: itemDesc,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
@@ -155,7 +169,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 8.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: hCode,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
@@ -174,7 +188,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 8.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: quanity,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
@@ -193,7 +207,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 8.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: amount,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
@@ -211,22 +225,22 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     const SizedBox(
                       height: 8.0,
                     ),
-                    cgstDropDownList(context, "GCST"),
+                    cgstDropDownList(context, "CGST", cgstList, () {}),
                     const SizedBox(
                       height: 5.0,
                     ),
                     // sgstDropDownList(context),
-                    cgstDropDownList(context, "IGST"),
+                    cgstDropDownList(context, "SGST", sgstList, () {}),
                     const SizedBox(
                       height: 8.0,
                     ),
-                    cgstDropDownList(context, "CST"),
+                    cgstDropDownList(context, "IGST", igstList, () {}),
                     // sgstDropDownList(context),
                     const SizedBox(
                       height: 8.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: amountFinal,
                       readOnly: true,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -242,11 +256,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         return null;
                       },
                     ),
+
                     const SizedBox(
                       height: 8.0,
                     ),
                     TextFormField(
-                      controller: TextEditingController(),
+                      controller: amountTax,
                       readOnly: true,
                       textInputAction: TextInputAction.done,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -262,7 +277,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Row(
@@ -344,7 +359,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
-  Widget cgstDropDownList(BuildContext context, String key) {
+  Widget cgstDropDownList(BuildContext context, String key,
+      List<String> listOfData, VoidCallback voidCallback) {
     return Padding(
       padding: const EdgeInsets.only(),
       child: Row(
@@ -362,7 +378,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     color: Theme.of(context).hintColor,
                   ),
                 ),
-                items: cgstList
+                items: listOfData
                     .map((item) => DropdownMenuItem(
                           value: item,
                           child: Text(
@@ -430,6 +446,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration:
                   CustomTextDecoration.textFieldDecoration(labelText: ""),
+              readOnly: true,
               // inputFormatters: [
               //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
               // ],
@@ -446,205 +463,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
-  Widget sgstDropDownList(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton2<String>(
-              isExpanded: true,
-              hint: Text(
-                'Select Item',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).hintColor,
-                ),
-              ),
-              items: sgstList
-                  .map((item) => DropdownMenuItem(
-                        value: item,
-                        child: Text(
-                          item,
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ))
-                  .toList(),
-              value: selectedVendor,
-              onChanged: (value) {
-                selectedVendor = value;
-                // context.read<InvoiceBloc>().getProjectSelected(value.toString());
-              },
-              buttonStyleData: ButtonStyleData(
-                height: 45,
-                width: MediaQuery.of(context).size.width * 0.20,
-                padding: const EdgeInsets.only(left: 14, right: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: Colors.grey,
-                  ),
-                ),
-                // elevation: 2,
-              ),
-              iconStyleData: const IconStyleData(
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                ),
-                // iconSize: 14,
-                iconEnabledColor: Colors.black,
-                iconDisabledColor: Colors.grey,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                maxHeight: 250,
-                width: 150,
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  // color: Colors.redAccent,
-                ),
-                // offset: const Offset(-20, 0),
-                scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(40),
-                    thickness: MaterialStateProperty.all<double>(10.0),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
-                    trackVisibility: MaterialStateProperty.all(true),
-                    interactive: true,
-                    trackColor: MaterialStateProperty.all(Colors.grey)),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 40,
-                padding: EdgeInsets.only(left: 14, right: 14),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.20,
-            child: TextFormField(
-              controller: TextEditingController(),
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  CustomTextDecoration.textFieldDecoration(labelText: ""),
-              // inputFormatters: [
-              //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-              // ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return Constant.enterTextError;
-                }
-                return null;
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget igstDropDownList(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton2<String>(
-              isExpanded: true,
-              hint: Text(
-                'Select Item',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).hintColor,
-                ),
-              ),
-              items: igstList
-                  .map((item) => DropdownMenuItem(
-                        value: item,
-                        child: Text(
-                          item,
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ))
-                  .toList(),
-              value: selectedVendor,
-              onChanged: (value) {
-                selectedVendor = value;
-                // context.read<InvoiceBloc>().getProjectSelected(value.toString());
-              },
-              buttonStyleData: ButtonStyleData(
-                height: 45,
-                width: 150,
-                padding: const EdgeInsets.only(left: 14, right: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: Colors.grey,
-                  ),
-                ),
-                // elevation: 2,
-              ),
-              iconStyleData: const IconStyleData(
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                ),
-                // iconSize: 14,
-                iconEnabledColor: Colors.black,
-                iconDisabledColor: Colors.grey,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                maxHeight: 250,
-                width: 150,
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  // color: Colors.redAccent,
-                ),
-                // offset: const Offset(-20, 0),
-                scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(40),
-                    thickness: MaterialStateProperty.all<double>(10.0),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
-                    trackVisibility: MaterialStateProperty.all(true),
-                    interactive: true,
-                    trackColor: MaterialStateProperty.all(Colors.grey)),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 40,
-                padding: EdgeInsets.only(left: 14, right: 14),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 150,
-            child: TextFormField(
-              controller: TextEditingController(),
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  CustomTextDecoration.textFieldDecoration(labelText: ""),
-              // inputFormatters: [
-              //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-              // ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return Constant.enterTextError;
-                }
-                return null;
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget dropDownList(BuildContext context, List<ProjectData>? listProject) {
+  Widget dropDownList(BuildContext context, List<VendorData>? listData,
+      VoidCallback onSelection) {
     return Padding(
       padding: const EdgeInsets.only(),
       child: DropdownButtonHideUnderline(
@@ -657,9 +477,92 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               color: Theme.of(context).hintColor,
             ),
           ),
-          items: listProject == null
+          items: listData == null
               ? []
-              : listProject
+              : listData
+                  .map((item) => DropdownMenuItem(
+                        value: item.companyName,
+                        child: Text(
+                          item.companyName!,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
+                  .toList(),
+          value: selectedVendor,
+          onChanged: (value) {
+            selectedVendor = value;
+            listData!.forEach((element) {
+              if (element.companyName == value) {
+                VendorData vendorData = element;
+                context.read<AddInvoiceBloc>().onVendorSelection(vendorData);
+              }
+            });
+          },
+          buttonStyleData: ButtonStyleData(
+            height: 45,
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.only(left: 14, right: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.grey,
+              ),
+            ),
+            // elevation: 2,
+          ),
+          iconStyleData: const IconStyleData(
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+            ),
+            // iconSize: 14,
+            iconEnabledColor: Colors.black,
+            iconDisabledColor: Colors.grey,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              // color: Colors.redAccent,
+            ),
+            // offset: const Offset(-20, 0),
+            scrollbarTheme: ScrollbarThemeData(
+                radius: const Radius.circular(40),
+                thickness: MaterialStateProperty.all<double>(10.0),
+                thumbVisibility: MaterialStateProperty.all<bool>(true),
+                trackVisibility: MaterialStateProperty.all(true),
+                interactive: true,
+                trackColor: MaterialStateProperty.all(Colors.grey)),
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 40,
+            padding: EdgeInsets.only(left: 14, right: 14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget projectDropDownList(BuildContext context, List<ProjectData>? listData,
+      VoidCallback onSelection) {
+    return Padding(
+      padding: const EdgeInsets.only(),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton2<String>(
+          isExpanded: true,
+          hint: Text(
+            'Select Item',
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+          items: listData == null
+              ? []
+              : listData
                   .map((item) => DropdownMenuItem(
                         value: item.projectname,
                         child: Text(
@@ -672,8 +575,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   .toList(),
           value: selectedVendor,
           onChanged: (value) {
-            // selectedProject = value;
-            // context.read<InvoiceBloc>().getProjectSelected(value.toString());
+            selectedVendor = value;
+            // listData!.forEach((element) {
+            //   if (element.companyName == value) {
+            //     VendorData vendorData = element;
+            //     context.read<AddInvoiceBloc>().onVendorSelection(vendorData);
+            //   }
+            // });
           },
           buttonStyleData: ButtonStyleData(
             height: 45,
@@ -881,43 +789,60 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       state: _activeCurrentStep <= 0 ? StepState.editing : StepState.complete,
       isActive: _activeCurrentStep >= 0,
       title: const Text('Step 1'),
-      content: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      content: BlocBuilder<AddInvoiceBloc, AddInvoiceState>(
+          builder: (BuildContext context, state) {
+        if (state is LoadedVendorState) {
+          listofVenderData =
+              state.dataVendor.data == null ? [] : state.dataVendor.data!;
+          print("Step 1${listofVenderData.length}");
+        }
+        // if (state is LoadingState) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
+        return Column(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            dropDownList(context, []),
+            dropDownList(context, listofVenderData, () {}),
             const SizedBox(
               height: 8,
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("Preview PDF")),
-            Card(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomTextStyle.bold(
-                        text: "Vendor Details",
-                        fontSize: 18,
-                        color: AppColors.blueColor),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    builderToShowData(
-                        "Contact Person", "Snehal", "Mobile", "8108519788"),
-                    builderToShowData("Email ", "bharatgangwane@gmail.com",
-                        "GST ", "27AOCPK6216L1ZT	"),
-                    builderToShowData("Pan ", "ABGFS9045Q", "Address ",
-                        "Room No - 1102, Valmiki Chs, Tagore Nagar, Group No - 5, Vikhroli East , (400 08), mumbai"),
-                  ],
+            if (state is VendorSelectedState)
+              Card(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomTextStyle.bold(
+                          text: "Vendor Details",
+                          fontSize: 18,
+                          color: AppColors.blueColor),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      builderToShowData(
+                          "Contact Person",
+                          "${state.dataVendor.contactName}",
+                          "Mobile",
+                          "${state.dataVendor.contactNo}"),
+                      builderToShowData("Email ", "${state.dataVendor.email}",
+                          "GST ", "${state.dataVendor.gst}"),
+                      builderToShowData("Pan ", "${state.dataVendor.pan}",
+                          "Address ", "${state.dataVendor.address}"),
+                    ],
+                  ),
                 ),
               ),
-            )
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                  onPressed: () {}, child: const Text("Preview PDF")),
+            ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -977,7 +902,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               const SizedBox(
                 height: 8,
               ),
-              dropDownList(context, []),
+              projectDropDownList(context, projectData, () {}),
               const SizedBox(
                 height: 16,
               ),

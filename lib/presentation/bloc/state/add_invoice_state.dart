@@ -37,3 +37,14 @@ class LoadedVendorState extends AddInvoiceState {
 
   LoadedVendorState(this.dataVendor);
 }
+
+class VendorSelectedState extends AddInvoiceState {
+  final VendorData dataVendor;
+
+  VendorSelectedState(this.dataVendor);
+}
+
+class SecondVendorState extends AddInvoiceState {
+  final ProjectModel projectModel;
+  SecondVendorState(this.projectModel);
+}
