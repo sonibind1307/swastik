@@ -144,7 +144,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
-              child: Obx(() => Form(
+              child:Form(
                     key: _addInvoiceFormKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -392,7 +392,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     ),
                   ),
                ),
-              ),
+
           ],
         ),
       ),
@@ -473,7 +473,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   Widget cgstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
-    return Obx(() => Padding(
+    return  Padding(
             padding: const EdgeInsets.only(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -544,7 +544,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 ),
               ],
             ),
-      ),
     );
   }
 
@@ -1192,7 +1191,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      callStep2invoice();
+
                     },
                     style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith<Color?>(
@@ -1414,36 +1413,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         ));
   }
 
-  Future<void> callStep2invoice() async {
-    /* var data = FormData.fromMap({
-      'inv_date': '',
-      'inv_ref': '',
-      'invcomments': '',
-      'inv_project': '',
-      'inv_building': '',
-      'inv_category': '',
-      'ldgr_tds_pcnt': '',
-      'inv_po': '',
-      'vendor_id': '',
-      'created_date': '',
-      'vendor_linked_ldgr': ''
-    });
 
-    var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/add_invoice_step1?inv_ref=234&inv_date=2023-02-02&invcomments=testing&inv_project=234&inv_building=234&inv_category=234&ldgr_tds_pcnt=234&inv_po=234&vendor_id=234&created_date=234&vendor_linked_ldgr=234',
-      options: Options(
-        method: 'POST',
-      ),
-      data: data,
-    );
-
-    if (response.statusCode == 200) {
-      print(json.encode(response.data));
-    } else {
-      print(response.statusMessage);
-  }*/
-  }
 }
 
 

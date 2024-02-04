@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/model/responses/all_invoice_items.dart';
@@ -18,6 +19,7 @@ class AddInvoiceController extends GetxController {
   var categoryItemList = <CategoryData>[].obs;
   var projectList = <ProjectData>[].obs;
   var buildList = <BuildData>[].obs;
+  var invoiceDetail = <DetailData>[].obs;
 
 
   VendorData vendorData = VendorData();
@@ -49,7 +51,7 @@ class AddInvoiceController extends GetxController {
 
   void onVendorSelection(VendorData value){
     vendorData = value;
-    debugPrint("vendorData ${jsonEncode(vendorData)}");
+    debugPrint("vendorData 2024 -> ${jsonEncode(vendorData)}");
     update();
   }
 
@@ -82,6 +84,13 @@ class AddInvoiceController extends GetxController {
     buildList.value = data.data!;
     update();
   }
+
+  Future<void> onGetInvoiceDetails(String invoiceId) async {
+    InvoiceIDetailModel  data = await ApiRepo.getInvoiceDetails(invoiceId);
+    invoiceDetail.value = data.data!;
+    update();
+  }
+
 
 
 

@@ -1,17 +1,17 @@
-class InvoiceItemModel {
+class InvoiceIDetailModel {
   String? status;
   String? message;
-  List<ItemData>? data;
+  List<DetailData>? data;
 
-  InvoiceItemModel({this.status, this.message, this.data});
+  InvoiceIDetailModel({this.status, this.message, this.data});
 
-  InvoiceItemModel.fromJson(Map<String, dynamic> json) {
+  InvoiceIDetailModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <ItemData>[];
+      data = <DetailData>[];
       json['data'].forEach((v) {
-        data!.add(new ItemData.fromJson(v));
+        data!.add(new DetailData.fromJson(v));
       });
     }
   }
@@ -27,7 +27,7 @@ class InvoiceItemModel {
   }
 }
 
-class ItemData {
+class DetailData {
   String? invoiceId;
   String? companyId;
   String? companyname;
@@ -70,7 +70,7 @@ class ItemData {
   Null? uploaduser;
   Null? uploaddate;
 
-  ItemData(
+  DetailData(
       {this.invoiceId,
         this.companyId,
         this.companyname,
@@ -113,7 +113,7 @@ class ItemData {
         this.uploaduser,
         this.uploaddate});
 
-  ItemData.fromJson(Map<String, dynamic> json) {
+  DetailData.fromJson(Map<String, dynamic> json) {
     invoiceId = json['invoice_id'];
     companyId = json['company_id'];
     companyname = json['companyname'];
