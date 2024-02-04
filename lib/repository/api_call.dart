@@ -1,6 +1,13 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
+import 'package:swastik/model/responses/build_model.dart';
+import 'package:swastik/model/responses/invoice_item_model.dart';
+
+import '../model/responses/all_invoice_items.dart';
+import '../model/responses/category_model.dart';
 import '../model/responses/project_model.dart';
+import '../model/responses/vendor_model.dart';
 
 class ApiRepo {
   static Future<ProjectModel> getProjectList() async {
@@ -27,4 +34,100 @@ class ApiRepo {
       print(response.statusMessage);
     }*/
   }
+
+  static Future<VendorModel> getVendors() async {
+    VendorModel vendorModel = VendorModel();
+     var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_all_vendors',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      vendorModel = VendorModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return vendorModel;
+  }
+
+
+  static Future<BuildModel> getBuilding(String projectId) async {
+    BuildModel buildModel = BuildModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_buildings/$projectId',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      buildModel = BuildModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return buildModel;
+  }
+
+  static Future<InvoiceItemModel> getInvoiceItem() async {
+    InvoiceItemModel invoiceItemModel = InvoiceItemModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_invoice/9774',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      invoiceItemModel = InvoiceItemModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return invoiceItemModel;
+  }
+
+  static Future<CategoryModel> getInvoiceCategory() async {
+    CategoryModel categoryModel = CategoryModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_all_invcat',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      categoryModel = CategoryModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return categoryModel;
+  }
+
+  static Future<AllInvoiceItems> getAllInvoiceItems() async {
+    AllInvoiceItems allInvoiceItems = AllInvoiceItems();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_inv_items/9774',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      allInvoiceItems = AllInvoiceItems.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return allInvoiceItems;
+  }
+
+
+
+
+
 }

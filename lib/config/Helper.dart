@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -146,5 +147,40 @@ class Helper {
       tempDate = DateTime.parse('${time}Z');
     }
     return tempDate.toLocal();
+  }
+
+  static DropdownStyleData dropdownStyleData(BuildContext context){
+    return DropdownStyleData(
+      maxHeight: 250,
+      width: MediaQuery.of(context).size.width - 32,
+      padding: const EdgeInsets.only(left: 14, right: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        // color: Colors.redAccent,
+      ),
+      // offset: const Offset(-20, 0),
+      scrollbarTheme: ScrollbarThemeData(
+          radius: const Radius.circular(40),
+          thickness: MaterialStateProperty.all<double>(10.0),
+          thumbVisibility: MaterialStateProperty.all<bool>(true),
+          trackVisibility: MaterialStateProperty.all(true),
+          interactive: true,
+          trackColor: MaterialStateProperty.all(Colors.grey)),
+    );
+  }
+
+  static ButtonStyleData buttonStyleData(BuildContext context){
+    return ButtonStyleData(
+      height: 45,
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.grey,
+        ),
+      ),
+      // elevation: 2,
+    );
   }
 }
