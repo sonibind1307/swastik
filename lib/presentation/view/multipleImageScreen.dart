@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/Helper.dart';
-import 'package:swastik/presentation/view/pdfexport/pdfpreview.dart';
+import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
-import '../../model/invoice.dart';
 import '../bloc/bloc_logic/multiImagePickerBloc.dart';
 import '../bloc/state/multi_image_state.dart';
 
@@ -22,22 +21,16 @@ class MultiImageScreen extends StatelessWidget {
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
-              Invoice invoice = Invoice(
-                customer: 'Michael Ambiguous',
-                address: '82 Unsure St\r\nBaggle Palace',
-                items: [
-                  LineItem('Professional Advice', 100),
-                  LineItem('Lunch Bill', 43.55),
-                  LineItem('Remote Assistance', 50),
-                ],
-                name: 'Provide remote support after lunch',
-              );
-
               if (imageList.isNotEmpty) {
                 imageLogo = convertFilesToMemoryImages(imageList);
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => PdfPreviewPage(),
+                //   ),
+                // );
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PdfPreviewPage(),
+                    builder: (context) => const AddInvoiceScreen(),
                   ),
                 );
               } else {
@@ -64,7 +57,7 @@ class MultiImageScreen extends StatelessWidget {
                 itemCount:
                     state.imageList.length + 1, // Add 1 for the "Add" button
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == state.imageList.length) {
+                  if (index == 0) {
                     return InkWell(
                       onTap: () {
                         context.read<MultiImageCubit>().getCameraImage();
@@ -74,17 +67,18 @@ class MultiImageScreen extends StatelessWidget {
                         child: const Icon(Icons.add),
                       ),
                     );
+                  } else {
+                    return ClipRRect(
+                      child: state.imageList[index - 1].path == null
+                          ? const CircularProgressIndicator()
+                          : Image.file(
+                              File(state.imageList[index - 1].path),
+                              height: 200,
+                              width: 200,
+                              gaplessPlayback: true,
+                            ),
+                    );
                   }
-                  return ClipRRect(
-                    child: state.imageList[index].path == null
-                        ? const CircularProgressIndicator()
-                        : Image.file(
-                            File(state.imageList[index].path),
-                            height: 100,
-                            width: 200,
-                            gaplessPlayback: true,
-                          ),
-                  );
                 },
               );
             }

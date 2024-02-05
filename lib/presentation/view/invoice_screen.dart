@@ -49,11 +49,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             onPressed: () {
               setState(() {
                 if (actionIcon.icon == Icons.search) {
-                  actionIcon = const Icon(
+                  actionIcon = Icon(
                     Icons.close,
                     color: Colors.white,
                   );
                   appBarTitle = TextField(
+                    onChanged: (value) {
+                      context
+                          .read<InvoiceBloc>()
+                          .onSearchInvoice(_selectedStatus.toString());
+                    },
                     controller: _searchQuery,
                     style: const TextStyle(
                       color: Colors.white,
@@ -76,53 +81,50 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             if (state is LoadingState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is LoadedState) {
-              return InkWell(
-                onTap: () {
-                  openBottomSheet(context);
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 8,
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  dropDownList(context, state.dataProject.data),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Wrap(
+                      spacing: 8.0,
+                      children: listOfStatus.map((status) {
+                        return ChoiceChip(
+                          labelPadding:
+                              const EdgeInsets.only(left: 8, right: 8),
+                          padding: const EdgeInsets.only(left: 8, right: 8),
+                          selectedColor: Colors.blue,
+                          label: Text(_getChipStatusText(status)),
+                          selected: _selectedStatus == status,
+                          onSelected: (isSelected) {
+                            if (isSelected) {
+                              _selectedStatus = status;
+                            }
+                            context.read<InvoiceBloc>().chipChoiceCardSelected(
+                                _selectedStatus.toString());
+                          },
+                        );
+                      }).toList(),
                     ),
-                    dropDownList(context, state.dataProject.data),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        children: listOfStatus.map((status) {
-                          return ChoiceChip(
-                            labelPadding:
-                                const EdgeInsets.only(left: 8, right: 8),
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            selectedColor: Colors.blue,
-                            label: Text(_getChipStatusText(status)),
-                            selected: _selectedStatus == status,
-                            onSelected: (isSelected) {
-                              if (isSelected) {
-                                _selectedStatus = status;
-                              }
-                              print(_selectedStatus);
-                              context
-                                  .read<InvoiceBloc>()
-                                  .chipChoiceCardSelected(
-                                      _selectedStatus.toString());
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    listBuilder(context, state.dataInvoice)
-                  ],
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 32.0),
+                    child: Align(
+                        alignment: Alignment.topRight,
+                        child: CustomTextStyle.regular(
+                            text:
+                                "Count: ${state.dataInvoice.data == null ? "0.0" : state.dataInvoice.data!.length}")),
+                  ),
+                  listBuilder(context, state.dataInvoice)
+                ],
               );
             }
             return const Center(child: CircularProgressIndicator());
@@ -272,90 +274,96 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget listBuilder(BuildContext context, InvoiceModel invoiceList) {
     if (invoiceList.data == null) {
-      return Expanded(child: Center(child: CircularProgressIndicator()));
+      return const Expanded(child: Center(child: CircularProgressIndicator()));
     } else {
       return Expanded(
         child: ListView.builder(
-          padding: EdgeInsets.only(left: 8, right: 8),
+          padding: const EdgeInsets.only(left: 8, right: 8),
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           itemCount: invoiceList.data == null ? 0 : invoiceList.data!.length,
           itemBuilder: (context, index) {
-            return Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(4))),
-                          child:
-                              getIcon(invoiceList.data![index].invoiceStatus!)),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextStyle.extraBold(
-                            text: invoiceList.data![index].vendorCmpny),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                  color: Colors.redAccent,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(4))),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: CustomTextStyle.regular(
-                                    text: invoiceList.data![index].projectname,
-                                    color: Colors.white),
+            return InkWell(
+              onTap: () {
+                openBottomSheet(context);
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(4))),
+                            child: getIcon(
+                                invoiceList.data![index].invoiceStatus!)),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomTextStyle.extraBold(
+                              text: invoiceList.data![index].vendorCmpny),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                decoration: const BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(4))),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: CustomTextStyle.regular(
+                                      text:
+                                          invoiceList.data![index].projectname,
+                                      color: Colors.white),
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 4,
-                            ),
-                            CustomTextStyle.regular(
-                                text: invoiceList.data![index].invDate),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        CustomTextStyle.regular(
-                            text:
-                                "Inv.no: ${invoiceList.data![index].invoiceNo}"),
-                        CustomTextStyle.regular(
-                            text: invoiceList.data![index].invcat),
-                      ],
-                    ),
-                    const Spacer(),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomTextStyle.extraBold(
-                            text: double.parse(invoiceList
-                                    .data![index].totalamount
-                                    .toString())
-                                .toInt()
-                                .inRupeesFormat()),
-                        const SizedBox(height: 50),
-                        CustomTextStyle.regular(
-                            text: _getStatusText(invoiceList
-                                .data![index].invoiceStatus
-                                .toString())),
-                      ],
-                    )
-                  ],
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              CustomTextStyle.regular(
+                                  text: invoiceList.data![index].invDate),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          CustomTextStyle.regular(
+                              text:
+                                  "Inv.no: ${invoiceList.data![index].invoiceNo}"),
+                          CustomTextStyle.regular(
+                              text: invoiceList.data![index].invcat),
+                        ],
+                      ),
+                      const Spacer(),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomTextStyle.extraBold(
+                              text: double.parse(invoiceList
+                                      .data![index].totalamount
+                                      .toString())
+                                  .toInt()
+                                  .inRupeesFormat()),
+                          const SizedBox(height: 50),
+                          CustomTextStyle.regular(
+                              text: _getStatusText(invoiceList
+                                  .data![index].invoiceStatus
+                                  .toString())),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             );

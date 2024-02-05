@@ -84,51 +84,54 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  if (_activeCurrentStep == 0) {
-                    return;
-                  }
+              if (_activeCurrentStep != 0)
+                ElevatedButton(
+                  onPressed: () {
+                    if (_activeCurrentStep == 0) {
+                      return;
+                    }
 
-                  setState(() {
-                    _activeCurrentStep -= 1;
-                  });
-                },
-                style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.hovered)) {
-                        return AppColors.btnBorderColor; //<-- SEE HERE
-                      }
-                      return null; // Defer to the widget's default.
-                    },
+                    setState(() {
+                      _activeCurrentStep -= 1;
+                    });
+                  },
+                  style: ButtonStyle(
+                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.hovered)) {
+                          return AppColors.btnBorderColor; //<-- SEE HERE
+                        }
+                        return null; // Defer to the widget's default.
+                      },
+                    ),
+                    side: MaterialStateProperty.all(
+                        const BorderSide(color: AppColors.btnBorderColor)),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.all(AppColors.whiteColor),
                   ),
-                  side: MaterialStateProperty.all(
-                      const BorderSide(color: AppColors.btnBorderColor)),
-                  padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      "Back",
+                      //"strCancel".tr(),
+                      style: AppTextStyles.btn3TextStyle,
+                    ),
                   ),
-                  backgroundColor:
-                      MaterialStateProperty.all(AppColors.whiteColor),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(7.0),
-                  child: Text(
-                    "Cancel",
-                    //"strCancel".tr(),
-                    style: AppTextStyles.btn3TextStyle,
-                  ),
-                ),
-              ),
               const SizedBox(
                 width: 16,
               ),
               ElevatedButton(
                 onPressed: () {
+                  if (_activeCurrentStep == 2) {
+                    Helper.getSnackBarError(context, "call api");
+                  }
                   if (_activeCurrentStep < (3 - 1)) {
                     setState(() {
                       _activeCurrentStep += 1;
-                      getProjectList();
                     });
                   }
                 },
@@ -142,14 +145,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     },
                   ),
                   padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                   ),
-                  backgroundColor: MaterialStateProperty.all(AppColors.bgColor),
+                  backgroundColor:
+                      MaterialStateProperty.all(AppColors.primaryColor),
                 ),
                 child: Padding(
-                    padding: const EdgeInsets.all(7.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: Text(
-                      "Next",
+                      _activeCurrentStep == 2 ? "Submit" : "Next",
                       style: AppTextStyles.btn1TextStyle,
                     )),
               )
