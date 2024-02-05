@@ -8,8 +8,9 @@ class CustomDateTime {
     return showDatePicker(
         context: context,
         initialDate: now,
-        firstDate: DateTime.now(),
-        lastDate: now);
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101)
+    );
   }
 
   static int getDaysInMonth(int year, int month) {

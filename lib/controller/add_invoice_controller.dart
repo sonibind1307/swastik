@@ -30,9 +30,9 @@ class AddInvoiceController extends GetxController {
   String? sgstValue;
   String? igstValue;
 
-  RxString cgstValue1 ="".obs;
-  RxString sgstValue1 ="".obs;
-  RxString igstValue1 ="".obs;
+  RxString cgstValue1 ="CGST".obs;
+  RxString sgstValue1 ="SGST".obs;
+  RxString igstValue1 ="IGST".obs;
 
   String? selectedCategory;
   String? selectedProject;
@@ -59,6 +59,11 @@ class AddInvoiceController extends GetxController {
     var gst = (percent*amount) / 100;
     debugPrint("gst $gst");
     return gst;
+  }
+
+  double totalAmount(double amount, {double? cgst, double? sgst, double? igst}){
+    var total = amount + cgst! + sgst! + igst!;
+    return total;
   }
 
   Future<void> onGetAllInvoiceItem() async {

@@ -52,7 +52,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   List<String> igstList = ["IGST", "0%", "5%", "12%", "18%", "28%"];
   final addInvoiceController = Get.find<AddInvoiceController>();
   var selectedDate;
-
+  double? totalAmount;
   @override
   void initState() {
     super.initState();
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       ),
       // Here we have initialized the stepper widget
       body: Stepper(
-        physics: ScrollPhysics(),
+        physics: const ScrollPhysics(),
         type: StepperType.horizontal,
         currentStep: _activeCurrentStep,
         controlsBuilder: (context, controller) {
@@ -222,7 +222,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           });
         },*/
       ),
-      /*floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
         tooltip: 'Add',
         onPressed: () {
@@ -233,7 +233,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               });
         },
         child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),*/
+      ),
     );
   }
 
@@ -248,259 +248,230 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         width: MediaQuery.of(context).size.width,
         color: Colors.white,
         child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Form(
-                key: _addInvoiceFormKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Add Invoice",
-                          style: AppTextStyles.modalTitleText,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16.0,
-                    ),
-                    TextFormField(
-                      controller: itemDesc,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Item Description"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    TextFormField(
-                      controller: hCode,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "HSN/SAC Code"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    TextFormField(
-                      controller: quanity,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Quantity"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    TextFormField(
-                      controller: amount,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Amount"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    cgstDropDownList(context, "CGST", cgstList, (value) {
-                      if (value == cgstList[0]) {
-                        addInvoiceController.cgstFlag.value = true;
-                        addInvoiceController.igstFlag.value = true;
-                        debugPrint("true");
-                      } else {
-                        addInvoiceController.igstFlag.value = false;
-                        debugPrint("false");
-                      }
-                      cgstController.text = value.toString();
-                    }),
-                    const SizedBox(
-                      height: 5.0,
-                    ),
-                    // sgstDropDownList(context),
-                    sgstDropDownList(context, "SGST", sgstList, (value) {
-                      if (value == sgstList[0]) {
-                        addInvoiceController.cgstFlag.value = true;
-                        addInvoiceController.igstFlag.value = true;
-                      } else {
-                        addInvoiceController.igstFlag.value = false;
-                      }
-                      sgstController.text = value.toString();
-                    }),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    igstDropDownList(context, "IGST", igstList, (value) {
-                      if (value == igstList[0]) {
-                        addInvoiceController.cgstFlag.value = true;
-                        addInvoiceController.igstFlag.value = true;
-                      } else {
-                        addInvoiceController.cgstFlag.value = false;
-                        addInvoiceController.igstFlag.value = true;
-                      }
-                      igstController.text = value.toString();
-                    }),
-                    // sgstDropDownList(context),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    TextFormField(
-                      controller: amountFinal,
-                      readOnly: true,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Final Amount"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
+            children: [
+              SingleChildScrollView(
+                child: Form(
+                  key: _addInvoiceFormKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Add Invoice",
+                            style: AppTextStyles.modalTitleText,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16.0,
+                      ),
+                      TextFormField(
+                        controller: itemDesc,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "Item Description"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      TextFormField(
+                        controller: hCode,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "HSN/SAC Code"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      TextFormField(
+                        controller: quanity,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "Quantity"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      TextFormField(
+                        controller: amount,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "Amount"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                     cgstDropDownList(context, "CGST", cgstList, (value) {}),
+                      const SizedBox(
+                        height: 5.0,
+                      ),
+                      sgstDropDownList(context, "SGST", sgstList, (value) {}),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      igstDropDownList(context, "IGST", igstList, (value) {}),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      TextFormField(
+                        controller: amountFinal,
+                        readOnly: true,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "Final Amount"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
 
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    TextFormField(
-                      controller: amountTax,
-                      readOnly: true,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Tax Amount"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered)) {
-                                  return AppColors
-                                      .btnBorderColor; //<-- SEE HERE
-                                }
-                                return null; // Defer to the widget's default.
-                              },
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      TextFormField(
+                        controller: amountTax,
+                        readOnly: true,
+                        textInputAction: TextInputAction.done,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: CustomTextDecoration.textFieldDecoration(
+                            labelText: "Tax Amount"),
+                        // inputFormatters: [
+                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                        // ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return Constant.enterTextError;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ButtonStyle(
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return AppColors
+                                        .btnBorderColor; //<-- SEE HERE
+                                  }
+                                  return null; // Defer to the widget's default.
+                                },
+                              ),
+                              side: MaterialStateProperty.all(const BorderSide(
+                                  color: AppColors.btnBorderColor)),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                              ),
+                              backgroundColor:
+                                  MaterialStateProperty.all(AppColors.whiteColor),
                             ),
-                            side: MaterialStateProperty.all(const BorderSide(
-                                color: AppColors.btnBorderColor)),
-                            padding: MaterialStateProperty.all(
-                              const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 15),
-                            ),
-                            backgroundColor:
-                                MaterialStateProperty.all(AppColors.whiteColor),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(7.0),
-                            child: Text(
-                              "Cancel",
-                              //"strCancel".tr(),
-                              style: AppTextStyles.btn3TextStyle,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_addInvoiceFormKey.currentState!.validate()) {}
-                          },
-                          style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered)) {
-                                  return AppColors.hoverColor; //<-- SEE HERE
-                                }
-                                return null; // Defer to the widget's default.
-                              },
-                            ),
-                            padding: MaterialStateProperty.all(
-                              const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 15),
-                            ),
-                            backgroundColor:
-                                MaterialStateProperty.all(AppColors.bgColor),
-                          ),
-                          child: Padding(
+                            child: Padding(
                               padding: const EdgeInsets.all(7.0),
                               child: Text(
-                                "Submit",
-                                style: AppTextStyles.btn1TextStyle,
-                              )),
-                        )
-                      ],
-                    )
-                  ],
+                                "Cancel",
+                                //"strCancel".tr(),
+                                style: AppTextStyles.btn3TextStyle,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_addInvoiceFormKey.currentState!.validate()) {}
+                            },
+                            style: ButtonStyle(
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return AppColors.hoverColor; //<-- SEE HERE
+                                  }
+                                  return null; // Defer to the widget's default.
+                                },
+                              ),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                              ),
+                              backgroundColor:
+                                  MaterialStateProperty.all(AppColors.bgColor),
+                            ),
+                            child: Padding(
+                                padding: const EdgeInsets.all(7.0),
+                                child: Text(
+                                  "Submit",
+                                  style: AppTextStyles.btn1TextStyle,
+                                )),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -569,225 +540,249 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   Widget cgstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            flex: 2,
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).hintColor,
+    return Obx(() => Padding(
+        padding: const EdgeInsets.only(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 2,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    key,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                ),
-                items: listOfData
-                    .map((item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
+                  items: listOfData
+                      .map((item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ))
-                    .toList(),
-                value: addInvoiceController.cgstValue,
-                onChanged: (value) {
-                  addInvoiceController.cgstValue = value!;
-                  addInvoiceController.cgstValue1.value = value;
-                  voidCallback(addInvoiceController.cgstValue1.value);
-                  // context.read<InvoiceBloc>().getProjectSelected(value.toString());
-                },
-                buttonStyleData: Helper.buttonStyleData(context),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
+                          ))
+                      .toList(),
+                  value: addInvoiceController.cgstValue1.value,
+                  onChanged: (value) {
+                    addInvoiceController.cgstValue1.value = value!;
+                    voidCallback(addInvoiceController.cgstValue1.value);
+
+                    if (value == cgstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                      cgstController.clear();
+                      sgstController.clear();
+                      igstController.clear();
+                      debugPrint("true");
+                    } else {
+                      addInvoiceController.igstFlag.value = false;
+                      String result = value.substring(0, value.length - 1);
+                      double cgstTax = addInvoiceController.onGstCalculation(double.parse(result), double.parse(amount.text));
+                      cgstController.text = cgstTax.toString();
+                      totalAmount = addInvoiceController.totalAmount(double.parse(amount.text), cgst: cgstTax,sgst: 0.0,igst: 0.0);
+                      debugPrint("res --$totalAmount");
+                    }},
+                  buttonStyleData: Helper.buttonStyleData(context),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                    ),
+                    // iconSize: 14,
+                    iconEnabledColor: Colors.black,
+                    iconDisabledColor: Colors.grey,
                   ),
-                  // iconSize: 14,
-                  iconEnabledColor: Colors.black,
-                  iconDisabledColor: Colors.grey,
+                  dropdownStyleData: Helper.dropdownStyleData(context),
                 ),
-                dropdownStyleData: Helper.dropdownStyleData(context),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TextFormField(
-              controller: amountTax,
-              enabled: false,
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  CustomTextDecoration.textFieldDecoration(labelText: ""),
-              readOnly: true,
-              // inputFormatters: [
-              //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-              // ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return Constant.enterTextError;
-                }
-                return null;
-              },
+            const SizedBox(width: 4,),
+            Expanded(
+              flex: 1,
+              child: Container(
+                height:  42,
+                width:  70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                    border: Border.all(color: Colors.grey,),
+                    borderRadius: BorderRadius.circular(4)
+                ),
+                child:Text("${cgstController.text}"),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget sgstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            flex: 2,
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).hintColor,
+    return Obx(() => Padding(
+        padding: const EdgeInsets.only(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 2,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    key,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                ),
-                items: listOfData
-                    .map((item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
+                  items: listOfData
+                      .map((item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ))
-                    .toList(),
-                value: addInvoiceController.sgstValue,
-                onChanged: (value) {
-                  addInvoiceController.sgstValue = value!;
-                  addInvoiceController.sgstValue1.value = value;
-                  voidCallback(addInvoiceController.sgstValue1.value);
-                  // context.read<InvoiceBloc>().getProjectSelected(value.toString());
-                },
-                buttonStyleData: Helper.buttonStyleData(context),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
+                          ))
+                      .toList(),
+                  value: addInvoiceController.sgstValue1.value,
+                  onChanged: (value) {
+                    //addInvoiceController.sgstValue = value!;
+                    addInvoiceController.sgstValue1.value = value!;
+                    voidCallback(addInvoiceController.sgstValue1.value);
+                    if (value == sgstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                      cgstController.clear();
+                      sgstController.clear();
+                      igstController.clear();
+                    } else {
+                      addInvoiceController.igstFlag.value = false;
+                      String result = value.substring(0, value.length - 1);
+                      double sgstTax = addInvoiceController.onGstCalculation(double.parse(result), double.parse(amount.text));
+                      sgstController.text = sgstTax.toString();
+                      totalAmount = addInvoiceController.totalAmount(double.parse(amount.text),cgst: 0.0,sgst: sgstTax,igst: 0.0);
+                      debugPrint("res --$totalAmount");
+                    }
+                  },
+                  buttonStyleData: Helper.buttonStyleData(context),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                    ),
+                    // iconSize: 14,
+                    iconEnabledColor: Colors.black,
+                    iconDisabledColor: Colors.grey,
                   ),
-                  // iconSize: 14,
-                  iconEnabledColor: Colors.black,
-                  iconDisabledColor: Colors.grey,
+                  dropdownStyleData: Helper.dropdownStyleData(context),
                 ),
-                dropdownStyleData: Helper.dropdownStyleData(context),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TextFormField(
-              controller: TextEditingController(),
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  CustomTextDecoration.textFieldDecoration(labelText: ""),
-              readOnly: true,
-              // inputFormatters: [
-              //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-              // ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return Constant.enterTextError;
-                }
-                return null;
-              },
+            const SizedBox(width: 4,),
+            Expanded(
+              flex: 1,
+              child: Container(
+                height:  42,
+                width:  70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    border: Border.all(color: Colors.grey,),
+                    borderRadius: BorderRadius.circular(4)
+                ),
+                child:Text(sgstController.text),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget igstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            flex: 2,
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).hintColor,
+    return Obx(() => Padding(
+        padding: const EdgeInsets.only(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 2,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    key,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                ),
-                items: listOfData
-                    .map((item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
+                  items: listOfData
+                      .map((item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ))
-                    .toList(),
-                value: addInvoiceController.igstValue,
-                onChanged: (value) {
-                  addInvoiceController.igstValue = value!;
-                  addInvoiceController.igstValue1.value = value;
-                  voidCallback(addInvoiceController.igstValue1.value);
-                },
-                buttonStyleData: Helper.buttonStyleData(context),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
+                          ))
+                      .toList(),
+                  value: addInvoiceController.igstValue1.value,
+                  onChanged: (value) {
+                    addInvoiceController.igstValue1.value = value!;
+                    voidCallback(addInvoiceController.igstValue1.value);
+                    if (value == igstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                      cgstController.clear();
+                      sgstController.clear();
+                      igstController.clear();
+                    } else {
+                      addInvoiceController.cgstFlag.value = false;
+                      String result = value.substring(0, value.length - 1);
+                      double igstTax = addInvoiceController.onGstCalculation(double.parse(result), double.parse(amount.text));
+                      igstController.text = igstTax.toString();
+                    }
+                  },
+                  buttonStyleData: Helper.buttonStyleData(context),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                    ),
+                    // iconSize: 14,
+                    iconEnabledColor: Colors.black,
+                    iconDisabledColor: Colors.grey,
                   ),
-                  // iconSize: 14,
-                  iconEnabledColor: Colors.black,
-                  iconDisabledColor: Colors.grey,
+                  dropdownStyleData: Helper.dropdownStyleData(context),
                 ),
-                dropdownStyleData: Helper.dropdownStyleData(context),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TextFormField(
-              controller: TextEditingController(),
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  CustomTextDecoration.textFieldDecoration(labelText: ""),
-              readOnly: true,
-              // inputFormatters: [
-              //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-              // ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return Constant.enterTextError;
-                }
-                return null;
-              },
+            const SizedBox(width: 4,),
+            Expanded(
+              flex: 1,
+              child: Container(
+                height:  42,
+                width:  70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    border: Border.all(color: Colors.grey,),
+                    borderRadius: BorderRadius.circular(4)
+                ),
+                child:Text(igstController.text),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
