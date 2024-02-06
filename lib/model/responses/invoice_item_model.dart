@@ -1,19 +1,14 @@
 class InvoiceIDetailModel {
   String? status;
   String? message;
-  List<DetailData>? data;
+  Data? data;
 
   InvoiceIDetailModel({this.status, this.message, this.data});
 
   InvoiceIDetailModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    if (json['data'] != null) {
-      data = <DetailData>[];
-      json['data'].forEach((v) {
-        data!.add(new DetailData.fromJson(v));
-      });
-    }
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -21,13 +16,13 @@ class InvoiceIDetailModel {
     data['status'] = this.status;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
     }
     return data;
   }
 }
 
-class DetailData {
+class Data {
   String? invoiceId;
   String? companyId;
   String? companyname;
@@ -64,56 +59,58 @@ class DetailData {
   String? updatedBy;
   String? updatedDate;
   String? status;
-  Null? filename;
-  Null? filetype;
-  Null? size;
-  Null? uploaduser;
-  Null? uploaddate;
+  String? filename;
+  String? filetype;
+  String? size;
+  String? uploaduser;
+  String? uploaddate;
+  List<InvoiceItems>? invoiceItems;
 
-  DetailData(
+  Data(
       {this.invoiceId,
-        this.companyId,
-        this.companyname,
-        this.project,
-        this.projectname,
-        this.building,
-        this.nameofbuilding,
-        this.ledgerid,
-        this.invref,
-        this.poId,
-        this.vendorId,
-        this.companyName,
-        this.address,
-        this.city,
-        this.pincode,
-        this.email,
-        this.gst,
-        this.pan,
-        this.invDate,
-        this.invcat,
-        this.invcomments,
-        this.cgstPercent,
-        this.cgstAmount,
-        this.sgstPercent,
-        this.sgstAmount,
-        this.igstPercent,
-        this.igstAmount,
-        this.invamount,
-        this.subtotal,
-        this.taxamount,
-        this.totalamount,
-        this.createdDate,
-        this.createdBy,
-        this.updatedBy,
-        this.updatedDate,
-        this.status,
-        this.filename,
-        this.filetype,
-        this.size,
-        this.uploaduser,
-        this.uploaddate});
+      this.companyId,
+      this.companyname,
+      this.project,
+      this.projectname,
+      this.building,
+      this.nameofbuilding,
+      this.ledgerid,
+      this.invref,
+      this.poId,
+      this.vendorId,
+      this.companyName,
+      this.address,
+      this.city,
+      this.pincode,
+      this.email,
+      this.gst,
+      this.pan,
+      this.invDate,
+      this.invcat,
+      this.invcomments,
+      this.cgstPercent,
+      this.cgstAmount,
+      this.sgstPercent,
+      this.sgstAmount,
+      this.igstPercent,
+      this.igstAmount,
+      this.invamount,
+      this.subtotal,
+      this.taxamount,
+      this.totalamount,
+      this.createdDate,
+      this.createdBy,
+      this.updatedBy,
+      this.updatedDate,
+      this.status,
+      this.filename,
+      this.filetype,
+      this.size,
+      this.uploaduser,
+      this.uploaddate,
+      this.invoiceItems});
 
-  DetailData.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     invoiceId = json['invoice_id'];
     companyId = json['company_id'];
     companyname = json['companyname'];
@@ -155,6 +152,12 @@ class DetailData {
     size = json['size'];
     uploaduser = json['uploaduser'];
     uploaddate = json['uploaddate'];
+    if (json['invoice_items'] != null) {
+      invoiceItems = <InvoiceItems>[];
+      json['invoice_items'].forEach((v) {
+        invoiceItems!.add(new InvoiceItems.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -200,6 +203,75 @@ class DetailData {
     data['size'] = this.size;
     data['uploaduser'] = this.uploaduser;
     data['uploaddate'] = this.uploaddate;
+    if (this.invoiceItems != null) {
+      data['invoice_items'] =
+          this.invoiceItems!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class InvoiceItems {
+  String? invoiceItemId;
+  String? invoiceId;
+  String? itemDescription;
+  String? itemAmount;
+  String? qty;
+  String? hsnCode;
+  String? itemCgst;
+  String? itemSgst;
+  String? itemIgst;
+  String? itemTds;
+  String? itemTax;
+  String? itemTotal;
+  String? itemVat;
+
+  InvoiceItems(
+      {this.invoiceItemId,
+      this.invoiceId,
+      this.itemDescription,
+      this.itemAmount,
+      this.qty,
+      this.hsnCode,
+      this.itemCgst,
+      this.itemSgst,
+      this.itemIgst,
+      this.itemTds,
+      this.itemTax,
+      this.itemTotal,
+      this.itemVat});
+
+  InvoiceItems.fromJson(Map<String, dynamic> json) {
+    invoiceItemId = json['invoice_item_id'];
+    invoiceId = json['invoice_id'];
+    itemDescription = json['item_description'];
+    itemAmount = json['item_amount'];
+    qty = json['qty'];
+    hsnCode = json['hsn_code'];
+    itemCgst = json['item_cgst'];
+    itemSgst = json['item_sgst'];
+    itemIgst = json['item_igst'];
+    itemTds = json['item_tds'];
+    itemTax = json['item_tax'];
+    itemTotal = json['item_total'];
+    itemVat = json['item_vat'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['invoice_item_id'] = this.invoiceItemId;
+    data['invoice_id'] = this.invoiceId;
+    data['item_description'] = this.itemDescription;
+    data['item_amount'] = this.itemAmount;
+    data['qty'] = this.qty;
+    data['hsn_code'] = this.hsnCode;
+    data['item_cgst'] = this.itemCgst;
+    data['item_sgst'] = this.itemSgst;
+    data['item_igst'] = this.itemIgst;
+    data['item_tds'] = this.itemTds;
+    data['item_tax'] = this.itemTax;
+    data['item_total'] = this.itemTotal;
+    data['item_vat'] = this.itemVat;
     return data;
   }
 }

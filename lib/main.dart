@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:swastik/presentation/view/invoice_screen.dart';
+import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import 'controller/add_invoice_controller.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: InvoiceScreen(),
+      home: AddInvoiceScreen(),
     );
   }
 }

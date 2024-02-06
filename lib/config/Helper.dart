@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import 'colorConstant.dart';
@@ -149,7 +150,7 @@ class Helper {
     return tempDate.toLocal();
   }
 
-  static DropdownStyleData dropdownStyleData(BuildContext context){
+  static DropdownStyleData dropdownStyleData(BuildContext context) {
     return DropdownStyleData(
       maxHeight: 250,
       width: MediaQuery.of(context).size.width - 32,
@@ -169,7 +170,7 @@ class Helper {
     );
   }
 
-  static ButtonStyleData buttonStyleData(BuildContext context){
+  static ButtonStyleData buttonStyleData(BuildContext context) {
     return ButtonStyleData(
       height: 45,
       width: MediaQuery.of(context).size.width,
