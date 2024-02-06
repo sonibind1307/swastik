@@ -63,6 +63,7 @@ class AddInvoiceController extends GetxController {
   List<String> cgstList = ["CGST", "0%", "2.5%", "6%", "9%", "14%"];
   List<String> sgstList = ["SGST", "0%", "2.5%", "6%", "9%", "14%"];
   List<String> igstList = ["IGST", "0%", "5%", "12%", "18%", "28%"];
+
   // double? totalAmount;
 
   Future<void> onGetVendor() async {
@@ -79,88 +80,49 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
-  double onGstCalculation() {
+  void onGstCalculation() {
     debugPrint("quanity ${quanity.text}");
     debugPrint("amount ${amount.text}");
     double _amount = 0.0;
+    double cgstPer = 0.0;
+    double sgstPer = 0.0;
+    double igstPer = 0.0;
     double _gst = 0.0;
 
     if (amount.text.trim().isNotEmpty) {
       _amount = double.parse(amount.text);
+      if (cgstFlag == true) {
+        double cgstVal = 0.0;
+        double sgstVal = 0.0;
+        if (cgstValue1.value != cgstList[0]) {
+          cgstPer = double.parse(cgstValue1.value
+              .substring(0, cgstValue1.value.length - 1)
+              .toString());
+          cgstVal = (cgstPer * _amount) / 100;
+        }
+        if (sgstValue1.value != sgstList[0]) {
+          sgstPer = double.parse(sgstValue1.value
+              .substring(0, sgstValue1.value.length - 1)
+              .toString());
+          sgstVal = (sgstPer * _amount) / 100;
+        }
+        cgstController.text = cgstVal.toString();
+        sgstController.text = sgstVal.toString();
+
+        _gst = cgstVal + sgstVal;
+      } else {
+        double sgstVal = 0.0;
+        if (sgstValue1.value != sgstList[0]) {
+          sgstVal = double.parse(sgstValue1.value
+              .substring(0, sgstValue1.value.length - 1)
+              .toString());
+          igstPer = (sgstVal * _amount) / 100;
+        }
+        _gst = igstPer;
+      }
+      amountTax.text = _gst.toString();
+      amountFinal.text = (_amount + _gst).toString();
     }
-
-    if (cgstFlag == true) {
-      double cgstPer = double.parse(cgstValue1.value
-          .substring(0, cgstValue1.value.length - 1)
-          .toString());
-      double sgstPer = double.parse(sgstValue1.value
-          .substring(0, sgstValue1.value.length - 1)
-          .toString());
-
-      double cgstVal = (cgstPer * _amount) / 100;
-      double sgstVal = (sgstPer * _amount) / 100;
-      _gst = cgstVal + sgstVal;
-    } else {
-      double igstPer = double.parse(sgstValue1.value
-          .substring(0, sgstValue1.value.length - 1)
-          .toString());
-      double sgstVal = (igstPer * _amount) / 100;
-      _gst = sgstVal;
-    }
-
-    debugPrint("Final _gst ${_gst}");
-    debugPrint("Final amount ${quanity.text}");
-    debugPrint("text amount ${amount.text}");
-    /*
-    String result =
-    value.substring(0, value.length - 1);
-    double cgstTax =
-    addInvoiceController.onGstCalculation(
-        double.parse(result),
-        double.parse(amount.text));
-    cgstController.text = cgstTax.toString();
-    totalAmount = addInvoiceController.totalAmount(
-        double.parse(amount.text),
-        cgst: cgstTax,
-        sgst: 0.0,
-        igst: 0.0);
-    debugPrint("res --$totalAmount");*/
-
-    /*
-
-   String result =
-                                value.substring(0, value.length - 1);
-                            double sgstTax =
-                                addInvoiceController.onGstCalculation(
-                                    double.parse(result),
-                                    double.parse(amount.text));
-                            sgstController.text = sgstTax.toString();
-                            totalAmount = addInvoiceController.totalAmount(
-                                double.parse(amount.text),
-                                cgst: 0.0,
-                                sgst: sgstTax,
-                                igst: 0.0);
-                            debugPrint("res --$totalAmount");
-
-    */
-
-    /*
-
-     String result =
-                                value.substring(0, value.length - 1);
-                            double igstTax =
-                                addInvoiceController.onGstCalculation(
-                                    double.parse(result),
-                                    double.parse(amount.text));
-                            igstController.text = igstTax.toString();
-
-    */
-
-    // var gst = (percent * amount) / 100;
-    // debugPrint("gst $gst");
-    // return gst;
-
-    return 0.0;
   }
 
   double totalAmount(double amount,
