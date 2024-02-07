@@ -88,12 +88,13 @@ class AddInvoiceController extends GetxController {
     double sgstPer = 0.0;
     double igstPer = 0.0;
     double _gst = 0.0;
+    double cgstVal = 0.0;
+    double sgstVal = 0.0;
+    double igstVal = 0.0;
 
     if (amount.text.trim().isNotEmpty) {
       _amount = double.parse(amount.text);
       if (cgstFlag == true) {
-        double cgstVal = 0.0;
-        double sgstVal = 0.0;
         if (cgstValue1.value != cgstList[0]) {
           cgstPer = double.parse(cgstValue1.value
               .substring(0, cgstValue1.value.length - 1)
@@ -106,36 +107,32 @@ class AddInvoiceController extends GetxController {
               .toString());
           sgstVal = (sgstPer * _amount) / 100;
         }
-        cgstController.text = cgstVal.toString();
-        sgstController.text = sgstVal.toString();
 
         _gst = cgstVal + sgstVal;
       } else {
-        double igstVal = 0.0;
         if (igstValue1.value != igstList[0]) {
           igstPer = double.parse(igstValue1.value
               .substring(0, igstValue1.value.length - 1)
               .toString());
           igstVal = (igstPer * _amount) / 100;
         }
-        igstController.text = igstVal.toString();
+
         _gst = igstVal;
       }
+
+      cgstController.text = cgstVal.toString();
+      sgstController.text = sgstVal.toString();
+      igstController.text = igstVal.toString();
+
       amountTax.text = _gst.toString();
       amountFinal.text = (_amount + _gst).toString();
     }
   }
 
-  double totalAmount(double amount,
-      {double? cgst, double? sgst, double? igst}) {
-    var total = amount + cgst! + sgst! + igst!;
-    return total;
-  }
-
   Future<void> onGetAllInvoiceItem() async {
-    AllInvoiceItems allInvoiceItems = await ApiRepo.getAllInvoiceItems();
-    allInvoiceItemList.value = allInvoiceItems.data!;
-    update();
+    // AllInvoiceItems allInvoiceItems = await ApiRepo.getAllInvoiceItems();
+    // allInvoiceItemList.value = allInvoiceItems.data!;
+    // update();
   }
 
   Future<void> onGetInvoiceCategoryItem() async {
@@ -171,6 +168,25 @@ class AddInvoiceController extends GetxController {
       invRefController.text = data.data!.invref.toString();
     }
 
+    update();
+  }
+
+  addItems() {
+    AllItemData allItemData = AllItemData();
+    allItemData.invoiceItemId = itemDesc.text.toString();
+    allItemData.itemDescription = itemDesc.text.toString();
+    allItemData.invoiceId = itemDesc.text.toString();
+    allItemData.itemAmount = amount.text.toString();
+    allItemData.qty = quanity.text.toString();
+    allItemData.hsnCode = hCode.text.toString();
+    allItemData.itemCgst = cgstController.text.toString();
+    allItemData.itemSgst = sgstController.text.toString();
+    allItemData.itemIgst = igstController.text.toString();
+    allItemData.itemTds = itemDesc.text.toString();
+    allItemData.itemTax = itemDesc.text.toString();
+    allItemData.itemTotal = amountFinal.text.toString();
+    allItemData.itemVat = itemDesc.text.toString();
+    allInvoiceItemList.add(allItemData);
     update();
   }
 }

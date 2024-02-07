@@ -9,6 +9,7 @@ import 'package:swastik/repository/api_call.dart';
 
 import '../../../config/constant.dart';
 import '../../../config/text-style.dart';
+import '../../../model/responses/all_invoice_items.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
@@ -200,18 +201,18 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           });
         },*/
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
-      //   tooltip: 'Add',
-      //   onPressed: () {
-      //     showDialog(
-      //         context: context,
-      //         builder: (BuildContext context) {
-      //           return addInvoiceDialog(context);
-      //         });
-      //   },
-      //   child: const Icon(Icons.add, color: Colors.white, size: 28),
-      // ),
+      /*   floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
+        tooltip: 'Add',
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return addInvoiceDialog(context);
+              });
+        },
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
+      ),*/
     );
   }
 
@@ -237,7 +238,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Add Invoice",
+                          "Add Item",
                           style: AppTextStyles.modalTitleText,
                         ),
                       ],
@@ -423,7 +424,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            if (_addInvoiceFormKey.currentState!.validate()) {}
+                            if (_addInvoiceFormKey.currentState!.validate()) {
+                              Navigator.pop(context);
+                              addInvoiceController.addItems();
+                            }
                           },
                           style: ButtonStyle(
                             overlayColor:
@@ -602,7 +606,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       color: Colors.grey,
                     ),
                     borderRadius: BorderRadius.circular(4)),
-                child: Text("${addInvoiceController.cgstController.text}"),
+                child: Text(addInvoiceController.cgstController.text),
               ),
             ),
           ],
@@ -1322,213 +1326,147 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       title: const Text('Step 3'),
       content: SizedBox(
         height: MediaQuery.of(context).size.height * 0.7,
-        child: Center(
-          child: OutlinedButton.icon(
-            // <-- OutlinedButton
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return addInvoiceDialog(context);
-                  });
-            },
-            icon: Icon(
-              Icons.add,
-              size: 24.0,
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: OutlinedButton.icon(
+                // <-- OutlinedButton
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return addInvoiceDialog(context);
+                      });
+                },
+                icon: Icon(
+                  Icons.add,
+                  size: 24.0,
+                ),
+                label: Text('Add Item'),
+              ),
             ),
-            label: Text('Add Invoice'),
-          ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: addInvoiceController.allInvoiceItemList.isEmpty
+                  ? Center(
+                      child: CustomTextStyle.regular(text: "No Item Added"),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      physics: const ScrollPhysics(),
+                      itemCount: addInvoiceController.allInvoiceItemList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        AllItemData data =
+                            addInvoiceController.allInvoiceItemList[index];
+                        return Card(
+                            child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    // flex: 2,
+                                    child: Container(
+                                        // color: Colors.red,
+                                        child: CustomTextStyle.bold(
+                                            text: data.itemDescription ?? "NA",
+                                            fontSize: 16)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      flex: 2,
+                                      child: CustomTextStyle.regular(
+                                          text: data.hsnCode ?? "0.0")),
+                                  Expanded(
+                                      flex: 1,
+                                      child: CustomTextStyle.regular(
+                                          text: 'Qty: ${data.qty ?? "NA"}',
+                                          fontSize: 12)),
+                                  Expanded(
+                                      child: CustomTextStyle.bold(
+                                          text: data.itemAmount ?? "0.0",
+                                          fontSize: 16)),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                      flex: 1,
+                                      child: CustomTextStyle.regular(
+                                          text: 'Rate: 10000', fontSize: 12)),
+                                  Expanded(
+                                      child: Row(
+                                    children: [
+                                      CustomTextStyle.regular(
+                                          text: 'GST', fontSize: 12),
+                                      const SizedBox(
+                                        width: 4.0,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return gstDialog(
+                                                    context,
+                                                    data.itemCgst,
+                                                    data.itemSgst,
+                                                    data.itemIgst);
+                                              });
+                                        },
+                                        child: const Icon(
+                                          Icons.info_rounded,
+                                          color: Colors.grey,
+                                        ),
+                                      )
+                                    ],
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                      child: CustomTextStyle.bold(
+                                          text:
+                                              'RS. ${data.itemTotal ?? "0.0"}',
+                                          fontSize: 16)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ));
+                      },
+                    ),
+            )
+          ],
         ),
       ),
-
-/*        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.7,
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            physics: const ScrollPhysics(),
-            itemCount: addInvoiceController.allInvoiceItemList.length,
-            itemBuilder: (BuildContext context, int index) {
-              AllItemData data = addInvoiceController.allInvoiceItemList[index];
-              return Card(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          // flex: 2,
-                          child: Container(
-                              // color: Colors.red,
-                              child: CustomTextStyle.bold(
-                                  text: data.itemDescription ?? "NA",
-                                  fontSize: 16)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                            flex: 2,
-                            child: CustomTextStyle.regular(
-                                text: data.hsnCode ?? "0.0")),
-                        Expanded(
-                            flex: 1,
-                            child: CustomTextStyle.regular(
-                                text: 'Qty: ${data.qty ?? "NA"}',
-                                fontSize: 12)),
-                        Expanded(
-                            child: CustomTextStyle.bold(
-                                text: data.itemAmount ?? "0.0", fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: Container(),
-                        ),
-                        Expanded(
-                            flex: 1,
-                            child: CustomTextStyle.regular(
-                                text: 'Rate: 10000', fontSize: 12)),
-                        Expanded(
-                            child: Row(
-                          children: [
-                            CustomTextStyle.regular(text: 'GST', fontSize: 12),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return gstDialog(context, data.itemCgst,
-                                          data.itemSgst, data.itemIgst);
-                                    });
-                              },
-                              child: const Icon(
-                                Icons.info_rounded,
-                                color: Colors.grey,
-                              ),
-                            )
-                          ],
-                        )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Expanded(
-                            child: CustomTextStyle.bold(
-                                text: 'RS. ${data.itemTotal ?? "0.0"}',
-                                fontSize: 16)),
-                      ],
-                    ),
-
-                    */ /*Divider(),
-                    ListTile(
-                      title: CustomTextStyle.regular(text: "Amount"),
-                      trailing: CustomTextStyle.bold(text: "2000"),
-                    ),
-                    // Divider(),
-
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16),
-                      child: Row(
-                        children: [
-                          CustomTextStyle.regular(text: 'Qty: '),
-                          CustomTextStyle.regular(text: '24'),
-                        ],
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0, left: 16),
-                      child: Row(
-                        children: [
-                          CustomTextStyle.regular(text: 'GST: '),
-                          CustomTextStyle.regular(text: '24'),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Icon(
-                            Icons.info_rounded,
-                            color: Colors.grey,
-                          )
-                        ],
-                      ),
-                    ),
-
-                    // Padding(
-                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
-                    //   child: Row(
-                    //     children: [
-                    //       CustomTextStyle.regular(text: 'CGST ${email.text}'),
-                    //       Spacer(),
-                    //       CustomTextStyle.regular(text: '24'),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
-                    //   child: Row(
-                    //     children: [
-                    //       CustomTextStyle.regular(text: 'SGST ${email.text}'),
-                    //       Spacer(),
-                    //       CustomTextStyle.regular(text: '28'),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
-                    //   child: Row(
-                    //     children: [
-                    //       Text('IGSC ${email.text}'),
-                    //       Spacer(),
-                    //       Text('3'),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(right: 16.0, left: 16),
-                    //   child: Row(
-                    //     children: [
-                    //       CustomTextStyle.regular(text: 'GST  ${email.text}'),
-                    //       Spacer(),
-                    //       CustomTextStyle.regular(text: '8'),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Divider(),*/ /*
-                    // ListTile(
-                    //   title: CustomTextStyle.regular(text: "Total Amt"),
-                    //   trailing: CustomTextStyle.bold(
-                    //       text: "303000", color: AppColors.greenColor),
-                    // ),
-                  ],
-                ),
-              ));
-            },
-          ),
-        )*/
     );
   }
 }
