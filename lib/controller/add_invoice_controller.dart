@@ -111,14 +111,15 @@ class AddInvoiceController extends GetxController {
 
         _gst = cgstVal + sgstVal;
       } else {
-        double sgstVal = 0.0;
-        if (sgstValue1.value != sgstList[0]) {
-          sgstVal = double.parse(sgstValue1.value
-              .substring(0, sgstValue1.value.length - 1)
+        double igstVal = 0.0;
+        if (igstValue1.value != igstList[0]) {
+          igstPer = double.parse(igstValue1.value
+              .substring(0, igstValue1.value.length - 1)
               .toString());
-          igstPer = (sgstVal * _amount) / 100;
+          igstVal = (igstPer * _amount) / 100;
         }
-        _gst = igstPer;
+        igstController.text = igstVal.toString();
+        _gst = igstVal;
       }
       amountTax.text = _gst.toString();
       amountFinal.text = (_amount + _gst).toString();

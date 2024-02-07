@@ -200,18 +200,18 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           });
         },*/
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
-        tooltip: 'Add',
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return addInvoiceDialog(context);
-              });
-        },
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
+      //   tooltip: 'Add',
+      //   onPressed: () {
+      //     showDialog(
+      //         context: context,
+      //         builder: (BuildContext context) {
+      //           return addInvoiceDialog(context);
+      //         });
+      //   },
+      //   child: const Icon(Icons.add, color: Colors.white, size: 28),
+      // ),
     );
   }
 
