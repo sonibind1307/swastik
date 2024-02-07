@@ -184,4 +184,41 @@ class Helper {
       // elevation: 2,
     );
   }
+
+  static DropdownSearchData dropdownSearchData(BuildContext context,TextEditingController searchTextBar){
+    return DropdownSearchData(
+      searchController:searchTextBar,
+      searchInnerWidgetHeight: 50,
+      searchInnerWidget: Container(
+        height: 50,
+        padding: const EdgeInsets.only(
+          top: 8,
+          bottom: 4,
+          right: 8,
+          left: 8,
+        ),
+        child: TextFormField(
+          expands: true,
+          maxLines: null,
+          controller:searchTextBar,
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 8,
+            ),
+            hintText: 'Search...',
+            hintStyle: const TextStyle(fontSize: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+      searchMatchFn: (item, searchValue) {
+        return item.value!.toLowerCase().contains(searchValue.toLowerCase());
+      },
+    );
+
+  }
 }
