@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
@@ -31,18 +32,21 @@ class ApiRepo {
 
   static Future<VendorModel> getVendors() async {
     VendorModel vendorModel = VendorModel();
-     var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/get_all_vendors',
-      options: Options(
-        method: 'GET',
-      ),
-    );
-    if (response.statusCode == 200) {
-      var res = jsonDecode(response.data);
-      vendorModel = VendorModel.fromJson(res);
-    } else {
-      print(response.statusMessage);
+    try{
+      var dio = Dio();
+      var response = await dio.request(
+        'https://swastik.online/Mobile/get_all_vendors',
+        options: Options(
+          method: 'GET',
+        ),);
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        vendorModel = VendorModel.fromJson(res);
+      } else {
+        print(response.statusMessage);
+      }
+    }catch(e){
+      debugPrint("message :-> $e");
     }
     return vendorModel;
   }

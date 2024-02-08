@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/colorConstant.dart';
@@ -287,6 +288,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.quanity,
                       textInputAction: TextInputAction.done,
+                      keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
+                      ],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "Quantity"),
@@ -309,6 +314,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.amount,
                       textInputAction: TextInputAction.done,
+                      keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
+                      ],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "Amount"),
@@ -346,19 +355,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.amountFinal,
                       readOnly: true,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      enabled: false,
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "Final Amount"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(
                       height: 8.0,
@@ -366,19 +365,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.amountTax,
                       readOnly: true,
-                      textInputAction: TextInputAction.done,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      enabled: false,
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "Tax Amount"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(
                       height: 16,
@@ -832,6 +821,25 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               iconDisabledColor: Colors.grey,
             ),
             dropdownStyleData: Helper.dropdownStyleData(context),
+
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+              padding: EdgeInsets.only(left: 14, right: 14),
+            ),
+
+            dropdownSearchData:Helper.dropdownSearchData(context, addInvoiceController.searchTextBar),
+            //This to clear the search value when you close the menu
+            onMenuStateChange: (isOpen) {
+              if (!isOpen) {
+                addInvoiceController.searchTextBar.clear();
+              }
+            },
+
+
+
+
+
+
           ),
         ),
       ),
@@ -1339,136 +1347,135 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               child: OutlinedButton.icon(
                 // <-- OutlinedButton
                 onPressed: () {
+                  addInvoiceController.clearAddFormData();
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return addInvoiceDialog(context);
                       });
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.add,
                   size: 24.0,
                 ),
-                label: Text('Add Item'),
+                label: const Text('Add Item'),
               ),
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: addInvoiceController.allInvoiceItemList.isEmpty
-                  ? Center(
-                      child: CustomTextStyle.regular(text: "No Item Added"),
-                    )
-                  : ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      physics: const ScrollPhysics(),
-                      itemCount: addInvoiceController.allInvoiceItemList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        AllItemData data =
-                            addInvoiceController.allInvoiceItemList[index];
-                        return Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    // flex: 2,
-                                    child: Container(
-                                        // color: Colors.red,
+            Obx(()=> SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: addInvoiceController.allInvoiceItemList.isEmpty ? Center(
+                        child: CustomTextStyle.regular(text: "No Item Added"),)
+                    : ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        physics: const ScrollPhysics(),
+                        itemCount: addInvoiceController.allInvoiceItemList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          AllItemData data = addInvoiceController.allInvoiceItemList[index];
+                          return Card(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      // flex: 2,
+                                      child: Container(
+                                          // color: Colors.red,
+                                          child: CustomTextStyle.bold(
+                                              text: data.itemDescription ?? "NA",
+                                              fontSize: 16)),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        flex: 2,
+                                        child: CustomTextStyle.regular(
+                                            text: data.hsnCode ?? "0.0")),
+                                    Expanded(
+                                        flex: 1,
+                                        child: CustomTextStyle.regular(
+                                            text: 'Qty: ${data.qty ?? "NA"}',
+                                            fontSize: 12)),
+                                    Expanded(
                                         child: CustomTextStyle.bold(
-                                            text: data.itemDescription ?? "NA",
+                                            text: data.itemAmount ?? "0.0",
                                             fontSize: 16)),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
                                       flex: 2,
-                                      child: CustomTextStyle.regular(
-                                          text: data.hsnCode ?? "0.0")),
-                                  Expanded(
-                                      flex: 1,
-                                      child: CustomTextStyle.regular(
-                                          text: 'Qty: ${data.qty ?? "NA"}',
-                                          fontSize: 12)),
-                                  Expanded(
-                                      child: CustomTextStyle.bold(
-                                          text: data.itemAmount ?? "0.0",
-                                          fontSize: 16)),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(),
-                                  ),
-                                  Expanded(
-                                      flex: 1,
-                                      child: CustomTextStyle.regular(
-                                          text: 'Rate: 10000', fontSize: 12)),
-                                  Expanded(
-                                      child: Row(
-                                    children: [
-                                      CustomTextStyle.regular(
-                                          text: 'GST', fontSize: 12),
-                                      const SizedBox(
-                                        width: 4.0,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return gstDialog(
-                                                    context,
-                                                    data.itemCgst,
-                                                    data.itemSgst,
-                                                    data.itemIgst);
-                                              });
-                                        },
-                                        child: const Icon(
-                                          Icons.info_rounded,
-                                          color: Colors.grey,
+                                      child: Container(),
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: CustomTextStyle.regular(
+                                            text: 'Rate: 10000', fontSize: 12)),
+                                    Expanded(
+                                        child: Row(
+                                      children: [
+                                        CustomTextStyle.regular(
+                                            text: 'GST', fontSize: 12),
+                                        const SizedBox(
+                                          width: 4.0,
                                         ),
-                                      )
-                                    ],
-                                  )),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  Expanded(
-                                      child: CustomTextStyle.bold(
-                                          text:
-                                              'RS. ${data.itemTotal ?? "0.0"}',
-                                          fontSize: 16)),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ));
-                      },
-                    ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return gstDialog(
+                                                      context,
+                                                      data.itemCgst,
+                                                      data.itemSgst,
+                                                      data.itemIgst);
+                                                });
+                                          },
+                                          child: const Icon(
+                                            Icons.info_rounded,
+                                            color: Colors.grey,
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                    Expanded(
+                                        child: CustomTextStyle.bold(
+                                            text:
+                                                'RS. ${data.itemTotal ?? "0.0"}',
+                                            fontSize: 16)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ));
+                        },
+                      ),
+              ),
             )
           ],
         ),

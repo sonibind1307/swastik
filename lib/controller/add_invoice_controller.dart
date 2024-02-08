@@ -47,16 +47,18 @@ class AddInvoiceController extends GetxController {
   TextEditingController address = TextEditingController();
   TextEditingController pincode = TextEditingController();
 
-  TextEditingController itemDesc = TextEditingController();
-  TextEditingController hCode = TextEditingController();
-  TextEditingController amount = TextEditingController();
-  TextEditingController amountTax = TextEditingController();
+  TextEditingController itemDesc    = TextEditingController();
+  TextEditingController hCode       = TextEditingController();
+  TextEditingController amount      = TextEditingController();
+  TextEditingController amountTax   = TextEditingController();
   TextEditingController amountFinal = TextEditingController();
-  TextEditingController quanity = TextEditingController();
+  TextEditingController quanity     = TextEditingController();
 
   TextEditingController cgstController = TextEditingController();
   TextEditingController sgstController = TextEditingController();
   TextEditingController igstController = TextEditingController();
+
+  TextEditingController searchTextBar = TextEditingController();
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -76,7 +78,6 @@ class AddInvoiceController extends GetxController {
 
   void onVendorSelection(VendorData value) {
     vendorData = value;
-
     update();
   }
 
@@ -187,4 +188,23 @@ class AddInvoiceController extends GetxController {
     allInvoiceItemList.add(allItemData);
     update();
   }
+
+  void clearAddFormData(){
+    itemDesc.clear();
+    hCode.clear();
+    amount.clear();
+    amountTax.clear();
+    amountFinal.clear();
+    quanity.clear();
+    cgstController.clear();
+    sgstController.clear();
+    igstController.clear();
+    cgstValue1.value = "CGST";
+    sgstValue1.value = "SGST";
+    igstValue1.value = "IGST";
+    cgstFlag.value = true;
+    igstFlag.value = true;
+  }
 }
+
+
