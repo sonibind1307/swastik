@@ -1208,7 +1208,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 onTap: () {
                   CustomDateTime.buildShowDatePicker(context)
                       .then((DateTime? onValue) {
-                    addInvoiceController.selectedDate = onValue;
+                    if (onValue != null) {
+                      String date = "${onValue.year}-"
+                          "${Helper.padWithZero(onValue.month)}-"
+                          "${Helper.padWithZero(onValue.day)}";
+                      addInvoiceController.selectedDate = date;
+                    }
+
                     setState(() {});
                   });
                 },

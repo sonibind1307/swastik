@@ -81,8 +81,6 @@ class AddInvoiceController extends GetxController {
   }
 
   void onGstCalculation() {
-    debugPrint("quanity ${quanity.text}");
-    debugPrint("amount ${amount.text}");
     double _amount = 0.0;
     double cgstPer = 0.0;
     double sgstPer = 0.0;
