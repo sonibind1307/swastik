@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:swastik/model/responses/all_invoice_items.dart';
 import 'package:swastik/model/responses/category_model.dart';
 import 'package:swastik/model/responses/vendor_model.dart';
 
@@ -14,7 +13,7 @@ import '../repository/api_call.dart';
 class AddInvoiceController extends GetxController {
   // List<VendorData> vendorList = [];
   var vendorList = <VendorData>[].obs;
-  var allInvoiceItemList = <AllItemData>[].obs;
+  var allInvoiceItemList = <InvoiceItems>[].obs;
   var categoryItemList = <CategoryData>[].obs;
   var projectList = <ProjectData>[].obs;
   var buildList = <BuildData>[].obs;
@@ -41,24 +40,20 @@ class AddInvoiceController extends GetxController {
 
   String? selectedVendor;
 
-  TextEditingController name = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController pass = TextEditingController();
-  TextEditingController address = TextEditingController();
-  TextEditingController pincode = TextEditingController();
-
-  TextEditingController itemDesc    = TextEditingController();
-  TextEditingController hCode       = TextEditingController();
-  TextEditingController amount      = TextEditingController();
-  TextEditingController amountTax   = TextEditingController();
+  TextEditingController itemDesc = TextEditingController();
+  TextEditingController hCode = TextEditingController();
+  TextEditingController amount = TextEditingController();
+  TextEditingController amountTax = TextEditingController();
   TextEditingController amountFinal = TextEditingController();
-  TextEditingController quanity     = TextEditingController();
+  TextEditingController quanity = TextEditingController();
+  TextEditingController noteController = TextEditingController();
 
   TextEditingController cgstController = TextEditingController();
   TextEditingController sgstController = TextEditingController();
   TextEditingController igstController = TextEditingController();
 
-  TextEditingController searchTextBar = TextEditingController();
+  TextEditingController searchProjectDropDown = TextEditingController();
+  TextEditingController searchCategoryDropDown = TextEditingController();
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -165,13 +160,18 @@ class AddInvoiceController extends GetxController {
       selectedBuild = data.data!.nameofbuilding;
       selectedDate = data.data!.invDate;
       invRefController.text = data.data!.invref.toString();
+
+      if (data.data!.invoiceItems!.isNotEmpty) {
+        allInvoiceItemList.value = data.data!.invoiceItems!;
+        update();
+      }
     }
 
     update();
   }
 
   addItems() {
-    AllItemData allItemData = AllItemData();
+    InvoiceItems allItemData = InvoiceItems();
     allItemData.invoiceItemId = itemDesc.text.toString();
     allItemData.itemDescription = itemDesc.text.toString();
     allItemData.invoiceId = itemDesc.text.toString();
@@ -189,7 +189,7 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
-  void clearAddFormData(){
+  void clearAddFormData() {
     itemDesc.clear();
     hCode.clear();
     amount.clear();
@@ -206,5 +206,3 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 }
-
-

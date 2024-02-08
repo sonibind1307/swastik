@@ -185,9 +185,9 @@ class Helper {
     );
   }
 
-  static DropdownSearchData dropdownSearchData(BuildContext context,TextEditingController searchTextBar){
+/*  static DropdownSearchData dropdownSearchData(BuildContext context){
     return DropdownSearchData(
-      searchController:searchTextBar,
+      searchController:TextEditingController(),
       searchInnerWidgetHeight: 50,
       searchInnerWidget: Container(
         height: 50,
@@ -220,5 +220,5 @@ class Helper {
       },
     );
 
-  }
+  }*/
 }

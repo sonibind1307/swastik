@@ -30,7 +30,9 @@ class MultiImageScreen extends StatelessWidget {
                 // );
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const AddInvoiceScreen(),
+                    builder: (context) => AddInvoiceScreen(
+                      scheduleId: "",
+                    ),
                   ),
                 );
               } else {

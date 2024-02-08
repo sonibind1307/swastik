@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/RupeesConverter.dart';
+import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../../model/responses/invoice_model.dart';
 import '../../model/responses/project_model.dart';
@@ -196,6 +197,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   Widget dropDownList(BuildContext context, List<ProjectData>? listProject) {
+    TextEditingController searchBar = TextEditingController();
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: DropdownButtonHideUnderline(
@@ -267,6 +269,47 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             height: 40,
             padding: EdgeInsets.only(left: 14, right: 14),
           ),
+          dropdownSearchData: DropdownSearchData(
+            searchController: searchBar,
+            searchInnerWidgetHeight: 50,
+            searchInnerWidget: Container(
+              height: 50,
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 4,
+                right: 8,
+                left: 8,
+              ),
+              child: TextFormField(
+                expands: true,
+                maxLines: null,
+                controller: searchBar,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(fontSize: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            searchMatchFn: (item, searchValue) {
+              return item.value!
+                  .toLowerCase()
+                  .contains(searchValue.toLowerCase());
+            },
+          ),
+          onMenuStateChange: (isOpen) {
+            if (!isOpen) {
+              searchBar.clear();
+              // addInvoiceController.searchTextBar.clear();
+            }
+          },
         ),
       ),
     );
@@ -285,7 +328,17 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           itemBuilder: (context, index) {
             return InkWell(
               onTap: () {
-                openBottomSheet(context);
+                openBottomSheet(context, (key) {
+                  if (key == "edit") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddInvoiceScreen(
+                                scheduleId: invoiceList.data![index].invoiceId!,
+                              )),
+                    );
+                  }
+                });
               },
               child: Card(
                 child: Padding(
@@ -520,7 +573,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     });
   }
 
-  Future openBottomSheet(BuildContext context) {
+  Future openBottomSheet(BuildContext context, Function(String key) onClick) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -561,18 +614,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       child: const Icon(Icons.link)),
                 ),
               ),
-              ListTile(
-                title: const Text("Edit"),
-                leading: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
-                      child: const Icon(Icons.edit)),
+              InkWell(
+                onTap: () {
+                  onClick("edit");
+                },
+                child: ListTile(
+                  title: const Text("Edit"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.edit)),
+                  ),
                 ),
               ),
               ListTile(

@@ -10,7 +10,7 @@ import 'package:swastik/repository/api_call.dart';
 
 import '../../../config/constant.dart';
 import '../../../config/text-style.dart';
-import '../../../model/responses/all_invoice_items.dart';
+import '../../../model/responses/invoice_item_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
@@ -18,7 +18,10 @@ import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
 
 class AddInvoiceScreen extends StatefulWidget {
-  const AddInvoiceScreen({Key? key}) : super(key: key);
+  final scheduleId;
+
+  const AddInvoiceScreen({Key? key, required this.scheduleId})
+      : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -32,11 +35,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   @override
   void initState() {
     super.initState();
+    addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
     addInvoiceController.onGetVendor();
-    addInvoiceController.onGetAllInvoiceItem();
     addInvoiceController.onGetInvoiceCategoryItem();
     addInvoiceController.onGetProject();
-    addInvoiceController.onGetInvoiceDetails("9589");
     setState(() {});
   }
 
@@ -288,7 +290,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.quanity,
                       textInputAction: TextInputAction.done,
-                      keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: false, decimal: true),
                       inputFormatters: [
                         FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
                       ],
@@ -314,7 +317,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     TextFormField(
                       controller: addInvoiceController.amount,
                       textInputAction: TextInputAction.done,
-                      keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: false, decimal: true),
                       inputFormatters: [
                         FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
                       ],
@@ -775,6 +779,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   }
 
   Widget dropDownList(BuildContext context, VoidCallback onSelection) {
+    TextEditingController searchBar = TextEditingController();
     return Obx(
       () => Padding(
         padding: const EdgeInsets.only(),
@@ -821,25 +826,51 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               iconDisabledColor: Colors.grey,
             ),
             dropdownStyleData: Helper.dropdownStyleData(context),
-
             menuItemStyleData: const MenuItemStyleData(
               height: 40,
               padding: EdgeInsets.only(left: 14, right: 14),
             ),
-
-            dropdownSearchData:Helper.dropdownSearchData(context, addInvoiceController.searchTextBar),
-            //This to clear the search value when you close the menu
+            dropdownSearchData: DropdownSearchData(
+              searchController: searchBar,
+              searchInnerWidgetHeight: 50,
+              searchInnerWidget: Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 4,
+                  right: 8,
+                  left: 8,
+                ),
+                child: TextFormField(
+                  expands: true,
+                  maxLines: null,
+                  controller: searchBar,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    hintText: 'Search...',
+                    hintStyle: const TextStyle(fontSize: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              searchMatchFn: (item, searchValue) {
+                return item.value!
+                    .toLowerCase()
+                    .contains(searchValue.toLowerCase());
+              },
+            ),
             onMenuStateChange: (isOpen) {
               if (!isOpen) {
-                addInvoiceController.searchTextBar.clear();
+                searchBar.clear();
+                // addInvoiceController.searchTextBar.clear();
               }
             },
-
-
-
-
-
-
           ),
         ),
       ),
@@ -847,6 +878,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   }
 
   Widget projectDropDownList(BuildContext context) {
+    TextEditingController searchBar = TextEditingController();
     return Padding(
       padding: const EdgeInsets.only(),
       child: DropdownButtonHideUnderline(
@@ -903,12 +935,54 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             iconDisabledColor: Colors.grey,
           ),
           dropdownStyleData: Helper.dropdownStyleData(context),
+          dropdownSearchData: DropdownSearchData(
+            searchController: searchBar,
+            searchInnerWidgetHeight: 50,
+            searchInnerWidget: Container(
+              height: 50,
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 4,
+                right: 8,
+                left: 8,
+              ),
+              child: TextFormField(
+                expands: true,
+                maxLines: null,
+                controller: searchBar,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(fontSize: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            searchMatchFn: (item, searchValue) {
+              return item.value!
+                  .toLowerCase()
+                  .contains(searchValue.toLowerCase());
+            },
+          ),
+          onMenuStateChange: (isOpen) {
+            if (!isOpen) {
+              searchBar.clear();
+              // addInvoiceController.searchTextBar.clear();
+            }
+          },
         ),
       ),
     );
   }
 
   Widget categoryDropDownList(BuildContext context) {
+    TextEditingController searchBar = TextEditingController();
     return Padding(
       padding: const EdgeInsets.only(),
       child: DropdownButtonHideUnderline(
@@ -948,6 +1022,47 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             iconDisabledColor: Colors.grey,
           ),
           dropdownStyleData: Helper.dropdownStyleData(context),
+          dropdownSearchData: DropdownSearchData(
+            searchController: searchBar,
+            searchInnerWidgetHeight: 50,
+            searchInnerWidget: Container(
+              height: 50,
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 4,
+                right: 8,
+                left: 8,
+              ),
+              child: TextFormField(
+                expands: true,
+                maxLines: null,
+                controller: searchBar,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(fontSize: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            searchMatchFn: (item, searchValue) {
+              return item.value!
+                  .toLowerCase()
+                  .contains(searchValue.toLowerCase());
+            },
+          ),
+          onMenuStateChange: (isOpen) {
+            if (!isOpen) {
+              searchBar.clear();
+              // addInvoiceController.searchTextBar.clear();
+            }
+          },
         ),
       ),
     );
@@ -1259,7 +1374,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 height: 8,
               ),
               CustomEditTestWidgets.textEditText(
-                TextEditingController(),
+                addInvoiceController.noteController,
               ),
               const SizedBox(
                 height: 16,
@@ -1361,16 +1476,21 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 label: const Text('Add Item'),
               ),
             ),
-            Obx(()=> SizedBox(
+            Obx(
+              () => SizedBox(
                 height: MediaQuery.of(context).size.height * 0.6,
-                child: addInvoiceController.allInvoiceItemList.isEmpty ? Center(
-                        child: CustomTextStyle.regular(text: "No Item Added"),)
+                child: addInvoiceController.allInvoiceItemList.isEmpty
+                    ? Center(
+                        child: CustomTextStyle.regular(text: "No Item Added"),
+                      )
                     : ListView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
-                        itemCount: addInvoiceController.allInvoiceItemList.length,
+                        itemCount:
+                            addInvoiceController.allInvoiceItemList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          AllItemData data = addInvoiceController.allInvoiceItemList[index];
+                          InvoiceItems data =
+                              addInvoiceController.allInvoiceItemList[index];
                           return Card(
                               child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -1385,7 +1505,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                       child: Container(
                                           // color: Colors.red,
                                           child: CustomTextStyle.bold(
-                                              text: data.itemDescription ?? "NA",
+                                              text:
+                                                  data.itemDescription ?? "NA",
                                               fontSize: 16)),
                                     ),
                                   ],
@@ -1435,7 +1556,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                           onTap: () {
                                             showDialog(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   return gstDialog(
                                                       context,
                                                       data.itemCgst,
