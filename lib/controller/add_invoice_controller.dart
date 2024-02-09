@@ -86,22 +86,24 @@ class AddInvoiceController extends GetxController {
     double cgstVal = 0.0;
     double sgstVal = 0.0;
     double igstVal = 0.0;
+    double _finalAmount = 0.0;
 
     if (amount.text.trim().isNotEmpty && quanity.text.trim().isNotEmpty) {
       _amount = double.parse(amount.text);
       _quanity = double.parse(quanity.text);
+      _finalAmount = _amount * _quanity;
       if (cgstFlag == true) {
         if (cgstValue1.value != cgstList[0]) {
           cgstPer = double.parse(cgstValue1.value
               .substring(0, cgstValue1.value.length - 1)
               .toString());
-          cgstVal = (cgstPer * _amount) / 100;
+          cgstVal = (cgstPer * _finalAmount) / 100;
         }
         if (sgstValue1.value != sgstList[0]) {
           sgstPer = double.parse(sgstValue1.value
               .substring(0, sgstValue1.value.length - 1)
               .toString());
-          sgstVal = (sgstPer * _amount) / 100;
+          sgstVal = (sgstPer * _finalAmount) / 100;
         }
 
         _gst = cgstVal + sgstVal;
@@ -110,7 +112,7 @@ class AddInvoiceController extends GetxController {
           igstPer = double.parse(igstValue1.value
               .substring(0, igstValue1.value.length - 1)
               .toString());
-          igstVal = (igstPer * _amount) / 100;
+          igstVal = (igstPer * _finalAmount) / 100;
         }
 
         _gst = igstVal;
@@ -121,7 +123,7 @@ class AddInvoiceController extends GetxController {
       igstController.text = igstVal.toString();
 
       amountTax.text = _gst.toString();
-      amountFinal.text = (_amount + _gst).toString();
+      amountFinal.text = (_finalAmount + _gst).toString();
     }
   }
 
