@@ -78,6 +78,7 @@ class AddInvoiceController extends GetxController {
 
   void onGstCalculation() {
     double _amount = 0.0;
+    double _quanity = 0.0;
     double cgstPer = 0.0;
     double sgstPer = 0.0;
     double igstPer = 0.0;
@@ -86,8 +87,9 @@ class AddInvoiceController extends GetxController {
     double sgstVal = 0.0;
     double igstVal = 0.0;
 
-    if (amount.text.trim().isNotEmpty) {
+    if (amount.text.trim().isNotEmpty && quanity.text.trim().isNotEmpty) {
       _amount = double.parse(amount.text);
+      _quanity = double.parse(quanity.text);
       if (cgstFlag == true) {
         if (cgstValue1.value != cgstList[0]) {
           cgstPer = double.parse(cgstValue1.value
@@ -154,7 +156,7 @@ class AddInvoiceController extends GetxController {
 
     if (data.data != null) {
       debugPrint("vendorData 2024 -> ${data.data!.project}");
-      // await onGetBuilding(data.data![0].project!);
+      await onGetBuilding(data.data!.project!);
       selectedProject = data.data!.projectname;
       selectedCategory = data.data!.invcat;
       selectedBuild = data.data!.nameofbuilding;

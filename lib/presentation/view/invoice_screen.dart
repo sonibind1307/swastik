@@ -50,7 +50,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             onPressed: () {
               setState(() {
                 if (actionIcon.icon == Icons.search) {
-                  actionIcon = Icon(
+                  actionIcon = const Icon(
                     Icons.close,
                     color: Colors.white,
                   );
@@ -330,6 +330,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               onTap: () {
                 openBottomSheet(context, (key) {
                   if (key == "edit") {
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
