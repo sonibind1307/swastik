@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/presentation/view/invoice_screen.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import 'controller/add_invoice_controller.dart';
 
@@ -21,15 +20,4 @@ class MyApp extends StatelessWidget {
       home: InvoiceScreen(),
     );
   }
-}
-
-class pdfOne extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body: SfPdfViewer.network(
-            'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf'));
-  }
-
 }

@@ -54,21 +54,24 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     Icons.close,
                     color: Colors.white,
                   );
-                  appBarTitle = TextField(
-                    onChanged: (value) {
-                      context
-                          .read<InvoiceBloc>()
-                          .onSearchInvoice(_selectedStatus.toString());
-                    },
-                    controller: _searchQuery,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search, color: Colors.white),
-                        hintText: "Search invoice",
-                        hintStyle: TextStyle(color: Colors.white)),
-                  );
+                  appBarTitle = BlocBuilder<InvoiceBloc, InvoiceState>(
+                      builder: (BuildContext context, state) {
+                    return TextField(
+                      onChanged: (value) {
+                        context
+                            .read<InvoiceBloc>()
+                            .onSearchInvoice(value.trim().toString());
+                      },
+                      controller: _searchQuery,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.search, color: Colors.white),
+                          hintText: "Search invoice",
+                          hintStyle: TextStyle(color: Colors.white)),
+                    );
+                  });
                   _handleSearchStart();
                 } else {
                   _handleSearchEnd();

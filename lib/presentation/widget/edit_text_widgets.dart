@@ -68,7 +68,7 @@ class CustomEditTestWidgets {
       controller: controller,
       textInputAction: TextInputAction.done,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      maxLines: 2,
+      maxLines: 1,
       decoration:
           CustomTextDecoration.textFieldDecoration(labelText: Constant.remark),
       validator: (value) {

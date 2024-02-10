@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/category_model.dart';
 import 'package:swastik/model/responses/vendor_model.dart';
 
@@ -35,6 +36,7 @@ class AddInvoiceController extends GetxController {
   String? selectedCategory;
   String? selectedProject;
   String? selectedBuild;
+  String? pdfUrl;
 
   TextEditingController invRefController = TextEditingController();
 
@@ -62,6 +64,7 @@ class AddInvoiceController extends GetxController {
   List<String> igstList = ["IGST", "0%", "5%", "12%", "18%", "28%"];
 
   // double? totalAmount;
+  String? vendorId;
 
   Future<void> onGetVendor() async {
     VendorModel vendorModel = await ApiRepo.getVendors();
@@ -71,8 +74,17 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
+  void init() {
+    DateTime dateTime = DateTime.now();
+    String date = "${dateTime.year}-"
+        "${Helper.padWithZero(dateTime.month)}-"
+        "${Helper.padWithZero(dateTime.day)}";
+    selectedDate = date;
+  }
+
   void onVendorSelection(VendorData value) {
     vendorData = value;
+    vendorId = value.id!;
     update();
   }
 
@@ -92,39 +104,34 @@ class AddInvoiceController extends GetxController {
       _amount = double.parse(amount.text);
       _quanity = double.parse(quanity.text);
       _finalAmount = _amount * _quanity;
-      if (cgstFlag == true) {
-        if (cgstValue1.value != cgstList[0]) {
-          cgstPer = double.parse(cgstValue1.value
-              .substring(0, cgstValue1.value.length - 1)
-              .toString());
-          cgstVal = (cgstPer * _finalAmount) / 100;
-        }
-        if (sgstValue1.value != sgstList[0]) {
-          sgstPer = double.parse(sgstValue1.value
-              .substring(0, sgstValue1.value.length - 1)
-              .toString());
-          sgstVal = (sgstPer * _finalAmount) / 100;
-        }
 
-        _gst = cgstVal + sgstVal;
-      } else {
-        if (igstValue1.value != igstList[0]) {
-          igstPer = double.parse(igstValue1.value
-              .substring(0, igstValue1.value.length - 1)
-              .toString());
-          igstVal = (igstPer * _finalAmount) / 100;
-        }
+      if (cgstValue1.value != cgstList[0]) {
+        cgstPer = double.parse(cgstValue1.value
+            .substring(0, cgstValue1.value.length - 1)
+            .toString());
+        cgstVal = (cgstPer * _finalAmount) / 100;
+      }
+      if (sgstValue1.value != sgstList[0]) {
+        sgstPer = double.parse(sgstValue1.value
+            .substring(0, sgstValue1.value.length - 1)
+            .toString());
+        sgstVal = (sgstPer * _finalAmount) / 100;
+      }
+      _gst = cgstVal + sgstVal;
 
+      if (igstValue1.value != igstList[0]) {
+        igstPer = double.parse(igstValue1.value
+            .substring(0, igstValue1.value.length - 1)
+            .toString());
+        igstVal = (igstPer * _finalAmount) / 100;
         _gst = igstVal;
       }
-
-      cgstController.text = cgstVal.toString();
-      sgstController.text = sgstVal.toString();
-      igstController.text = igstVal.toString();
-
-      amountTax.text = _gst.toString();
-      amountFinal.text = (_finalAmount + _gst).toString();
     }
+    cgstController.text = cgstVal.toString();
+    sgstController.text = sgstVal.toString();
+    igstController.text = igstVal.toString();
+    amountTax.text = _gst.toString();
+    amountFinal.text = (_finalAmount + _gst).toString();
   }
 
   Future<void> onGetAllInvoiceItem() async {
@@ -162,9 +169,10 @@ class AddInvoiceController extends GetxController {
       selectedProject = data.data!.projectname;
       selectedCategory = data.data!.invcat;
       selectedBuild = data.data!.nameofbuilding;
-      selectedDate = data.data!.invDate;
+      selectedDate = data.data!.invDate!;
       invRefController.text = data.data!.invref.toString();
-
+      pdfUrl = data.data!.filename.toString();
+      debugPrint("pdfUrl -> $pdfUrl");
       if (data.data!.invoiceItems!.isNotEmpty) {
         allInvoiceItemList.value = data.data!.invoiceItems!;
         update();
@@ -208,5 +216,29 @@ class AddInvoiceController extends GetxController {
     igstValue1.value = "IGST";
     cgstFlag.value = true;
     igstFlag.value = true;
+  }
+
+  void addInvoiceAPi(BuildContext context) {
+    if (allInvoiceItemList.isNotEmpty) {
+      ApiRepo.addInvoiceData(
+          invDate: selectedDate,
+          invRef: invRefController.text.trim(),
+          invComments: noteController.text.trim(),
+          invProject: selectedProject,
+          invBuilding: selectedBuild,
+          invCategory: selectedCategory,
+          ldgrTdsPcnt: "0",
+
+          ///invoice details
+          invPo: "0",
+          vendorId: vendorId,
+          createdDate: DateTime.now(),
+          vendorLinkedLdgr: "ldgr_1025",
+
+          /// on project change
+          itemList: allInvoiceItemList);
+    } else {
+      Helper.getSnackBarError(context, "add at least one item");
+    }
   }
 }

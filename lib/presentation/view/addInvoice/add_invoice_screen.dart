@@ -16,9 +16,14 @@ import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
 import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
+import '../multipleImageScreen.dart';
+import '../pdfexport/pdf_url_viewer.dart';
+import '../pdfexport/pdfpreview.dart';
+
+List<MemoryImage> imageLogo = [];
 
 class AddInvoiceScreen extends StatefulWidget {
-  final scheduleId;
+  final String scheduleId;
 
   const AddInvoiceScreen({Key? key, required this.scheduleId})
       : super(key: key);
@@ -31,11 +36,16 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   int _activeCurrentStep = 0;
   final addInvoiceController = Get.find<AddInvoiceController>();
   final _addInvoiceFormKey = GlobalKey<FormState>();
+  final _quantityKey = GlobalKey<FormState>();
+  final _amountKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
+    addInvoiceController.init();
+    if(widget.scheduleId != ""){
+      addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
+    }
     addInvoiceController.onGetVendor();
     addInvoiceController.onGetInvoiceCategoryItem();
     addInvoiceController.onGetProject();
@@ -105,8 +115,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 onPressed: () {
                   if (addInvoiceController.selectedVendor != null) {
                     if (_activeCurrentStep == 2) {
-                      // Helper.getToastMsg("toastMessage");
-                      Helper.getSnackBarError(context, "call api");
+                      addInvoiceController.addInvoiceAPi(context);
                     }
                     if (_activeCurrentStep < (3 - 1)) {
                       setState(() {
@@ -288,6 +297,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 8.0,
                     ),
                     TextFormField(
+                      key: _quantityKey,
                       controller: addInvoiceController.quanity,
                       textInputAction: TextInputAction.done,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -310,7 +320,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         return null;
                       },
                       onChanged: (value) {
-                        _addInvoiceFormKey.currentState!.validate();
+                        if (_quantityKey.currentState != null) {
+                          if (_quantityKey.currentState!.validate()) {}
+                        }
                         addInvoiceController.onGstCalculation();
                       },
                     ),
@@ -318,6 +330,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       height: 8.0,
                     ),
                     TextFormField(
+                      key: _amountKey,
                       controller: addInvoiceController.amount,
                       textInputAction: TextInputAction.done,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -329,12 +342,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "Amount"),
                       onChanged: (value) {
-                        _addInvoiceFormKey.currentState!.validate();
+                        if (_amountKey.currentState != null) {
+                          if (_amountKey.currentState!.validate()) {}
+                        }
                         addInvoiceController.onGstCalculation();
                       },
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return Constant.enterTextError;
@@ -1201,7 +1213,25 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         CustomTextStyle.regular(text: "Sample PDF"),
                       ],
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (widget.scheduleId == "") {
+                        imageLogo =
+                            Helper.convertFilesToMemoryImages(imageList);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PdfPreviewPage(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PdfUrlView(
+                                    url: addInvoiceController.pdfUrl!,
+                                  )),
+                        );
+                      }
+                    },
                   ),
                 ),
                 const SizedBox(
@@ -1505,7 +1535,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           "${Helper.padWithZero(onValue.day)}";
                       addInvoiceController.selectedDate = date;
                     }
-
                     setState(() {});
                   });
                 },

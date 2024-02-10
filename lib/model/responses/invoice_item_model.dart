@@ -255,6 +255,7 @@ class InvoiceItems {
     itemTax = json['item_tax'];
     itemTotal = json['item_total'];
     itemVat = json['item_vat'];
+    // qty = json['item_qty'];
   }
 
   Map<String, dynamic> toJson() {
@@ -272,6 +273,7 @@ class InvoiceItems {
     data['item_tax'] = this.itemTax;
     data['item_total'] = this.itemTotal;
     data['item_vat'] = this.itemVat;
+    data['item_qty'] = this.qty;
     return data;
   }
 }
