@@ -1262,14 +1262,17 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                             ),
                             Expanded(
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextStyle.bold(
                                       text: "GST : ", fontSize: 16),
-                                  CustomTextStyle.regular(
-                                      text:
-                                          addInvoiceController.vendorData.gst ??
-                                              "NA",
-                                      fontSize: 14)
+                                  Expanded(
+                                    child: CustomTextStyle.regular(
+                                        text: addInvoiceController
+                                                .vendorData.gst ??
+                                            "NA",
+                                        fontSize: 14),
+                                  )
                                 ],
                               ),
                             ),
@@ -1303,14 +1306,17 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           children: [
                             Expanded(
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextStyle.bold(
                                       text: "Contact : ", fontSize: 16),
-                                  CustomTextStyle.regular(
-                                      text: addInvoiceController
-                                              .vendorData.contactName ??
-                                          "NA",
-                                      fontSize: 14)
+                                  Expanded(
+                                    child: CustomTextStyle.regular(
+                                        text: addInvoiceController
+                                                .vendorData.contactName ??
+                                            "NA",
+                                        fontSize: 14),
+                                  )
                                 ],
                               ),
                             ),
