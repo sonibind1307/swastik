@@ -1,8 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'colorConstant.dart';
@@ -221,4 +222,11 @@ class Helper {
     );
 
   }*/
+
+  static List<MemoryImage> convertFilesToMemoryImages(List<File> imageFiles) {
+    return imageFiles.map((File file) {
+      Uint8List bytes = file.readAsBytesSync();
+      return MemoryImage(Uint8List.fromList(bytes));
+    }).toList();
+  }
 }

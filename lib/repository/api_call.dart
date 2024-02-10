@@ -138,23 +138,6 @@ class ApiRepo {
       'item_list': json.encode(itemList)
     });
 
-    // Create your request parameters
-    var params = {
-      'inv_date': invDate,
-      'inv_ref': invRef,
-      'invcomments': invComments,
-      'inv_project': invProject,
-      'inv_building': invBuilding,
-      'inv_category': invCategory,
-      'ldgr_tds_pcnt': ldgrTdsPcnt,
-      'inv_po': invPo,
-      'vendor_id': vendorId,
-      'created_date': createdDate,
-      'vendor_linked_ldgr': vendorLinkedLdgr,
-      'file': "",
-      'item_list': json.encode(itemList) // Convert item list to JSON string
-    };
-
     try {
       // Initialize dio instance
       var dio = Dio();
@@ -162,8 +145,7 @@ class ApiRepo {
       // Send POST request
       var response = await dio.post(
         url,
-        // data: data,
-        queryParameters: params,
+        data: data,
       );
 
       // Check the response status code

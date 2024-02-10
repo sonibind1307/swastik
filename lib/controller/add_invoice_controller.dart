@@ -74,6 +74,14 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
+  void init() {
+    DateTime dateTime = DateTime.now();
+    String date = "${dateTime.year}-"
+        "${Helper.padWithZero(dateTime.month)}-"
+        "${Helper.padWithZero(dateTime.day)}";
+    selectedDate = date;
+  }
+
   void onVendorSelection(VendorData value) {
     vendorData = value;
     vendorId = value.id!;
@@ -161,7 +169,7 @@ class AddInvoiceController extends GetxController {
       selectedProject = data.data!.projectname;
       selectedCategory = data.data!.invcat;
       selectedBuild = data.data!.nameofbuilding;
-      selectedDate = data.data!.invDate;
+      selectedDate = data.data!.invDate!;
       invRefController.text = data.data!.invref.toString();
       pdfUrl = data.data!.filename.toString();
       debugPrint("pdfUrl -> $pdfUrl");
@@ -219,11 +227,15 @@ class AddInvoiceController extends GetxController {
           invProject: selectedProject,
           invBuilding: selectedBuild,
           invCategory: selectedCategory,
-          ldgrTdsPcnt: "null",
-          invPo: "null",
+          ldgrTdsPcnt: "0",
+
+          ///invoice details
+          invPo: "0",
           vendorId: vendorId,
           createdDate: DateTime.now(),
-          vendorLinkedLdgr: "null",
+          vendorLinkedLdgr: "ldgr_1025",
+
+          /// on project change
           itemList: allInvoiceItemList);
     } else {
       Helper.getSnackBarError(context, "add at least one item");

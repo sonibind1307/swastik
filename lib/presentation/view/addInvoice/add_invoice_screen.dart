@@ -16,10 +16,14 @@ import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
 import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
+import '../multipleImageScreen.dart';
 import '../pdfexport/pdf_url_viewer.dart';
+import '../pdfexport/pdfpreview.dart';
+
+List<MemoryImage> imageLogo = [];
 
 class AddInvoiceScreen extends StatefulWidget {
-  final scheduleId;
+  final String scheduleId;
 
   const AddInvoiceScreen({Key? key, required this.scheduleId})
       : super(key: key);
@@ -38,7 +42,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   @override
   void initState() {
     super.initState();
-    addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
+    addInvoiceController.init();
+    if(widget.scheduleId != ""){
+      addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
+    }
     addInvoiceController.onGetVendor();
     addInvoiceController.onGetInvoiceCategoryItem();
     addInvoiceController.onGetProject();
@@ -1207,13 +1214,23 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       ],
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PdfUrlView(
-                                  url: addInvoiceController.pdfUrl!,
-                                )),
-                      );
+                      if (widget.scheduleId == "") {
+                        imageLogo =
+                            Helper.convertFilesToMemoryImages(imageList);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PdfPreviewPage(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PdfUrlView(
+                                    url: addInvoiceController.pdfUrl!,
+                                  )),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -1518,7 +1535,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           "${Helper.padWithZero(onValue.day)}";
                       addInvoiceController.selectedDate = date;
                     }
-
                     setState(() {});
                   });
                 },

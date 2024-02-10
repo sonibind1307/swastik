@@ -10,10 +10,9 @@ import '../bloc/bloc_logic/multiImagePickerBloc.dart';
 import '../bloc/state/multi_image_state.dart';
 
 List<MemoryImage> imageLogo = [];
+List<File> imageList = [];
 
 class MultiImageScreen extends StatelessWidget {
-  List<File> imageList = [];
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
