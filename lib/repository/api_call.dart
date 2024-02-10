@@ -125,7 +125,8 @@ class ApiRepo {
   }
 
   static Future<void> addInvoiceData() async {
-    var data = FormData.fromMap({
+    var data = FormData.fromMap(
+        {
       'inv_date': '',
       'inv_ref': '',
       'invcomments': '',
@@ -151,7 +152,9 @@ class ApiRepo {
       'item_code':'',
       'invoice_item_id':''
 
-    });
+    }
+
+    );
 
     var dio = Dio();
     var response = await dio.request(
