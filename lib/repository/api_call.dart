@@ -5,13 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
-import '../model/responses/all_invoice_items.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/project_model.dart';
 import '../model/responses/vendor_model.dart';
 
 class ApiRepo {
-
   static Future<ProjectModel> getProjectList() async {
     ProjectModel data = ProjectModel();
     var dio = Dio();
@@ -21,6 +19,8 @@ class ApiRepo {
         method: 'GET',
       ),
     );
+
+    print("get_projects: ${response.data}");
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
       data = ProjectModel.fromJson(res);
@@ -32,25 +32,25 @@ class ApiRepo {
 
   static Future<VendorModel> getVendors() async {
     VendorModel vendorModel = VendorModel();
-    try{
+    try {
       var dio = Dio();
       var response = await dio.request(
         'https://swastik.online/Mobile/get_all_vendors',
         options: Options(
           method: 'GET',
-        ),);
+        ),
+      );
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         vendorModel = VendorModel.fromJson(res);
       } else {
         print(response.statusMessage);
       }
-    }catch(e){
+    } catch (e) {
       debugPrint("message :-> $e");
     }
     return vendorModel;
   }
-
 
   static Future<BuildModel> getBuilding(String projectId) async {
     BuildModel buildModel = BuildModel();
@@ -106,71 +106,74 @@ class ApiRepo {
     return categoryModel;
   }
 
-  static Future<AllInvoiceItems> getAllInvoiceItems() async {
-    AllInvoiceItems allInvoiceItems = AllInvoiceItems();
-    var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/get_inv_items/9774',
-      options: Options(
-        method: 'GET',
-      ),
-    );
-    if (response.statusCode == 200) {
-      var res = jsonDecode(response.data);
-      allInvoiceItems = AllInvoiceItems.fromJson(res);
-    } else {
-      print(response.statusMessage);
-    }
-    return allInvoiceItems;
-  }
+  static Future<void> addInvoiceData(
+      {required invDate,
+      required invRef,
+      required invComments,
+      required invProject,
+      required invBuilding,
+      required invCategory,
+      required ldgrTdsPcnt,
+      required invPo,
+      required vendorId,
+      required createdDate,
+      required vendorLinkedLdgr,
+      required List<InvoiceItems> itemList}) async {
+    var url = 'https://swastik.online/Mobile/add_invoice';
 
-  static Future<void> addInvoiceData() async {
+    // Define your form data
     var data = FormData.fromMap({
-      'inv_date': '',
-      'inv_ref': '',
-      'invcomments': '',
-      'inv_project': '',
-      'inv_building': '',
-      'inv_category': '',
-      'ldgr_tds_pcnt': '',
-      'inv_po': '',
-      'vendor_id': '',
-      'created_date': '',
-      'vendor_linked_ldgr': '',
-      'invoice_id': '',
-      'user_id': '',
-      'project_id': '',
-      'username': '',
-      'file': '',
-      'item_amount': '',
-      'item_cgst':'',
-      'item_sgst':'',
-      "item_igst":'',
-      'item_description':'',
-      'item_qty':'',
-      'item_code':'',
-      'invoice_item_id':''
-
+      'inv_date': invDate,
+      'inv_ref': invRef,
+      'invcomments': invComments,
+      'inv_project': invProject,
+      'inv_building': invBuilding,
+      'inv_category': invCategory,
+      'ldgr_tds_pcnt': ldgrTdsPcnt,
+      'inv_po': invPo,
+      'vendor_id': vendorId,
+      'created_date': createdDate,
+      'vendor_linked_ldgr': vendorLinkedLdgr,
+      'file': "",
+      'item_list': json.encode(itemList)
     });
 
-    var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/add_invoice_step1?inv_ref=234&inv_date=2023-02-02&invcomments=testing&inv_project=234&inv_building=234&inv_category=234&ldgr_tds_pcnt=234&inv_po=234&vendor_id=234&created_date=234&vendor_linked_ldgr=234',
-      options: Options(
-        method: 'POST',
-      ),
-      data: data,
-    );
+    // Create your request parameters
+    var params = {
+      'inv_date': invDate,
+      'inv_ref': invRef,
+      'invcomments': invComments,
+      'inv_project': invProject,
+      'inv_building': invBuilding,
+      'inv_category': invCategory,
+      'ldgr_tds_pcnt': ldgrTdsPcnt,
+      'inv_po': invPo,
+      'vendor_id': vendorId,
+      'created_date': createdDate,
+      'vendor_linked_ldgr': vendorLinkedLdgr,
+      'file': "",
+      'item_list': json.encode(itemList) // Convert item list to JSON string
+    };
 
-    if (response.statusCode == 200) {
-      print(json.encode(response.data));
-    } else {
-      print(response.statusMessage);
+    try {
+      // Initialize dio instance
+      var dio = Dio();
+
+      // Send POST request
+      var response = await dio.post(
+        url,
+        // data: data,
+        queryParameters: params,
+      );
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        print(json.encode(response.data));
+      } else {
+        print(response.statusMessage);
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
-
-
-
-
-
 }
