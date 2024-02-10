@@ -813,7 +813,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.vendorList
                 .map((item) => DropdownMenuItem(
-                      value: item.companyName,
+                      value: item.companyId,
                       child: Text(
                         item.companyName!,
                         style: const TextStyle(
@@ -911,7 +911,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           ),
           items: addInvoiceController.projectList
               .map((item) => DropdownMenuItem(
-                    value: item.projectname,
+                    value: item.projectcode,
                     child: Text(
                       item.projectname!,
                       style: const TextStyle(
@@ -923,6 +923,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           value: addInvoiceController.selectedProject,
           onChanged: (value) {
             addInvoiceController.selectedProject = value;
+
+            debugPrint("projectcode1 : ${addInvoiceController.selectedProject }");
+
+            addInvoiceController.onGetBuilding(value!);
 
             addInvoiceController.projectList.forEach((element) {
               debugPrint("projectcode : ${element.projectcode!}");
@@ -1102,7 +1106,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.buildList
                 .map((item) => DropdownMenuItem(
-                      value: item.nameofbuilding,
+                      value: item.buildingcode,
                       child: Text(
                         item.nameofbuilding!,
                         style: const TextStyle(
@@ -1115,6 +1119,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             onChanged: (value) {
               addInvoiceController.selectedBuild = value;
               setState(() {});
+
               // context.read<InvoiceBloc>().getProjectSelected(value.toString());
             },
             buttonStyleData: Helper.buttonStyleData(context),

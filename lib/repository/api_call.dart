@@ -63,6 +63,7 @@ class ApiRepo {
     );
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
+      print("Build data $res");
       buildModel = BuildModel.fromJson(res);
     } else {
       print(response.statusMessage);
@@ -108,22 +109,24 @@ class ApiRepo {
 
   static Future<void> addInvoiceData(
       {required invDate,
-      required invRef,
-      required invComments,
-      required invProject,
-      required invBuilding,
-      required invCategory,
-      required ldgrTdsPcnt,
-      required invPo,
-      required vendorId,
-      required createdDate,
-      required vendorLinkedLdgr,
-      required List<InvoiceItems> itemList}) async {
+        required invRef,
+        required invComments,
+        required invProject,
+        required invBuilding,
+        required invCategory,
+        required ldgrTdsPcnt,
+        required invPo,
+        required vendorId,
+        required createdDate,
+        required vendorLinkedLdgr,
+        required List<InvoiceItems> itemList}) async {
     var url = 'https://swastik.online/Mobile/add_invoice';
+
+    print("soni list => ${jsonEncode(itemList)}");
 
     // Define your form data
     var data = FormData.fromMap({
-      'inv_date': invDate,
+      'inv_date': '10-02-24',
       'inv_ref': invRef,
       'invcomments': invComments,
       'inv_project': invProject,
@@ -132,12 +135,36 @@ class ApiRepo {
       'ldgr_tds_pcnt': ldgrTdsPcnt,
       'inv_po': invPo,
       'vendor_id': vendorId,
-      'created_date': createdDate,
+      'created_date': '10-02-24',
       'vendor_linked_ldgr': vendorLinkedLdgr,
-      'file': "",
+      'file': [
+        await MultipartFile.fromFile('/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+            filename: 'example.pdf')
+      ],
       'item_list': json.encode(itemList)
     });
 
+    var data1 = FormData.fromMap({
+    'inv_date': 10-02-24,
+    'inv_ref': 12345,
+    'inv_project': 'p_006',
+    'inv_building': 'b_012',
+    'inv_category': 'cat',
+    'ldgr_tds_pcnt': 0,
+    'inv_po': 0,
+    'vendor_id': 1,
+    'created_date': 10-02-24,
+    'vendor_linked_ldgr': 'ldgr_1025',
+      'invcomments': 'note',
+      'file': [
+        await MultipartFile.fromFile('/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+            filename: 'example.pdf')
+      ],
+      'item_list':jsonEncode(itemList)});
+
+
+    print(" Add body data => ${data.fields}");
+    print(" Add body data1 => ${data.files}");
     try {
       // Initialize dio instance
       var dio = Dio();
@@ -147,6 +174,8 @@ class ApiRepo {
         url,
         data: data,
       );
+
+
 
       // Check the response status code
       if (response.statusCode == 200) {

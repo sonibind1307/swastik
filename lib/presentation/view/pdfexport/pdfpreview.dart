@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -26,7 +29,7 @@ class PdfPreviewPage extends StatelessWidget {
     return pw.Image(pdfImage);
   }
 
-  Future<Uint8List> generatePdf() {
+  Future<Uint8List> generatePdf() async {
     final pdf = pw.Document();
     for (MemoryImage memoryImage in imageLogo) {
       pdf.addPage(
@@ -62,9 +65,6 @@ class PdfPreviewPage extends StatelessWidget {
             ],
           ),
 
-
-
-
       //     pw.Page(
       //   build: (context) => pw.Column(
       //     children: [
@@ -76,6 +76,21 @@ class PdfPreviewPage extends StatelessWidget {
       // )
       );
     }
+
+    // Get temporary directory or application documents directory
+    final directory = await getApplicationDocumentsDirectory();
+    // final directory = await getApplicationDocumentsDirectory();
+
+    // Create the path for the PDF file
+    final path = '${directory.path}/example.pdf';
+
+    // Save the PDF to the path
+    final File file = File(path);
+
+    await file.writeAsBytes(await pdf.save());
+
+   // debugPrint("Soni ==> $path");
+
     return pdf.save();
   }
 }

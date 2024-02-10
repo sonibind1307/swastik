@@ -184,7 +184,7 @@ class AddInvoiceController extends GetxController {
 
   addItems() {
     InvoiceItems allItemData = InvoiceItems();
-    allItemData.invoiceItemId = itemDesc.text.toString();
+    allItemData.invoiceItemId = "1234";
     allItemData.itemDescription = itemDesc.text.toString();
     allItemData.invoiceId = itemDesc.text.toString();
     allItemData.itemAmount = amount.text.toString();
