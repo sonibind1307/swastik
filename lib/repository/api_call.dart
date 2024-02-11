@@ -6,6 +6,7 @@ import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
 import '../model/responses/category_model.dart';
+import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
 import '../model/responses/vendor_model.dart';
 
@@ -24,6 +25,26 @@ class ApiRepo {
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
       data = ProjectModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return data;
+  }
+
+  static Future<POModel> getVendorPO(String vendorId, String projectId) async {
+    POModel data = POModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_vendor_ledger/$vendorId/$projectId',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    print("get_projects: ${response.data}");
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      data = POModel.fromJson(res);
     } else {
       print(response.statusMessage);
     }
@@ -109,17 +130,17 @@ class ApiRepo {
 
   static Future<void> addInvoiceData(
       {required invDate,
-        required invRef,
-        required invComments,
-        required invProject,
-        required invBuilding,
-        required invCategory,
-        required ldgrTdsPcnt,
-        required invPo,
-        required vendorId,
-        required createdDate,
-        required vendorLinkedLdgr,
-        required List<InvoiceItems> itemList}) async {
+      required invRef,
+      required invComments,
+      required invProject,
+      required invBuilding,
+      required invCategory,
+      required ldgrTdsPcnt,
+      required invPo,
+      required vendorId,
+      required createdDate,
+      required vendorLinkedLdgr,
+      required List<InvoiceItems> itemList}) async {
     var url = 'https://swastik.online/Mobile/add_invoice';
 
     print("soni list => ${jsonEncode(itemList)}");
@@ -138,30 +159,32 @@ class ApiRepo {
       'created_date': '10-02-24',
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': [
-        await MultipartFile.fromFile('/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+        await MultipartFile.fromFile(
+            '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
             filename: 'example.pdf')
       ],
       'item_list': json.encode(itemList)
     });
 
     var data1 = FormData.fromMap({
-    'inv_date': 10-02-24,
-    'inv_ref': 12345,
-    'inv_project': 'p_006',
-    'inv_building': 'b_012',
-    'inv_category': 'cat',
-    'ldgr_tds_pcnt': 0,
-    'inv_po': 0,
-    'vendor_id': 1,
-    'created_date': 10-02-24,
-    'vendor_linked_ldgr': 'ldgr_1025',
+      'inv_date': 10 - 02 - 24,
+      'inv_ref': 12345,
+      'inv_project': 'p_006',
+      'inv_building': 'b_012',
+      'inv_category': 'cat',
+      'ldgr_tds_pcnt': 0,
+      'inv_po': 0,
+      'vendor_id': 1,
+      'created_date': 10 - 02 - 24,
+      'vendor_linked_ldgr': 'ldgr_1025',
       'invcomments': 'note',
       'file': [
-        await MultipartFile.fromFile('/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+        await MultipartFile.fromFile(
+            '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
             filename: 'example.pdf')
       ],
-      'item_list':jsonEncode(itemList)});
-
+      'item_list': jsonEncode(itemList)
+    });
 
     print(" Add body data => ${data.fields}");
     print(" Add body data1 => ${data.files}");
@@ -174,8 +197,6 @@ class ApiRepo {
         url,
         data: data,
       );
-
-
 
       // Check the response status code
       if (response.statusCode == 200) {

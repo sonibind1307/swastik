@@ -43,7 +43,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   void initState() {
     super.initState();
     addInvoiceController.init();
-    if(widget.scheduleId != ""){
+    if (widget.scheduleId != "") {
       addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
     }
     addInvoiceController.onGetVendor();
@@ -813,7 +813,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.vendorList
                 .map((item) => DropdownMenuItem(
-                      value: item.companyId,
+                      value: item.companyName,
                       child: Text(
                         item.companyName!,
                         style: const TextStyle(
@@ -826,12 +826,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             onChanged: (value) {
               setState(() {
                 addInvoiceController.selectedVendor = value;
-                addInvoiceController.vendorList.forEach((element) {
+                for (var element in addInvoiceController.vendorList) {
                   if (element.companyName == value) {
                     VendorData vendorData = element;
                     addInvoiceController.onVendorSelection(vendorData);
                   }
-                });
+                }
               });
             },
             buttonStyleData: Helper.buttonStyleData(context),
@@ -911,7 +911,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           ),
           items: addInvoiceController.projectList
               .map((item) => DropdownMenuItem(
-                    value: item.projectcode,
+                    value: item.projectname,
                     child: Text(
                       item.projectname!,
                       style: const TextStyle(
@@ -923,20 +923,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           value: addInvoiceController.selectedProject,
           onChanged: (value) {
             addInvoiceController.selectedProject = value;
-
-            debugPrint("projectcode1 : ${addInvoiceController.selectedProject }");
-
-            addInvoiceController.onGetBuilding(value!);
-
-            addInvoiceController.projectList.forEach((element) {
-              debugPrint("projectcode : ${element.projectcode!}");
-              debugPrint("sample 1 ${element.projectname!}");
-              debugPrint("value ${value}");
+            for (var element in addInvoiceController.projectList) {
               if (element.projectname == value) {
-                debugPrint("sample code ${element.projectcode!}");
                 addInvoiceController.onGetBuilding(element.projectcode!);
+                addInvoiceController.onGetVendorPO(element.projectcode!);
               }
-            });
+            }
 
             setState(() {});
 
@@ -1106,7 +1098,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.buildList
                 .map((item) => DropdownMenuItem(
-                      value: item.buildingcode,
+                      value: item.nameofbuilding,
                       child: Text(
                         item.nameofbuilding!,
                         style: const TextStyle(

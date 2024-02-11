@@ -8,6 +8,7 @@ import 'package:swastik/model/responses/vendor_model.dart';
 
 import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
+import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
 import '../repository/api_call.dart';
 
@@ -18,6 +19,7 @@ class AddInvoiceController extends GetxController {
   var categoryItemList = <CategoryData>[].obs;
   var projectList = <ProjectData>[].obs;
   var buildList = <BuildData>[].obs;
+  var poList = <PoList>[].obs;
 
   var selectedDate;
 
@@ -155,6 +157,19 @@ class AddInvoiceController extends GetxController {
   Future<void> onGetBuilding(String projectId) async {
     BuildModel data = await ApiRepo.getBuilding(projectId);
     buildList.value = data.data!;
+    update();
+  }
+
+  Future<void> onGetVendorPO(
+    String projectId,
+  ) async {
+    debugPrint("vendorId -> $vendorId");
+    debugPrint("projectId -> $projectId");
+
+    POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
+    if (data.data!.poList!.isNotEmpty) {
+      poList.value = data.data!.poList!;
+    }
     update();
   }
 
