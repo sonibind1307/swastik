@@ -12,6 +12,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -271,6 +272,8 @@ class AddInvoiceController extends GetxController {
      if(baseModel.status == "true"){
        loading.value = false;
        Helper.getToastMsg(baseModel.message!);
+       Get.offAll(InvoiceScreen());
+
      }else{
        loading.value = false;
        Helper.getToastMsg("Server Error");
