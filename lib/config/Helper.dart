@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import 'colorConstant.dart';
@@ -13,16 +14,16 @@ class Helper {
     log(error);
   }
 
-  // static getToastMsg(String toastMessage) {
-  //   Fluttertoast.showToast(
-  //       msg: toastMessage,
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.BOTTOM,
-  //       timeInSecForIosWeb: 3,
-  //       backgroundColor: AppColors.primaryColor,
-  //       textColor: AppColors.white200,
-  //       fontSize: 16.0);
-  // }
+  static getToastMsg(String toastMessage) {
+    Fluttertoast.showToast(
+        msg: toastMessage,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 3,
+        backgroundColor: AppColors.primaryColor,
+        textColor: AppColors.white200,
+        fontSize: 16.0);
+  }
 
   static getSnackBarError(BuildContext context, String errorMsg) {
     ScaffoldMessenger.of(context)

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
+import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
 import 'package:swastik/model/responses/vendor_model.dart';
 
@@ -43,6 +44,7 @@ class AddInvoiceController extends GetxController {
   TextEditingController invRefController = TextEditingController();
 
   String? selectedVendor;
+  String? selectedPo;
 
   TextEditingController itemDesc = TextEditingController();
   TextEditingController hCode = TextEditingController();
@@ -67,6 +69,8 @@ class AddInvoiceController extends GetxController {
 
   // double? totalAmount;
   String? vendorId;
+  String? ledgerId;
+  String? inVoiceId;
 
   Future<void> onGetVendor() async {
     VendorModel vendorModel = await ApiRepo.getVendors();
@@ -167,8 +171,10 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
+    ledgerId =data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
-      poList.value = data.data!.poList!;
+      //poList.value = data.data!.poList!;
+      poList.add(data.data!.poList![0]);
     }
     update();
   }
@@ -199,9 +205,9 @@ class AddInvoiceController extends GetxController {
 
   addItems() {
     InvoiceItems allItemData = InvoiceItems();
-    allItemData.invoiceItemId = "1234";
+    //allItemData.invoiceItemId = "1234";
     allItemData.itemDescription = itemDesc.text.toString();
-    allItemData.invoiceId = itemDesc.text.toString();
+    allItemData.invoiceId = inVoiceId;
     allItemData.itemAmount = amount.text.toString();
     allItemData.qty = quanity.text.toString();
     allItemData.hsnCode = hCode.text.toString();
@@ -209,7 +215,7 @@ class AddInvoiceController extends GetxController {
     allItemData.itemSgst = sgstController.text.toString();
     allItemData.itemIgst = igstController.text.toString();
     allItemData.itemTds = itemDesc.text.toString();
-    allItemData.itemTax = itemDesc.text.toString();
+    allItemData.itemTax = amountTax.text.toString();
     allItemData.itemTotal = amountFinal.text.toString();
     allItemData.itemVat = itemDesc.text.toString();
     allInvoiceItemList.add(allItemData);
@@ -233,9 +239,9 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  void addInvoiceAPi(BuildContext context) {
+  Future<void> addInvoiceAPi(BuildContext context) async {
     if (allInvoiceItemList.isNotEmpty) {
-      ApiRepo.addInvoiceData(
+    BaseModel? baseModel = await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
@@ -245,13 +251,21 @@ class AddInvoiceController extends GetxController {
           ldgrTdsPcnt: "0",
 
           ///invoice details
-          invPo: "0",
+          invPo: selectedPo,
           vendorId: vendorId,
           createdDate: DateTime.now(),
-          vendorLinkedLdgr: "ldgr_1025",
+          vendorLinkedLdgr: ledgerId,
 
           /// on project change
           itemList: allInvoiceItemList);
+
+     // if(baseModel!.status == true){
+     //   Helper.getToastMsg(baseModel.message!);
+     // }else{
+     //   Helper.getToastMsg(baseModel.message!);
+     //   debugPrint("Not get response");
+     // }
+
     } else {
       Helper.getSnackBarError(context, "add at least one item");
     }

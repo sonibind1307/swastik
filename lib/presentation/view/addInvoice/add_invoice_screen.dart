@@ -45,6 +45,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     addInvoiceController.init();
     if (widget.scheduleId != "") {
       addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
+      addInvoiceController.inVoiceId = widget.scheduleId;
     }
     addInvoiceController.onGetVendor();
     addInvoiceController.onGetInvoiceCategoryItem();
@@ -1137,29 +1138,26 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         child: DropdownButton2<String>(
           isExpanded: true,
           hint: Text(
-            'Other',
+            'PO',
             style: TextStyle(
               fontSize: 14,
               color: Theme.of(context).hintColor,
             ),
           ),
-          items: listProject == null
-              ? []
-              : listProject
-                  .map((item) => DropdownMenuItem(
-                        value: item.projectname,
+          items:addInvoiceController.poList.map((item) => DropdownMenuItem(
+                        value: item.id,
                         child: Text(
-                          item.projectname!,
+                         "${item.companyName!}" +" | "+ "${item.poDt!}",
                           style: const TextStyle(
                             fontSize: 14,
                           ),
                         ),
                       ))
                   .toList(),
-          value: addInvoiceController.selectedVendor,
+          value: addInvoiceController.selectedPo,
           onChanged: (value) {
-            // selectedProject = value;
-            // context.read<InvoiceBloc>().getProjectSelected(value.toString());
+            addInvoiceController.selectedPo = value;
+            debugPrint("addInvoiceController.selectedPo ${addInvoiceController.selectedPo}");
           },
           buttonStyleData: Helper.buttonStyleData(context),
           iconStyleData: const IconStyleData(
