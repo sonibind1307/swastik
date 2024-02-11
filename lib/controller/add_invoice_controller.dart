@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
@@ -171,7 +172,7 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
-    ledgerId =data.data!.ledgerId;
+    ledgerId = data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
       //poList.value = data.data!.poList!;
       poList.add(data.data!.poList![0]);
@@ -241,7 +242,7 @@ class AddInvoiceController extends GetxController {
 
   Future<void> addInvoiceAPi(BuildContext context) async {
     if (allInvoiceItemList.isNotEmpty) {
-    BaseModel? baseModel = await ApiRepo.addInvoiceData(
+      BaseModel? baseModel = await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
@@ -253,19 +254,18 @@ class AddInvoiceController extends GetxController {
           ///invoice details
           invPo: selectedPo,
           vendorId: vendorId,
-          createdDate: DateTime.now(),
+          createdDate: DateFormat('dd-MM-yy').format(DateTime.now()).toString(),
           vendorLinkedLdgr: ledgerId,
 
           /// on project change
           itemList: allInvoiceItemList);
 
-     // if(baseModel!.status == true){
-     //   Helper.getToastMsg(baseModel.message!);
-     // }else{
-     //   Helper.getToastMsg(baseModel.message!);
-     //   debugPrint("Not get response");
-     // }
-
+      if (baseModel!.status == true) {
+        Helper.getToastMsg(baseModel.message!);
+      } else {
+        // Helper.getToastMsg(baseModel.message!);
+        debugPrint("Not get response");
+      }
     } else {
       Helper.getSnackBarError(context, "add at least one item");
     }

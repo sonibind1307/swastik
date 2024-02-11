@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import 'colorConstant.dart';
@@ -15,14 +15,14 @@ class Helper {
   }
 
   static getToastMsg(String toastMessage) {
-    Fluttertoast.showToast(
-        msg: toastMessage,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 3,
-        backgroundColor: AppColors.primaryColor,
-        textColor: AppColors.white200,
-        fontSize: 16.0);
+    // Fluttertoast.showToast(
+    //     msg: toastMessage,
+    //     toastLength: Toast.LENGTH_SHORT,
+    //     gravity: ToastGravity.BOTTOM,
+    //     timeInSecForIosWeb: 3,
+    //     backgroundColor: AppColors.primaryColor,
+    //     textColor: AppColors.white200,
+    //     fontSize: 16.0);
   }
 
   static getSnackBarError(BuildContext context, String errorMsg) {
@@ -229,5 +229,13 @@ class Helper {
       Uint8List bytes = file.readAsBytesSync();
       return MemoryImage(Uint8List.fromList(bytes));
     }).toList();
+  }
+
+  static dbDateTime(String date) {
+    DateTime parseDate = DateFormat("MM/dd/yyyy' 'hh:mm:ss a").parse(date);
+    var inputDate = DateTime.parse(parseDate.toString());
+    var outputFormat = DateFormat('hh:mm:ss a');
+    var outputDate = outputFormat.format(inputDate);
+    return outputDate;
   }
 }
