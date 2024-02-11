@@ -5,8 +5,10 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../presentation/widget/custom_text_style.dart';
 import 'colorConstant.dart';
 
 class Helper {
@@ -230,4 +232,81 @@ class Helper {
       return MemoryImage(Uint8List.fromList(bytes));
     }).toList();
   }
+
+
+  /*customGetDialogWithButton({String? title, String? subTitle, VoidCallback? onTap,IconData? iconData}){
+    Get.dialog(
+      Dialog(
+        child: SizedBox(
+          width: 150,
+          height: 220,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              Icon(iconData,color: Colors.red,size: 50,),
+              Padding(
+                padding: const EdgeInsets.only(top: 10,),
+                child: CustomTextStyle.bold(
+                  text:title ?? "",
+                ),
+              ),
+              CustomTextStyle.regular(
+                text: subTitle ?? "",
+              ),
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0,right: 15.0,bottom: 8.0),
+                child: CustomButton(
+                  height: getVerticalSize(55),
+                  text: Loc.alized.lbl_login,
+                  shape: ButtonShape.CircleBorder25,
+                  onTap: () {
+                    onTap!.call();
+                    // Get.offNamed(Routes.LOGIN);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+*/
+  static customGetDialogWithoutButton({String? title, String? subTitle,IconData? iconData,bool? autoColsePopup}){
+    Get.dialog(
+        Dialog(
+          child: SizedBox(
+            width: 150,
+            height: 150,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Icon(iconData,color: Colors.red,size: 50,),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10,),
+                  child: CustomTextStyle.bold(
+                    text:title ?? "",
+                  ),
+                ),
+                CustomTextStyle.regular(
+                  text: subTitle ?? "",
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+    if(autoColsePopup == true){
+      Future.delayed(const Duration(seconds: 2), () {
+        Get.back(); // Close the dialog
+      });
+    }
+
+  }
+
+
 }
