@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
@@ -11,6 +12,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -21,12 +23,14 @@ class AddInvoiceController extends GetxController {
   var projectList = <ProjectData>[].obs;
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
+  RxBool loading = false.obs;
 
   var selectedDate;
 
   VendorData vendorData = VendorData();
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
+
 
   // String? cgstValue;
   // String? sgstValue;
@@ -161,6 +165,7 @@ class AddInvoiceController extends GetxController {
 
   Future<void> onGetBuilding(String projectId) async {
     buildList.clear();
+    selectedBuild=null;
     BuildModel data = await ApiRepo.getBuilding(projectId);
     buildList.value = data.data!;
     update();
@@ -173,8 +178,7 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
-    poList.clear();
-    ledgerId = data.data!.ledgerId;
+    ledgerId =data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
       //poList.value = data.data!.poList!;
       poList.add(data.data!.poList![0]);
@@ -242,10 +246,13 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  Future<void> addInvoiceAPi(BuildContext context) async {
+  Future<BaseModel?> addInvoiceAPi(BuildContext context)async {
+
+    BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
-      BaseModel baseModel = await ApiRepo.addInvoiceData(
-          invDate: selectedDate,
+      loading.value = true;
+      baseModel = (await ApiRepo.addInvoiceData(
+          invDate: DateFormat("dd-MM-yy").format(DateTime.parse(selectedDate)),
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
           invProject: projectId,
@@ -256,20 +263,27 @@ class AddInvoiceController extends GetxController {
           ///invoice details
           invPo: selectedPo,
           vendorId: vendorId,
-          createdDate: DateTime.now(),
+          createdDate: DateFormat("dd-MM-yy").format(DateTime.now()),
           vendorLinkedLdgr: ledgerId,
 
           /// on project change
-          itemList: allInvoiceItemList);
+          itemList: allInvoiceItemList))!;
 
-      if (baseModel.status == "true") {
-        Helper.getToastMsg(baseModel.message!);
-      } else {
-        // Helper.getToastMsg(baseModel.message!);
-        debugPrint("Not get response");
-      }
+     if(baseModel.status == "true"){
+       loading.value = false;
+       Helper.getToastMsg(baseModel.message!);
+       Get.offAll(InvoiceScreen());
+
+     }else{
+       loading.value = false;
+       Helper.getToastMsg("Server Error");
+
+       debugPrint("Not get response");
+     }
+
     } else {
       Helper.getSnackBarError(context, "add at least one item");
     }
+    return baseModel;
   }
 }

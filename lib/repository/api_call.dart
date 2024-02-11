@@ -129,7 +129,7 @@ class ApiRepo {
     return categoryModel;
   }
 
-  static Future<BaseModel> addInvoiceData(
+  static Future<BaseModel?> addInvoiceData(
       {required invDate,
       required invRef,
       required invComments,
@@ -142,10 +142,16 @@ class ApiRepo {
       required createdDate,
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList}) async {
+
     BaseModel baseModel = BaseModel();
+
     var url = 'https://swastik.online/Mobile/add_invoice';
+
+    print("soni list => ${jsonEncode(itemList)}");
+
+    // Define your form data
     var data = FormData.fromMap({
-      'inv_date': '10-02-24',
+      'inv_date': invDate,
       'inv_ref': invRef,
       'invcomments': invComments,
       'inv_project': invProject,
@@ -154,8 +160,8 @@ class ApiRepo {
       'ldgr_tds_pcnt': ldgrTdsPcnt,
       'inv_po': invPo,
       'vendor_id': vendorId,
-      'created_date': '10-02-24',
-      'user_id': "92",
+      'created_date': createdDate,
+      'user_id':"92",
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': [
         await MultipartFile.fromFile(
@@ -163,6 +169,27 @@ class ApiRepo {
             filename: 'example.pdf')
       ],
       'item_list': json.encode(itemList)
+    });
+
+    var data1 = FormData.fromMap({
+      'inv_date': 10 - 02 - 24,
+      'inv_ref': 12345,
+      'inv_project': 'p_006',
+      'inv_building': 'b_012',
+      'inv_category': 'cat',
+      'ldgr_tds_pcnt': 0,
+      'inv_po': 0,
+      'vendor_id': 1,
+      'created_date': 10 - 02 - 24,
+      'vendor_linked_ldgr': 'ldgr_1025',
+      'invcomments': 'note',
+      'user_id':"92",
+      'file': [
+        await MultipartFile.fromFile(
+            '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+            filename: 'example.pdf')
+      ],
+      'item_list': jsonEncode(itemList)
     });
 
     print(" Add body data => ${data.fields}");
@@ -181,21 +208,14 @@ class ApiRepo {
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         baseModel = BaseModel.fromJson(res);
-        print(json.encode(baseModel));
+        print(json.encode(response.data));
       } else {
         print(response.statusMessage);
       }
-    } on DioError catch (e) {
-      if (e.response != null) {
-        // The server responded with an error status code
-        print('Error: ${e.response!.requestOptions}');
-        print('Error message: ${e.response!.statusMessage}');
-        print('Error data: ${e.response!.data}');
-      } else {
-        // Something else went wrong while sending the request
-        print('Error: $e');
-      }
+    } catch (e) {
+      print('Error: $e');
     }
     return baseModel;
+    // return baseModel;
   }
 }
