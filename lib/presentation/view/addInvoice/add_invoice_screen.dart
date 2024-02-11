@@ -926,6 +926,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             addInvoiceController.selectedProject = value;
             for (var element in addInvoiceController.projectList) {
               if (element.projectname == value) {
+                addInvoiceController.projectId = element.projectcode!;
                 addInvoiceController.onGetBuilding(element.projectcode!);
                 addInvoiceController.onGetVendorPO(element.projectcode!);
               }
@@ -1099,7 +1100,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.buildList
                 .map((item) => DropdownMenuItem(
-                      value: item.nameofbuilding,
+                      value: item.buildingcode,
                       child: Text(
                         item.nameofbuilding!,
                         style: const TextStyle(

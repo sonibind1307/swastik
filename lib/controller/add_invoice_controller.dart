@@ -28,6 +28,7 @@ class AddInvoiceController extends GetxController {
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
 
+
   // String? cgstValue;
   // String? sgstValue;
   // String? igstValue;
@@ -71,6 +72,7 @@ class AddInvoiceController extends GetxController {
   String? vendorId;
   String? ledgerId;
   String? inVoiceId;
+  String? projectId;
 
   Future<void> onGetVendor() async {
     VendorModel vendorModel = await ApiRepo.getVendors();
@@ -239,13 +241,13 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  Future<void> addInvoiceAPi(BuildContext context) async {
+  Future<void> addInvoiceAPi(BuildContext context)async {
     if (allInvoiceItemList.isNotEmpty) {
-    BaseModel? baseModel = await ApiRepo.addInvoiceData(
+   await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
-          invProject: selectedProject,
+          invProject: projectId,
           invBuilding: selectedBuild,
           invCategory: selectedCategory,
           ldgrTdsPcnt: "0",

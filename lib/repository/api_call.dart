@@ -129,7 +129,7 @@ class ApiRepo {
     return categoryModel;
   }
 
-  static Future<BaseModel?> addInvoiceData(
+  static Future<void> addInvoiceData(
       {required invDate,
       required invRef,
       required invComments,
@@ -142,7 +142,7 @@ class ApiRepo {
       required createdDate,
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList}) async {
-    BaseModel baseModel = BaseModel();
+    //BaseModel baseModel = BaseModel();
 
     var url = 'https://swastik.online/Mobile/add_invoice';
 
@@ -206,7 +206,7 @@ class ApiRepo {
       // Check the response status code
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
-        baseModel = BaseModel.fromJson(res);
+        //baseModel = BaseModel.fromJson(res);
         print(json.encode(response.data));
       } else {
         print(response.statusMessage);
@@ -214,6 +214,6 @@ class ApiRepo {
     } catch (e) {
       print('Error: $e');
     }
-    return baseModel;
+    // return baseModel;
   }
 }
