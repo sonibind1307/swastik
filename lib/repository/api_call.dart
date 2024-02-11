@@ -129,7 +129,7 @@ class ApiRepo {
     return categoryModel;
   }
 
-  static Future<BaseModel?> addInvoiceData(
+  static Future<void> addInvoiceData(
       {required invDate,
       required invRef,
       required invComments,
@@ -142,12 +142,11 @@ class ApiRepo {
       required createdDate,
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList}) async {
-    print("createdDate${createdDate}");
-    BaseModel baseModel = BaseModel();
+    //BaseModel baseModel = BaseModel();
 
     var url = 'https://swastik.online/Mobile/add_invoice';
 
-    // print("soni list => ${jsonEncode(itemList)}");
+    print("soni list => ${jsonEncode(itemList)}");
 
     // Define your form data
     var data = FormData.fromMap({
@@ -160,8 +159,8 @@ class ApiRepo {
       'ldgr_tds_pcnt': ldgrTdsPcnt,
       'inv_po': invPo,
       'vendor_id': vendorId,
-      'created_date': "10-02-24",
-      'user_id': "92",
+      'created_date': '10-02-24',
+      'user_id':"92",
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': [
         await MultipartFile.fromFile(
@@ -169,6 +168,27 @@ class ApiRepo {
             filename: 'example.pdf')
       ],
       'item_list': json.encode(itemList)
+    });
+
+    var data1 = FormData.fromMap({
+      'inv_date': 10 - 02 - 24,
+      'inv_ref': 12345,
+      'inv_project': 'p_006',
+      'inv_building': 'b_012',
+      'inv_category': 'cat',
+      'ldgr_tds_pcnt': 0,
+      'inv_po': 0,
+      'vendor_id': 1,
+      'created_date': 10 - 02 - 24,
+      'vendor_linked_ldgr': 'ldgr_1025',
+      'invcomments': 'note',
+      'user_id':"92",
+      'file': [
+        await MultipartFile.fromFile(
+            '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
+            filename: 'example.pdf')
+      ],
+      'item_list': jsonEncode(itemList)
     });
 
     print(" Add body data => ${data.fields}");
@@ -186,7 +206,7 @@ class ApiRepo {
       // Check the response status code
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
-        baseModel = BaseModel.fromJson(res);
+        //baseModel = BaseModel.fromJson(res);
         print(json.encode(response.data));
       } else {
         print(response.statusMessage);
@@ -194,6 +214,6 @@ class ApiRepo {
     } catch (e) {
       print('Error: $e');
     }
-    return baseModel;
+    // return baseModel;
   }
 }

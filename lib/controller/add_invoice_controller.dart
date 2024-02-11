@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
@@ -28,6 +27,7 @@ class AddInvoiceController extends GetxController {
   VendorData vendorData = VendorData();
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
+
 
   // String? cgstValue;
   // String? sgstValue;
@@ -72,6 +72,7 @@ class AddInvoiceController extends GetxController {
   String? vendorId;
   String? ledgerId;
   String? inVoiceId;
+  String? projectId;
 
   Future<void> onGetVendor() async {
     VendorModel vendorModel = await ApiRepo.getVendors();
@@ -172,7 +173,7 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
-    ledgerId = data.data!.ledgerId;
+    ledgerId =data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
       //poList.value = data.data!.poList!;
       poList.add(data.data!.poList![0]);
@@ -240,13 +241,13 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  Future<void> addInvoiceAPi(BuildContext context) async {
+  Future<void> addInvoiceAPi(BuildContext context)async {
     if (allInvoiceItemList.isNotEmpty) {
-      BaseModel? baseModel = await ApiRepo.addInvoiceData(
+   await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
-          invProject: selectedProject,
+          invProject: projectId,
           invBuilding: selectedBuild,
           invCategory: selectedCategory,
           ldgrTdsPcnt: "0",
@@ -254,18 +255,19 @@ class AddInvoiceController extends GetxController {
           ///invoice details
           invPo: selectedPo,
           vendorId: vendorId,
-          createdDate: DateFormat('dd-MM-yy').format(DateTime.now()).toString(),
+          createdDate: DateTime.now(),
           vendorLinkedLdgr: ledgerId,
 
           /// on project change
           itemList: allInvoiceItemList);
 
-      if (baseModel!.status == true) {
-        Helper.getToastMsg(baseModel.message!);
-      } else {
-        // Helper.getToastMsg(baseModel.message!);
-        debugPrint("Not get response");
-      }
+     // if(baseModel!.status == true){
+     //   Helper.getToastMsg(baseModel.message!);
+     // }else{
+     //   Helper.getToastMsg(baseModel.message!);
+     //   debugPrint("Not get response");
+     // }
+
     } else {
       Helper.getSnackBarError(context, "add at least one item");
     }
