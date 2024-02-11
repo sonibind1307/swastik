@@ -28,7 +28,6 @@ class AddInvoiceController extends GetxController {
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
 
-
   // String? cgstValue;
   // String? sgstValue;
   // String? igstValue;
@@ -161,6 +160,7 @@ class AddInvoiceController extends GetxController {
   }
 
   Future<void> onGetBuilding(String projectId) async {
+    buildList.clear();
     BuildModel data = await ApiRepo.getBuilding(projectId);
     buildList.value = data.data!;
     update();
@@ -173,7 +173,8 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
-    ledgerId =data.data!.ledgerId;
+    poList.clear();
+    ledgerId = data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
       //poList.value = data.data!.poList!;
       poList.add(data.data!.poList![0]);
@@ -241,9 +242,9 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  Future<void> addInvoiceAPi(BuildContext context)async {
+  Future<void> addInvoiceAPi(BuildContext context) async {
     if (allInvoiceItemList.isNotEmpty) {
-   await ApiRepo.addInvoiceData(
+      BaseModel baseModel = await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
@@ -261,13 +262,12 @@ class AddInvoiceController extends GetxController {
           /// on project change
           itemList: allInvoiceItemList);
 
-     // if(baseModel!.status == true){
-     //   Helper.getToastMsg(baseModel.message!);
-     // }else{
-     //   Helper.getToastMsg(baseModel.message!);
-     //   debugPrint("Not get response");
-     // }
-
+      if (baseModel.status == "true") {
+        Helper.getToastMsg(baseModel.message!);
+      } else {
+        // Helper.getToastMsg(baseModel.message!);
+        debugPrint("Not get response");
+      }
     } else {
       Helper.getSnackBarError(context, "add at least one item");
     }

@@ -3,16 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../bloc/bloc_logic/multiImagePickerBloc.dart';
 import '../bloc/state/multi_image_state.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 List<MemoryImage> imageLogo = [];
 List<File> imageList = [];
@@ -37,7 +35,8 @@ class MultiImageScreen extends StatelessWidget {
                     builder: (context) => const AddInvoiceScreen(
                       scheduleId: "",
                     ),
-                  ),);
+                  ),
+                );
                 generatePdf();
               } else {
                 Helper.getSnackBarError(context, "Select image to create PDF");
@@ -46,9 +45,9 @@ class MultiImageScreen extends StatelessWidget {
               // context.read<MultiImageCubit>().generatePDf();
             },
             icon: const Icon(Icons.picture_as_pdf),
-            label: const Text("Generate Pdf")),
+            label: const Text("Create")),
         appBar: AppBar(
-          title: const Text("Generate PDF"),
+          title: const Text("Create New Invoice"),
         ),
         body: BlocConsumer<MultiImageCubit, MultiImageState>(
           builder: (BuildContext context, state) {
@@ -103,7 +102,6 @@ class MultiImageScreen extends StatelessWidget {
     }).toList();
   }
 
-
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;
     final pdfImage = pw.MemoryImage(imageData);
@@ -124,25 +122,18 @@ class MultiImageScreen extends StatelessWidget {
               child: pw.Text('Header Text'),
             ),
             // Image
-            pw.SizedBox(
-                height: 10
-            ),
+            pw.SizedBox(height: 10),
             pw.Center(
               child: buildPdfImage(memoryImage),
             ),
-            pw.SizedBox(
-                height: 10
-            ),
+            pw.SizedBox(height: 10),
             // Footer
             pw.Container(
               alignment: pw.Alignment.centerRight,
               margin: const pw.EdgeInsets.only(bottom: 10.0),
-              child: pw.Text('Date : ${DateTime.now()}',style: const pw.TextStyle(
-                  fontSize: 20
-              )),
+              child: pw.Text('Date : ${DateTime.now()}',
+                  style: const pw.TextStyle(fontSize: 20)),
             ),
-
-
           ],
         ),
 

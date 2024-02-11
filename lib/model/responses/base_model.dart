@@ -1,5 +1,5 @@
 class BaseModel {
-  bool? status;
+  String? status;
   String? message;
   int? data;
 
