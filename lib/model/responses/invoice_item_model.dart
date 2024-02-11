@@ -274,6 +274,7 @@ class InvoiceItems {
     data['item_total'] = this.itemTotal;
     data['item_vat'] = this.itemVat;
     data['item_qty'] = this.qty;
+    data['item_code'] = this.hsnCode;
     return data;
   }
 }

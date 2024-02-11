@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
@@ -128,7 +129,7 @@ class ApiRepo {
     return categoryModel;
   }
 
-  static Future<void> addInvoiceData(
+  static Future<BaseModel?> addInvoiceData(
       {required invDate,
       required invRef,
       required invComments,
@@ -141,6 +142,8 @@ class ApiRepo {
       required createdDate,
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList}) async {
+    BaseModel baseModel = BaseModel();
+
     var url = 'https://swastik.online/Mobile/add_invoice';
 
     print("soni list => ${jsonEncode(itemList)}");
@@ -157,6 +160,7 @@ class ApiRepo {
       'inv_po': invPo,
       'vendor_id': vendorId,
       'created_date': '10-02-24',
+      'user_id':"92",
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': [
         await MultipartFile.fromFile(
@@ -178,6 +182,7 @@ class ApiRepo {
       'created_date': 10 - 02 - 24,
       'vendor_linked_ldgr': 'ldgr_1025',
       'invcomments': 'note',
+      'user_id':"92",
       'file': [
         await MultipartFile.fromFile(
             '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
@@ -200,6 +205,8 @@ class ApiRepo {
 
       // Check the response status code
       if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        baseModel = BaseModel.fromJson(res);
         print(json.encode(response.data));
       } else {
         print(response.statusMessage);
@@ -207,5 +214,6 @@ class ApiRepo {
     } catch (e) {
       print('Error: $e');
     }
+    return baseModel;
   }
 }
