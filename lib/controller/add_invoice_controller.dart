@@ -31,7 +31,6 @@ class AddInvoiceController extends GetxController {
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
 
-
   // String? cgstValue;
   // String? sgstValue;
   // String? igstValue;
@@ -165,7 +164,7 @@ class AddInvoiceController extends GetxController {
 
   Future<void> onGetBuilding(String projectId) async {
     buildList.clear();
-    selectedBuild=null;
+    selectedBuild = null;
     BuildModel data = await ApiRepo.getBuilding(projectId);
     buildList.value = data.data!;
     update();
@@ -178,7 +177,7 @@ class AddInvoiceController extends GetxController {
     debugPrint("projectId -> $projectId");
 
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
-    ledgerId =data.data!.ledgerId;
+    ledgerId = data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
       //poList.value = data.data!.poList!;
       poList.add(data.data!.poList![0]);
@@ -246,8 +245,7 @@ class AddInvoiceController extends GetxController {
     igstFlag.value = true;
   }
 
-  Future<BaseModel?> addInvoiceAPi(BuildContext context)async {
-
+  Future<BaseModel?> addInvoiceAPi(BuildContext context) async {
     BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
       loading.value = true;
@@ -269,21 +267,41 @@ class AddInvoiceController extends GetxController {
           /// on project change
           itemList: allInvoiceItemList))!;
 
-     if(baseModel.status == "true"){
-       loading.value = false;
-       Helper.getToastMsg(baseModel.message!);
-       Get.offAll(InvoiceScreen());
+      if (baseModel.status == "true") {
+        loading.value = false;
+        Helper.getToastMsg(baseModel.message!);
+        Get.offAll(InvoiceScreen());
+      } else {
+        loading.value = false;
+        Helper.getToastMsg("Server Error");
 
-     }else{
-       loading.value = false;
-       Helper.getToastMsg("Server Error");
-
-       debugPrint("Not get response");
-     }
-
+        debugPrint("Not get response");
+      }
     } else {
-      Helper.getSnackBarError(context, "add at least one item");
+      Helper.getToastMsg("add at least one item");
     }
     return baseModel;
+  }
+
+  bool validateStep2() {
+    bool isValidate = true;
+    if (selectedProject == null) {
+      Helper.getToastMsg("Select project");
+      isValidate = false;
+    } else if (selectedBuild == null) {
+      isValidate = false;
+      Helper.getToastMsg("Select building name");
+    } else if (selectedCategory == null) {
+      isValidate = false;
+      Helper.getToastMsg("Select category");
+    } else if (invRefController.text.trim() == "") {
+      isValidate = false;
+      Helper.getToastMsg("Enter invoice reference");
+    } else if (noteController.text.trim() == "") {
+      isValidate = false;
+      Helper.getToastMsg("Enter invoice note");
+    }
+
+    return isValidate;
   }
 }

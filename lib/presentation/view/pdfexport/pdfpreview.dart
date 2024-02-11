@@ -33,47 +33,40 @@ class PdfPreviewPage extends StatelessWidget {
     final pdf = pw.Document();
     for (MemoryImage memoryImage in imageLogo) {
       pdf.addPage(
-          pw.MultiPage(
-            pageFormat: PdfPageFormat.a4,
-            build: (pw.Context context) => [
-              // Header
-              pw.Container(
-                alignment: pw.Alignment.centerRight,
-                margin: const pw.EdgeInsets.only(top: 10.0),
-                child: pw.Text('Header Text'),
-              ),
-              // Image
-              pw.SizedBox(
-                height: 10
-              ),
-              pw.Center(
-                child: buildPdfImage(memoryImage),
-              ),
-              pw.SizedBox(
-                  height: 10
-              ),
-              // Footer
-              pw.Container(
-                alignment: pw.Alignment.centerRight,
-                margin: const pw.EdgeInsets.only(bottom: 10.0),
-                child: pw.Text('Date : ${DateTime.now()}',style: const pw.TextStyle(
-                  fontSize: 20
-                )),
-              ),
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) => [
+            // Header
+            pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 10.0),
+              child: pw.Text('UserName: soni.b '),
+            ),
+            // Image
+            pw.SizedBox(height: 10),
+            pw.Center(
+              child: buildPdfImage(memoryImage),
+            ),
+            pw.SizedBox(height: 10),
+            // Footer
+            pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(bottom: 10.0),
+              child: pw.Text('Date : ${DateTime.now()}',
+                  style: const pw.TextStyle(fontSize: 20)),
+            ),
+          ],
+        ),
 
-
-            ],
-          ),
-
-      //     pw.Page(
-      //   build: (context) => pw.Column(
-      //     children: [
-      //       pw.Center(
-      //         child: buildPdfImage(memoryImage),
-      //       ),
-      //     ]
-      //   )
-      // )
+        //     pw.Page(
+        //   build: (context) => pw.Column(
+        //     children: [
+        //       pw.Center(
+        //         child: buildPdfImage(memoryImage),
+        //       ),
+        //     ]
+        //   )
+        // )
       );
     }
 
@@ -89,7 +82,7 @@ class PdfPreviewPage extends StatelessWidget {
 
     await file.writeAsBytes(await pdf.save());
 
-   // debugPrint("Soni ==> $path");
+    // debugPrint("Soni ==> $path");
 
     return pdf.save();
   }
