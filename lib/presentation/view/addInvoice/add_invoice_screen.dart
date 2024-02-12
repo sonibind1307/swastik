@@ -1689,7 +1689,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       isActive: _activeCurrentStep >= 2,
       title: const Text('Step 3'),
       content: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
           children: [
             Align(
@@ -1713,7 +1713,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             Obx(
               () => SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.5,
                 child: addInvoiceController.allInvoiceItemList.isEmpty
                     ? Center(
                         child: CustomTextStyle.regular(text: "No Item Added"),

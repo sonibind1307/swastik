@@ -171,27 +171,6 @@ class ApiRepo {
       'item_list': json.encode(itemList)
     });
 
-    var data1 = FormData.fromMap({
-      'inv_date': 10 - 02 - 24,
-      'inv_ref': 12345,
-      'inv_project': 'p_006',
-      'inv_building': 'b_012',
-      'inv_category': 'cat',
-      'ldgr_tds_pcnt': 0,
-      'inv_po': 0,
-      'vendor_id': 1,
-      'created_date': 10 - 02 - 24,
-      'vendor_linked_ldgr': 'ldgr_1025',
-      'invcomments': 'note',
-      'user_id': "92",
-      'file': [
-        await MultipartFile.fromFile(
-            '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
-            filename: 'example.pdf')
-      ],
-      'item_list': jsonEncode(itemList)
-    });
-
     print(" Add body data => ${data.fields}");
     print(" Add body data1 => ${data.files}");
     try {
