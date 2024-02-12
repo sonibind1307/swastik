@@ -39,7 +39,7 @@ class PdfPreviewPage extends StatelessWidget {
             // Header
             pw.Container(
               alignment: pw.Alignment.centerRight,
-              margin: const pw.EdgeInsets.only(top: 10.0),
+              // margin: const pw.EdgeInsets.only(top: 10.0),
               child: pw.Text('UserName: soni.b '),
             ),
             // Image
@@ -51,7 +51,7 @@ class PdfPreviewPage extends StatelessWidget {
             // Footer
             pw.Container(
               alignment: pw.Alignment.centerRight,
-              margin: const pw.EdgeInsets.only(bottom: 10.0),
+              // margin: const pw.EdgeInsets.only(bottom: 10.0),
               child: pw.Text('Date : ${DateTime.now()}',
                   style: const pw.TextStyle(fontSize: 20)),
             ),

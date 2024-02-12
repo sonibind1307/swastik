@@ -24,20 +24,16 @@ class AddInvoiceController extends GetxController {
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
   RxBool loading = false.obs;
-
   var selectedDate;
-
-  VendorData vendorData = VendorData();
+  var vendorData = <VendorData>[].obs;
+  InvoiceIDetailModel invoiceIDetailModel = InvoiceIDetailModel();
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
-
-  // String? cgstValue;
-  // String? sgstValue;
-  // String? igstValue;
 
   RxString cgstValue1 = "CGST".obs;
   RxString sgstValue1 = "SGST".obs;
   RxString igstValue1 = "IGST".obs;
+  RxString companyName = "".obs;
 
   String? selectedCategory;
   String? selectedProject;
@@ -81,6 +77,10 @@ class AddInvoiceController extends GetxController {
     if (vendorModel.data != null) {
       vendorList.value = vendorModel.data!;
     }
+    if (inVoiceId != "") {
+      selectedVendor = invoiceIDetailModel.data!.companyName;
+      onVendorSelection(selectedVendor!);
+    }
     update();
   }
 
@@ -90,11 +90,19 @@ class AddInvoiceController extends GetxController {
         "${Helper.padWithZero(dateTime.month)}-"
         "${Helper.padWithZero(dateTime.day)}";
     selectedDate = date;
+    VendorData data = VendorData();
+    vendorData.add(data);
   }
 
-  void onVendorSelection(VendorData value) {
-    vendorData = value;
-    vendorId = value.id!;
+  void onVendorSelection(String vendorName) {
+    debugPrint("vendorName -> $vendorName");
+    for (var element in vendorList) {
+      if (element.companyName == vendorName) {
+        vendorData.clear();
+        vendorData.add(element);
+        vendorId = element.id!;
+      }
+    }
     update();
   }
 
@@ -186,22 +194,24 @@ class AddInvoiceController extends GetxController {
   }
 
   Future<void> onGetInvoiceDetails(String invoiceId) async {
-    InvoiceIDetailModel data = await ApiRepo.getInvoiceDetails(invoiceId);
+    invoiceIDetailModel = await ApiRepo.getInvoiceDetails(invoiceId);
     // invoiceDetail.value = data.data!;
-    debugPrint("vendorData 2024 -> ${jsonEncode(data)}");
+    debugPrint("vendorData 2024 -> ${jsonEncode(invoiceIDetailModel)}");
 
-    if (data.data != null) {
-      debugPrint("vendorData 2024 -> ${data.data!.project}");
-      await onGetBuilding(data.data!.project!);
-      selectedProject = data.data!.projectname;
-      selectedCategory = data.data!.invcat;
-      selectedBuild = data.data!.nameofbuilding;
-      selectedDate = data.data!.invDate!;
-      invRefController.text = data.data!.invref.toString();
-      pdfUrl = data.data!.filename.toString();
+    if (invoiceIDetailModel.data != null) {
+      debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
+      await onGetBuilding(invoiceIDetailModel.data!.project!);
+
+      companyName.value = invoiceIDetailModel.data!.companyname!;
+      selectedProject = invoiceIDetailModel.data!.projectname;
+      selectedCategory = invoiceIDetailModel.data!.invcat;
+      selectedBuild = invoiceIDetailModel.data!.building;
+      selectedDate = invoiceIDetailModel.data!.invDate!;
+      invRefController.text = invoiceIDetailModel.data!.invref.toString();
+      pdfUrl = invoiceIDetailModel.data!.filename.toString();
       debugPrint("pdfUrl -> $pdfUrl");
-      if (data.data!.invoiceItems!.isNotEmpty) {
-        allInvoiceItemList.value = data.data!.invoiceItems!;
+      if (invoiceIDetailModel.data!.invoiceItems!.isNotEmpty) {
+        allInvoiceItemList.value = invoiceIDetailModel.data!.invoiceItems!;
         update();
       }
     }
@@ -301,7 +311,6 @@ class AddInvoiceController extends GetxController {
       isValidate = false;
       Helper.getToastMsg("Enter invoice note");
     }
-
     return isValidate;
   }
 }

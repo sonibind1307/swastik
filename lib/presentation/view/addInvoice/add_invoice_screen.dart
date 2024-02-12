@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/controller/add_invoice_controller.dart';
-import 'package:swastik/model/responses/vendor_model.dart';
 import 'package:swastik/repository/api_call.dart';
 
 import '../../../config/constant.dart';
@@ -844,12 +843,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             onChanged: (value) {
               setState(() {
                 addInvoiceController.selectedVendor = value;
-                for (var element in addInvoiceController.vendorList) {
-                  if (element.companyName == value) {
-                    VendorData vendorData = element;
-                    addInvoiceController.onVendorSelection(vendorData);
-                  }
-                }
+                addInvoiceController.onVendorSelection(value!);
               });
             },
             buttonStyleData: Helper.buttonStyleData(context),
@@ -1130,8 +1124,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             onChanged: (value) {
               addInvoiceController.selectedBuild = value;
               setState(() {});
-
-              // context.read<InvoiceBloc>().getProjectSelected(value.toString());
             },
             buttonStyleData: Helper.buttonStyleData(context),
             iconStyleData: const IconStyleData(
@@ -1255,188 +1247,197 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 const SizedBox(
                   height: 8,
                 ),
-                Card(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextStyle.bold(
-                            text: "Vendor Details",
-                            fontSize: 14,
-                            color: AppColors.blueColor),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        dropDownList(context, () {}),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTextStyle.bold(
-                                text: "Address : ", fontSize: 16),
-                            Expanded(
-                              child: CustomTextStyle.regular(
-                                  text:
-                                      addInvoiceController.vendorData.address ??
-                                          "NA",
-                                  fontSize: 14),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text: "PAN : ", fontSize: 16),
-                                  CustomTextStyle.regular(
-                                      text:
-                                          addInvoiceController.vendorData.pan ??
+                Obx(
+                  () => Card(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomTextStyle.bold(
+                              text: "Vendor Details",
+                              fontSize: 14,
+                              color: AppColors.blueColor),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Obx(() => CustomTextStyle.regular(
+                              text:
+                                  "Company name: ${addInvoiceController.companyName}")),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          dropDownList(context, () {}),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomTextStyle.bold(
+                                  text: "Address : ", fontSize: 16),
+                              Expanded(
+                                child: CustomTextStyle.regular(
+                                    text: addInvoiceController
+                                            .vendorData[0].address ??
+                                        "NA",
+                                    fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: "PAN : ", fontSize: 16),
+                                    CustomTextStyle.regular(
+                                        text: addInvoiceController
+                                                .vendorData[0].pan ??
+                                            "NA",
+                                        fontSize: 14)
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: "GST : ", fontSize: 16),
+                                    Expanded(
+                                      child: CustomTextStyle.regular(
+                                          text: addInvoiceController
+                                                  .vendorData[0].gst ??
                                               "NA",
-                                      fontSize: 14)
-                                ],
+                                          fontSize: 14),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text: "GST : ", fontSize: 16),
-                                  Expanded(
-                                    child: CustomTextStyle.regular(
-                                        text: addInvoiceController
-                                                .vendorData.gst ??
-                                            "NA",
-                                        fontSize: 14),
-                                  )
-                                ],
-                              ),
-                            ),
 
-                            /* Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.bold(
-                                  text: "PAN :".trim(), fontSize: 16)),
-                          Expanded(
-                              flex: 2,
-                              child: CustomTextStyle.regular(
-                                  text: addInvoiceController.vendorData.pan ?? "NA",
-                                  fontSize: 14)),
-                          Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.bold(
-                                  text: "GST :".trim(), fontSize: 16)),
-                          Expanded(
-                              flex: 2,
-                              child: CustomTextStyle.regular(
-                                  text: addInvoiceController.vendorData.gst ?? "NA",
-                                  fontSize: 14)),*/
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                              /* Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.bold(
+                                    text: "PAN :".trim(), fontSize: 16)),
                             Expanded(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text: "Contact : ", fontSize: 16),
-                                  Expanded(
-                                    child: CustomTextStyle.regular(
+                                flex: 2,
+                                child: CustomTextStyle.regular(
+                                    text: addInvoiceController.vendorData.pan ?? "NA",
+                                    fontSize: 14)),
+                            Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.bold(
+                                    text: "GST :".trim(), fontSize: 16)),
+                            Expanded(
+                                flex: 2,
+                                child: CustomTextStyle.regular(
+                                    text: addInvoiceController.vendorData.gst ?? "NA",
+                                    fontSize: 14)),*/
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: "Contact : ", fontSize: 16),
+                                    Expanded(
+                                      child: CustomTextStyle.regular(
+                                          text: addInvoiceController
+                                                  .vendorData[0].contactName ??
+                                              "NA",
+                                          fontSize: 14),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: "Mobile : ", fontSize: 16),
+                                    CustomTextStyle.regular(
                                         text: addInvoiceController
-                                                .vendorData.contactName ??
+                                                .vendorData[0].contactNo ??
                                             "NA",
-                                        fontSize: 14),
-                                  )
-                                ],
+                                        fontSize: 14)
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text: "Mobile : ", fontSize: 16),
-                                  CustomTextStyle.regular(
-                                      text: addInvoiceController
-                                              .vendorData.contactNo ??
-                                          "NA",
-                                      fontSize: 14)
-                                ],
-                              ),
-                            ),
 
-                            /* Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.bold(
-                                  text: "Contact :", fontSize: 16)),
-                          Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.regular(
-                                  text:
-                                      addInvoiceController.vendorData.contactName ??
-                                          "NA",
-                                  fontSize: 14)),
-                          Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.bold(
-                                  text: "Mobile :".trim(), fontSize: 16)),
-                          Expanded(
-                              flex: 1,
-                              child: CustomTextStyle.regular(
-                                  text: addInvoiceController.vendorData.contactNo ??
+                              /* Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.bold(
+                                    text: "Contact :", fontSize: 16)),
+                            Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.regular(
+                                    text:
+                                        addInvoiceController.vendorData.contactName ??
+                                            "NA",
+                                    fontSize: 14)),
+                            Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.bold(
+                                    text: "Mobile :".trim(), fontSize: 16)),
+                            Expanded(
+                                flex: 1,
+                                child: CustomTextStyle.regular(
+                                    text: addInvoiceController.vendorData.contactNo ??
+                                        "NA",
+                                    fontSize: 14)),*/
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomTextStyle.bold(
+                                  text: "Email : ", fontSize: 16),
+                              CustomTextStyle.regular(
+                                  text: addInvoiceController
+                                          .vendorData[0].email ??
                                       "NA",
-                                  fontSize: 14)),*/
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTextStyle.bold(
-                                text: "Email : ", fontSize: 16),
-                            CustomTextStyle.regular(
-                                text: addInvoiceController.vendorData.email ??
-                                    "NA",
-                                fontSize: 14),
-                          ],
-                        ),
+                                  fontSize: 14),
+                            ],
+                          ),
 
-                        /* builderToShowData(
-                          "Address ",
-                          addInvoiceController.vendorData.address ?? "NA",
-                          "Address ",
-                          addInvoiceController.vendorData.address ?? "NA"),
-                      builderToShowData(
-                          "Contact Person",
-                          addInvoiceController.vendorData.contactName ?? "NA",
-                          "Mobile",
-                          addInvoiceController.vendorData.contactNo ?? "NA"),
-                      builderToShowData(
-                          "Email ",
-                          addInvoiceController.vendorData.email ?? "NA",
-                          "GST ",
-                          addInvoiceController.vendorData.gst ?? "NA"),*/
-                      ],
+                          /* builderToShowData(
+                            "Address ",
+                            addInvoiceController.vendorData.address ?? "NA",
+                            "Address ",
+                            addInvoiceController.vendorData.address ?? "NA"),
+                        builderToShowData(
+                            "Contact Person",
+                            addInvoiceController.vendorData.contactName ?? "NA",
+                            "Mobile",
+                            addInvoiceController.vendorData.contactNo ?? "NA"),
+                        builderToShowData(
+                            "Email ",
+                            addInvoiceController.vendorData.email ?? "NA",
+                            "GST ",
+                            addInvoiceController.vendorData.gst ?? "NA"),*/
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1777,7 +1778,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                     Expanded(
                                         flex: 1,
                                         child: CustomTextStyle.regular(
-                                            text: 'Rate: 10000', fontSize: 12)),
+                                            text: 'Rate: ${data.itemAmount}',
+                                            fontSize: 12)),
                                     Expanded(
                                         child: Row(
                                       children: [

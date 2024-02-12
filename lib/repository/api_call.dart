@@ -42,7 +42,8 @@ class ApiRepo {
       ),
     );
 
-    print("get_projects: ${response.data}");
+    print("getVendorPO: ${response.data}");
+
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
       data = POModel.fromJson(res);
@@ -142,7 +143,6 @@ class ApiRepo {
       required createdDate,
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList}) async {
-
     BaseModel baseModel = BaseModel();
 
     var url = 'https://swastik.online/Mobile/add_invoice';
@@ -161,7 +161,7 @@ class ApiRepo {
       'inv_po': invPo,
       'vendor_id': vendorId,
       'created_date': createdDate,
-      'user_id':"92",
+      'user_id': "92",
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': [
         await MultipartFile.fromFile(
@@ -183,7 +183,7 @@ class ApiRepo {
       'created_date': 10 - 02 - 24,
       'vendor_linked_ldgr': 'ldgr_1025',
       'invcomments': 'note',
-      'user_id':"92",
+      'user_id': "92",
       'file': [
         await MultipartFile.fromFile(
             '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
