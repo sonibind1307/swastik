@@ -92,7 +92,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   const SizedBox(
                     height: 8,
                   ),
-                  dropDownList(context, state.dataProject.data),
+                  dropDownList(context, state.dataProject),
                   const SizedBox(
                     height: 8,
                   ),
@@ -380,8 +380,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(4.0),
                                   child: CustomTextStyle.regular(
-                                      text:
-                                          invoiceList.data![index].projectname,
+                                      text: invoiceList
+                                              .data![index].projectname ??
+                                          "NA",
                                       color: Colors.white),
                                 ),
                               ),

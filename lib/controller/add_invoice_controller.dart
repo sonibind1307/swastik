@@ -24,6 +24,7 @@ class AddInvoiceController extends GetxController {
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
   RxBool loading = false.obs;
+  RxBool step1Loading = true.obs;
   var selectedDate;
   var vendorData = <VendorData>[].obs;
   InvoiceIDetailModel invoiceIDetailModel = InvoiceIDetailModel();
@@ -73,18 +74,28 @@ class AddInvoiceController extends GetxController {
   String? projectId;
 
   Future<void> onGetVendor() async {
+    step1Loading.value = true;
     VendorModel vendorModel = await ApiRepo.getVendors();
     if (vendorModel.data != null) {
       vendorList.value = vendorModel.data!;
     }
-    if (inVoiceId != "") {
+    Helper.getToastMsg(inVoiceId.toString());
+    if (inVoiceId != "" && inVoiceId != null) {
       selectedVendor = invoiceIDetailModel.data!.companyName;
       onVendorSelection(selectedVendor!);
     }
+
+    step1Loading.value = false;
     update();
   }
 
   void init() {
+    selectedCategory = null;
+    categoryItemList.clear();
+    selectedBuild = null;
+    buildList.clear();
+    companyName.value = "";
+    vendorData.clear();
     DateTime dateTime = DateTime.now();
     String date = "${dateTime.year}-"
         "${Helper.padWithZero(dateTime.month)}-"
@@ -92,6 +103,7 @@ class AddInvoiceController extends GetxController {
     selectedDate = date;
     VendorData data = VendorData();
     vendorData.add(data);
+    update();
   }
 
   void onVendorSelection(String vendorName) {
