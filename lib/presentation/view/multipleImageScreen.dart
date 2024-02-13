@@ -15,7 +15,12 @@ import '../bloc/state/multi_image_state.dart';
 List<MemoryImage> imageLogo = [];
 List<File> imageList = [];
 
-class MultiImageScreen extends StatelessWidget {
+class MultiImageScreen extends StatefulWidget {
+  @override
+  State<MultiImageScreen> createState() => _MultiImageScreenState();
+}
+
+class _MultiImageScreenState extends State<MultiImageScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -59,9 +64,13 @@ class MultiImageScreen extends StatelessWidget {
                   crossAxisSpacing: 4.0,
                   mainAxisSpacing: 4.0,
                 ),
-                itemCount:
-                    state.imageList.length + 1, // Add 1 for the "Add" button
+                itemCount: state.imageList.length + 1, // Add 1 for the "Add" button
                 itemBuilder: (BuildContext context, int index) {
+                  var placeholder = Image.asset(
+                    'assets/img/png/image_placeholder.png',
+                    height: 50,
+                    width: 50,
+                  );
                   if (index == 0) {
                     return InkWell(
                       onTap: () {
@@ -74,7 +83,7 @@ class MultiImageScreen extends StatelessWidget {
                     );
                   } else {
                     return ClipRRect(
-                      child: state.imageList[index - 1].path == null
+                      child: state.imageList[index - 1].path.isEmpty
                           ? const CircularProgressIndicator()
                           : Image.file(
                               File(state.imageList[index - 1].path),
