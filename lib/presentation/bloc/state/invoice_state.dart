@@ -24,7 +24,7 @@ class ErrorState extends InvoiceState {
 }
 
 class LoadedState extends InvoiceState {
-  final ProjectModel dataProject;
+  final List<ProjectData> dataProject;
   final InvoiceModel dataInvoice;
 
   LoadedState(this.dataProject, this.dataInvoice);

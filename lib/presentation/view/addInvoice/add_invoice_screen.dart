@@ -54,198 +54,194 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text(
-            'Vendor Invoices',
-            style: TextStyle(color: Colors.white),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'Vendor Invoices',
+          style: TextStyle(color: Colors.white),
         ),
-        body: Stepper(
-          physics: const ScrollPhysics(),
-          type: StepperType.horizontal,
-          currentStep: _activeCurrentStep,
-          controlsBuilder: (context, controller) {
-            return Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (_activeCurrentStep != 0)
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_activeCurrentStep == 0) {
-                          return;
-                        }
-                        setState(() {
-                          _activeCurrentStep -= 1;
-                        });
-                      },
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.hovered)) {
-                              return AppColors.btnBorderColor; //<-- SEE HERE
-                            }
-                            return null; // Defer to the widget's default.
-                          },
-                        ),
-                        side: MaterialStateProperty.all(
-                            const BorderSide(color: AppColors.btnBorderColor)),
-                        padding: MaterialStateProperty.all(
-                          const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all(AppColors.whiteColor),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          "Back",
-                          //"strCancel".tr(),
-                          style: AppTextStyles.btn3TextStyle,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(
-                    width: 16,
-                  ),
+      ),
+      // Here we have initialized the stepper widget
+      body: Stepper(
+        physics: const ScrollPhysics(),
+        type: StepperType.horizontal,
+        currentStep: _activeCurrentStep,
+        controlsBuilder: (context, controller) {
+          return Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (_activeCurrentStep != 0)
                   ElevatedButton(
                     onPressed: () {
-                      if (addInvoiceController.selectedVendor != null) {
-                        if (_activeCurrentStep == 2) {
-                          addInvoiceController.addInvoiceAPi(context);
-                        }
-                        if (_activeCurrentStep < (3 - 1)) {
-                          setState(() {
-                            if (_activeCurrentStep == 1) {
-                              if (addInvoiceController.validateStep2() == true) {
-                                _activeCurrentStep += 1;
-                              }
-                            }
-                            if (_activeCurrentStep == 0) {
-                              _activeCurrentStep += 1;
-                            }
-                          });
-                        }
-                      } else {
-                        Helper.getToastMsg("Select vendor");
+                      if (_activeCurrentStep == 0) {
+                        return;
                       }
+                      setState(() {
+                        _activeCurrentStep -= 1;
+                      });
                     },
                     style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.hovered)) {
-                            return AppColors.hoverColor; //<-- SEE HERE
+                            return AppColors.btnBorderColor; //<-- SEE HERE
                           }
                           return null; // Defer to the widget's default.
                         },
                       ),
+                      side: MaterialStateProperty.all(
+                          const BorderSide(color: AppColors.btnBorderColor)),
                       padding: MaterialStateProperty.all(
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       ),
                       backgroundColor:
-                          MaterialStateProperty.all(AppColors.primaryColor),
+                          MaterialStateProperty.all(AppColors.whiteColor),
                     ),
                     child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: addInvoiceController.loading.isTrue
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                )))
-                            : Text(
-                                _activeCurrentStep == 2 ? "Submit" : "Next",
-                                style: AppTextStyles.btn1TextStyle,
-                              )),
-                  )
-                ],
-              ),
-            );
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    if (_activeCurrentStep == 0) {
-                      return;
-                    }
-
-                    setState(() {
-                      _activeCurrentStep -= 1;
-                    });
-                  },
-                  child: const Text('CANCEL'),
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        "Back",
+                        //"strCancel".tr(),
+                        style: AppTextStyles.btn3TextStyle,
+                      ),
+                    ),
+                  ),
+                const SizedBox(
+                  width: 16,
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
-                    if (_activeCurrentStep < (3 - 1)) {
-                      setState(() {
-                        _activeCurrentStep += 1;
-                        getProjectList();
-                      });
+                    if (addInvoiceController.selectedVendor != null) {
+                      if (_activeCurrentStep == 2) {
+                        addInvoiceController.addInvoiceAPi(context);
+                      }
+                      if (_activeCurrentStep < (3 - 1)) {
+                        setState(() {
+                          if (_activeCurrentStep == 1) {
+                            if (addInvoiceController.validateStep2() == true) {
+                              _activeCurrentStep += 1;
+                            }
+                          }
+                          if (_activeCurrentStep == 0) {
+                            _activeCurrentStep += 1;
+                          }
+                        });
+                      }
+                    } else {
+                      Helper.getToastMsg("Select vendor");
                     }
                   },
-                  child: const Text('NEXT'),
-                ),
+                  style: ButtonStyle(
+                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.hovered)) {
+                          return AppColors.hoverColor; //<-- SEE HERE
+                        }
+                        return null; // Defer to the widget's default.
+                      },
+                    ),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.all(AppColors.primaryColor),
+                  ),
+                  child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: addInvoiceController.loading.isTrue
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.white,
+                              )))
+                          : Text(
+                              _activeCurrentStep == 2 ? "Submit" : "Next",
+                              style: AppTextStyles.btn1TextStyle,
+                            )),
+                )
               ],
-            );
-          },
-          steps: [
-            stepOneUI(),
-            stepTwoUI(),
-            stepThreeUI(),
-          ],
+            ),
+          );
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              TextButton(
+                onPressed: () {
+                  if (_activeCurrentStep == 0) {
+                    return;
+                  }
 
-          /*    // onStepContinue takes us to the next step
-          onStepContinue: () {
-            if (_activeCurrentStep < (3 - 1)) {
-              setState(() {
-                _activeCurrentStep += 1;
-                getProjectList();
-              });
-            }
-          },
+                  setState(() {
+                    _activeCurrentStep -= 1;
+                  });
+                },
+                child: const Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_activeCurrentStep < (3 - 1)) {
+                    setState(() {
+                      _activeCurrentStep += 1;
+                      getProjectList();
+                    });
+                  }
+                },
+                child: const Text('NEXT'),
+              ),
+            ],
+          );
+        },
+        steps: [
+          stepOneUI(),
+          stepTwoUI(),
+          stepThreeUI(),
+        ],
 
-          // onStepCancel takes us to the previous step
-          onStepCancel: () {
-            if (_activeCurrentStep == 0) {
-              return;
-            }
-
+        /*    // onStepContinue takes us to the next step
+        onStepContinue: () {
+          if (_activeCurrentStep < (3 - 1)) {
             setState(() {
-              _activeCurrentStep -= 1;
+              _activeCurrentStep += 1;
+              getProjectList();
             });
-          },
+          }
+        },
 
-          // onStepTap allows to directly click on the particular step we want
-          onStepTapped: (int index) {
-            setState(() {
-              _activeCurrentStep = index;
-            });
-          },*/
-        ),
-        /* floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
-          tooltip: 'Add',
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return addInvoiceDialog(context);
-                });
-          },
-          child: const Icon(Icons.add, color: Colors.white, size: 28),
-        ),*/
+        // onStepCancel takes us to the previous step
+        onStepCancel: () {
+          if (_activeCurrentStep == 0) {
+            return;
+          }
+
+          setState(() {
+            _activeCurrentStep -= 1;
+          });
+        },
+
+        // onStepTap allows to directly click on the particular step we want
+        onStepTapped: (int index) {
+          setState(() {
+            _activeCurrentStep = index;
+          });
+        },*/
       ),
+      /* floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
+        tooltip: 'Add',
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return addInvoiceDialog(context);
+              });
+        },
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
+      ),*/
     );
   }
 
@@ -256,6 +252,242 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   AlertDialog addInvoiceDialog(BuildContext context) {
     return AlertDialog(
+      content: Container(
+        width: MediaQuery.of(context).size.width,
+        color: Colors.white,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: _addInvoiceFormKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Add Item",
+                          style: AppTextStyles.modalTitleText,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 16.0,
+                    ),
+                    TextFormField(
+                      controller: addInvoiceController.itemDesc,
+                      textInputAction: TextInputAction.done,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "Item Description"),
+                      // inputFormatters: [
+                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                      // ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return Constant.enterTextError;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      controller: addInvoiceController.hCode,
+                      textInputAction: TextInputAction.done,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "HSN/SAC Code"),
+                      // inputFormatters: [
+                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                      // ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return Constant.enterTextError;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      key: _quantityKey,
+                      controller: addInvoiceController.quanity,
+                      textInputAction: TextInputAction.done,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: false, decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
+                      ],
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "Quantity"),
+                      // inputFormatters: [
+                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
+                      // ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return Constant.enterTextError;
+                        } else if (value.trim().toString() == "0") {
+                          return "Quantity can not be 0";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        if (_quantityKey.currentState != null) {
+                          if (_quantityKey.currentState!.validate()) {}
+                        }
+                        addInvoiceController.onGstCalculation();
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      key: _amountKey,
+                      controller: addInvoiceController.amount,
+                      textInputAction: TextInputAction.done,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: false, decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
+                      ],
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "Amount"),
+                      onChanged: (value) {
+                        if (_amountKey.currentState != null) {
+                          if (_amountKey.currentState!.validate()) {}
+                        }
+                        addInvoiceController.onGstCalculation();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return Constant.enterTextError;
+                        } else if (value.trim().toString() == "0") {
+                          return "Amount can not be 0";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    cgstDropDownList(context, "CGST",
+                        addInvoiceController.cgstList, (value) {}),
+                    const SizedBox(
+                      height: 5.0,
+                    ),
+                    sgstDropDownList(context, "SGST",
+                        addInvoiceController.sgstList, (value) {}),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    igstDropDownList(context, "IGST",
+                        addInvoiceController.igstList, (value) {}),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      controller: addInvoiceController.amountFinal,
+                      readOnly: true,
+                      enabled: false,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "Final Amount"),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextFormField(
+                      controller: addInvoiceController.amountTax,
+                      readOnly: true,
+                      enabled: false,
+                      decoration: CustomTextDecoration.textFieldDecoration(
+                          labelText: "Tax Amount"),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ButtonStyle(
+                            overlayColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return AppColors
+                                      .btnBorderColor; //<-- SEE HERE
+                                }
+                                return null; // Defer to the widget's default.
+                              },
+                            ),
+                            side: MaterialStateProperty.all(const BorderSide(
+                                color: AppColors.btnBorderColor)),
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 15),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.all(AppColors.whiteColor),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(7.0),
+                            child: Text(
+                              "Cancel",
+                              //"strCancel".tr(),
+                              style: AppTextStyles.btn3TextStyle,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_addInvoiceFormKey.currentState!.validate()) {
+                              Navigator.pop(context);
+                              addInvoiceController.addItems();
+                            }
+                          },
+                          style: ButtonStyle(
+                            overlayColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return AppColors.hoverColor; //<-- SEE HERE
+                                }
+                                return null; // Defer to the widget's default.
+                              },
+                            ),
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 15),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.all(AppColors.bgColor),
+                          ),
+                          child: Padding(
+                              padding: const EdgeInsets.all(7.0),
+                              child: Text(
+                                "Add Item",
+                                style: AppTextStyles.btn1TextStyle,
+                              )),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
       content: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();

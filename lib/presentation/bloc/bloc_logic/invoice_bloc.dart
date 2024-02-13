@@ -13,10 +13,16 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     getInvoiceList();
   }
 
-  ProjectModel listProject = ProjectModel();
+  List<ProjectData> listProject = [];
   InvoiceModel listInvoice = InvoiceModel();
+  String projectId = "";
 
   Future<void> getProjectList() async {
+    ProjectData projectData = ProjectData();
+    projectData.projectname = "All";
+    projectData.projectcode = "";
+    listProject.add(projectData);
+
     emit(LoadingState());
     var dio = Dio();
     var response = await dio.request(
@@ -29,7 +35,10 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
 
-      listProject = ProjectModel.fromJson(res);
+      ProjectModel projectModel = ProjectModel.fromJson(res);
+
+      listProject.addAll(projectModel.data!);
+
       emit(LoadedState(listProject, listInvoice));
     } else {
       print(response.statusMessage);
@@ -37,8 +46,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   void getProjectSelected(String projectName) {
-    String projectId = "";
-    for (var element in listProject.data!) {
+    for (var element in listProject) {
       if (element.projectname == projectName) {
         projectId = element.projectcode!;
       }
@@ -58,16 +66,38 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     InvoiceModel filterInvoice = InvoiceModel();
     emit(LoadedState(listProject, filterInvoice));
 
+    print("${projectId}");
     if (choiceChip == "0") {
-      filterInvoice.data = listInvoice.data!;
-    } else {
+      // filterInvoice.data = listInvoice.data!;
       filterInvoice.data = listInvoice.data!
-          .where((data) => data.invoiceStatus!
+          .where((data) => data.prjId!
               .toString()
               .toLowerCase()
-              .contains(choiceChip.toLowerCase()))
+              .contains(projectId.toLowerCase()))
           .toList();
+    } else {
+      if (projectId == "") {
+        filterInvoice.data = listInvoice.data!
+            .where((data) => data.invoiceStatus!
+                .toString()
+                .toLowerCase()
+                .contains(choiceChip.toLowerCase()))
+            .toList();
+      } else {
+        filterInvoice.data = listInvoice.data!
+            .where((data) =>
+                data.invoiceStatus!
+                    .toString()
+                    .toLowerCase()
+                    .contains(choiceChip.toLowerCase()) &&
+                data.prjId!
+                    .toString()
+                    .toLowerCase()
+                    .contains(projectId.toLowerCase()))
+            .toList();
+      }
     }
+
     emit(LoadedState(listProject, filterInvoice));
   }
 
