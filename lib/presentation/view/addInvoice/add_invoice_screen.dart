@@ -477,7 +477,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           child: Padding(
                               padding: const EdgeInsets.all(7.0),
                               child: Text(
-                                "Submit",
+                                "Add Item",
                                 style: AppTextStyles.btn1TextStyle,
                               )),
                         )
@@ -1566,11 +1566,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               InkWell(
                 onTap: () {
                   CustomDateTime.buildShowDatePicker(context)
-                      .then((DateTime? onValue) {
-                    if (onValue != null) {
-                      String date = "${onValue.year}-"
-                          "${Helper.padWithZero(onValue.month)}-"
-                          "${Helper.padWithZero(onValue.day)}";
+                      .then((DateTime? dateTime) {
+                    if (dateTime != null) {
+                      String date =
+                          "${Helper.padWithZero(dateTime.day)}-${Helper.padWithZero(dateTime.month)}-${dateTime.year}";
+
                       addInvoiceController.selectedDate = date;
                     }
                     setState(() {});
@@ -1772,7 +1772,18 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                   data.itemDescription ?? "NA",
                                               fontSize: 16)),
                                     ),
-                                    InkWell(child: const Icon(Icons.edit))
+                                    InkWell(
+                                        onTap: () {
+                                          addInvoiceController.onEditItem(
+                                              itemData: data);
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return addInvoiceDialog(
+                                                    context);
+                                              });
+                                        },
+                                        child: Icon(Icons.edit))
                                   ],
                                 ),
                                 const SizedBox(

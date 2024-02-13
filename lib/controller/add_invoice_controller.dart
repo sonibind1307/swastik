@@ -63,9 +63,9 @@ class AddInvoiceController extends GetxController {
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
-  List<String> cgstList = ["CGST", "0%", "2.5%", "6%", "9%", "14%"];
-  List<String> sgstList = ["SGST", "0%", "2.5%", "6%", "9%", "14%"];
-  List<String> igstList = ["IGST", "0%", "5%", "12%", "18%", "28%"];
+  List<String> cgstList = ["CGST", "0%", "2.5%", "6.0%", "9.0%", "14.0%"];
+  List<String> sgstList = ["SGST", "0%", "2.5%", "6.0%", "9.0%", "14.0%"];
+  List<String> igstList = ["IGST", "0%", "5.0%", "12.0%", "18.0%", "28.0%"];
 
   // double? totalAmount;
   String? vendorId;
@@ -97,9 +97,8 @@ class AddInvoiceController extends GetxController {
     companyName.value = "";
     vendorData.clear();
     DateTime dateTime = DateTime.now();
-    String date = "${dateTime.year}-"
-        "${Helper.padWithZero(dateTime.month)}-"
-        "${Helper.padWithZero(dateTime.day)}";
+    String date =
+        "${Helper.padWithZero(dateTime.day)}-${Helper.padWithZero(dateTime.month)}-${dateTime.year}";
     selectedDate = date;
     VendorData data = VendorData();
     vendorData.add(data);
@@ -118,12 +117,16 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
+  double cgstPer = 0.0;
+  double sgstPer = 0.0;
+  double igstPer = 0.0;
+
   void onGstCalculation() {
     double _amount = 0.0;
     double _quanity = 0.0;
-    double cgstPer = 0.0;
-    double sgstPer = 0.0;
-    double igstPer = 0.0;
+    cgstPer = 0.0;
+    sgstPer = 0.0;
+    igstPer = 0.0;
     double _gst = 0.0;
     double cgstVal = 0.0;
     double sgstVal = 0.0;
@@ -239,9 +242,9 @@ class AddInvoiceController extends GetxController {
     allItemData.itemAmount = amount.text.toString();
     allItemData.qty = quanity.text.toString();
     allItemData.hsnCode = hCode.text.toString();
-    allItemData.itemCgst = cgstController.text.toString();
-    allItemData.itemSgst = sgstController.text.toString();
-    allItemData.itemIgst = igstController.text.toString();
+    allItemData.itemCgst = cgstPer.toString();
+    allItemData.itemSgst = sgstPer.toString();
+    allItemData.itemIgst = igstPer.toString();
     allItemData.itemTds = itemDesc.text.toString();
     allItemData.itemTax = amountTax.text.toString();
     allItemData.itemTotal = amountFinal.text.toString();
@@ -272,7 +275,8 @@ class AddInvoiceController extends GetxController {
     if (allInvoiceItemList.isNotEmpty) {
       loading.value = true;
       baseModel = (await ApiRepo.addInvoiceData(
-          invDate: DateFormat("dd-MM-yy").format(DateTime.parse(selectedDate)),
+          invDate:
+              DateFormat("dd-MM-yyyy").format(DateTime.parse(selectedDate)),
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
           invProject: projectId,
@@ -283,7 +287,7 @@ class AddInvoiceController extends GetxController {
           ///invoice details
           invPo: selectedPo,
           vendorId: vendorId,
-          createdDate: DateFormat("dd-MM-yy").format(DateTime.now()),
+          createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
           vendorLinkedLdgr: ledgerId,
 
           /// on project change
@@ -324,5 +328,16 @@ class AddInvoiceController extends GetxController {
       Helper.getToastMsg("Enter invoice note");
     }
     return isValidate;
+  }
+
+  void onEditItem({required InvoiceItems itemData}) {
+    itemDesc.text = itemData.itemDescription.toString();
+    hCode.text = itemData.hsnCode.toString();
+    quanity.text = itemData.qty.toString();
+    amount.text = itemData.itemAmount.toString();
+    cgstValue1.value = "${itemData.itemCgst}%";
+    sgstValue1.value = "${itemData.itemSgst}%";
+    igstValue1.value = "${itemData.itemIgst}%";
+    onGstCalculation();
   }
 }
