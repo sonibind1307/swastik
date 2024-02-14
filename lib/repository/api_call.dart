@@ -6,6 +6,7 @@ import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
+import '../config/Helper.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -142,7 +143,8 @@ class ApiRepo {
       required vendorId,
       required createdDate,
       required vendorLinkedLdgr,
-      required List<InvoiceItems> itemList}) async {
+      required List<InvoiceItems> itemList,
+      required context}) async {
     BaseModel baseModel = BaseModel();
 
     var url = 'https://swastik.online/Mobile/add_invoice';
@@ -171,8 +173,10 @@ class ApiRepo {
       'item_list': json.encode(itemList)
     });
 
+    Helper().showServerErrorDialog(context, "Request : ->${data.fields}");
+    return BaseModel();
+
     print(" Add body data => ${data.fields}");
-    print(" Add body data1 => ${data.files}");
     try {
       // Initialize dio instance
       var dio = Dio();

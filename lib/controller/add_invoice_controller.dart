@@ -12,7 +12,6 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
-import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -167,12 +166,6 @@ class AddInvoiceController extends GetxController {
     amountFinal.text = (_finalAmount + _gst).toString();
   }
 
-  Future<void> onGetAllInvoiceItem() async {
-    // AllInvoiceItems allInvoiceItems = await ApiRepo.getAllInvoiceItems();
-    // allInvoiceItemList.value = allInvoiceItems.data!;
-    // update();
-  }
-
   Future<void> onGetInvoiceCategoryItem() async {
     CategoryModel categoryModel = await ApiRepo.getInvoiceCategory();
     categoryItemList.value = categoryModel.data!;
@@ -273,10 +266,9 @@ class AddInvoiceController extends GetxController {
   Future<BaseModel?> addInvoiceAPi(BuildContext context) async {
     BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
-      loading.value = true;
+      // loading.value = true;
       baseModel = (await ApiRepo.addInvoiceData(
-          invDate:
-              DateFormat("dd-MM-yyyy").format(DateTime.parse(selectedDate)),
+          invDate: selectedDate,
           invRef: invRefController.text.trim(),
           invComments: noteController.text.trim(),
           invProject: projectId,
@@ -291,15 +283,16 @@ class AddInvoiceController extends GetxController {
           vendorLinkedLdgr: ledgerId,
 
           /// on project change
-          itemList: allInvoiceItemList))!;
+          itemList: allInvoiceItemList,
+          context: context))!;
 
       if (baseModel.status == "true") {
         loading.value = false;
         Helper.getToastMsg(baseModel.message!);
-        Get.offAll(InvoiceScreen());
+        // Get.offAll(InvoiceScreen());
       } else {
         loading.value = false;
-        Helper.getToastMsg("Server Error");
+        // Helper.getToastMsg("Server Error");
 
         debugPrint("Not get response");
       }

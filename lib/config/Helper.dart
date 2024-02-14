@@ -233,7 +233,6 @@ class Helper {
     }).toList();
   }
 
-
   /*customGetDialogWithButton({String? title, String? subTitle, VoidCallback? onTap,IconData? iconData}){
     Get.dialog(
       Dialog(
@@ -275,38 +274,141 @@ class Helper {
     );
   }
 */
-  static customGetDialogWithoutButton({String? title, String? subTitle,IconData? iconData,bool? autoColsePopup}){
-    Get.dialog(
-        Dialog(
-          child: SizedBox(
-            width: 150,
-            height: 150,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Icon(iconData,color: Colors.red,size: 50,),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10,),
-                  child: CustomTextStyle.bold(
-                    text:title ?? "",
-                  ),
-                ),
-                CustomTextStyle.regular(
-                  text: subTitle ?? "",
-                ),
-              ],
+  static customGetDialogWithoutButton(
+      {String? title,
+      String? subTitle,
+      IconData? iconData,
+      bool? autoColsePopup}) {
+    Get.dialog(Dialog(
+      child: SizedBox(
+        width: 150,
+        height: 150,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            Icon(
+              iconData,
+              color: Colors.red,
+              size: 50,
             ),
-          ),
-        )
-    );
-    if(autoColsePopup == true){
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 10,
+              ),
+              child: CustomTextStyle.bold(
+                text: title ?? "",
+              ),
+            ),
+            CustomTextStyle.regular(
+              text: subTitle ?? "",
+            ),
+          ],
+        ),
+      ),
+    ));
+    if (autoColsePopup == true) {
       Future.delayed(const Duration(seconds: 2), () {
         Get.back(); // Close the dialog
       });
     }
-
   }
 
+  void showServerErrorDialog(BuildContext context, String error) {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: "Barrier",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (_, __, ___) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Container(
+                height: 200,
+                width: 220,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.signal_wifi_connected_no_internet_4,
+                          color: Colors.red,
+                          size: 30,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: DefaultTextStyle(
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontStyle: FontStyle.normal),
+                        child: Text(
+                          error,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                    ),
+                    Material(
+                      child: InkWell(
+                        onTap: () async {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.only(
+                              left: 12.0, right: 12.0, top: 12.0, bottom: 2),
+                          child: DefaultTextStyle(
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                fontStyle: FontStyle.normal),
+                            child: Text(
+                              "Ok",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      transitionBuilder: (_, anim, __, child) {
+        Tween<Offset> tween;
+        if (anim.status == AnimationStatus.reverse) {
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
+        } else {
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+        }
 
+        return SlideTransition(
+          position: tween.animate(anim),
+          child: FadeTransition(
+            opacity: anim,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 }
