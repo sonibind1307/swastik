@@ -34,7 +34,7 @@ class Data {
   String? invref;
   String? poId;
   String? vendorId;
-  String? companyName;
+  String? vendorName;
   String? address;
   String? city;
   String? pincode;
@@ -78,7 +78,7 @@ class Data {
       this.invref,
       this.poId,
       this.vendorId,
-      this.companyName,
+      this.vendorName,
       this.address,
       this.city,
       this.pincode,
@@ -122,7 +122,7 @@ class Data {
     invref = json['invref'];
     poId = json['po_id'];
     vendorId = json['vendor_id'];
-    companyName = json['company_name'];
+    vendorName = json['vendor_name'];
     address = json['address'];
     city = json['city'];
     pincode = json['pincode'];
@@ -173,7 +173,7 @@ class Data {
     data['invref'] = this.invref;
     data['po_id'] = this.poId;
     data['vendor_id'] = this.vendorId;
-    data['company_name'] = this.companyName;
+    data['vendor_name'] = this.vendorName;
     data['address'] = this.address;
     data['city'] = this.city;
     data['pincode'] = this.pincode;

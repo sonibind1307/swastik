@@ -41,7 +41,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   @override
   void initState() {
     super.initState();
+    addInvoiceController.clearAllData();
     addInvoiceController.init();
+    debugPrint("widget.scheduleId ${widget.scheduleId}");
+
     if (widget.scheduleId != "") {
       addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
       addInvoiceController.inVoiceId = widget.scheduleId;
@@ -54,194 +57,201 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Vendor Invoices',
-          style: TextStyle(color: Colors.white),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Vendor Invoices',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-      // Here we have initialized the stepper widget
-      body: Stepper(
-        physics: const ScrollPhysics(),
-        type: StepperType.horizontal,
-        currentStep: _activeCurrentStep,
-        controlsBuilder: (context, controller) {
-          return Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (_activeCurrentStep != 0)
+        // Here we have initialized the stepper widget
+        body: Stepper(
+          physics: const ScrollPhysics(),
+          type: StepperType.horizontal,
+          currentStep: _activeCurrentStep,
+          controlsBuilder: (context, controller) {
+            return Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (_activeCurrentStep != 0)
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_activeCurrentStep == 0) {
+                          return;
+                        }
+                        setState(() {
+                          _activeCurrentStep -= 1;
+                        });
+                      },
+                      style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return AppColors.btnBorderColor; //<-- SEE HERE
+                            }
+                            return null; // Defer to the widget's default.
+                          },
+                        ),
+                        side: MaterialStateProperty.all(
+                            const BorderSide(color: AppColors.btnBorderColor)),
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 8),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.all(AppColors.whiteColor),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          "Back",
+                          //"strCancel".tr(),
+                          style: AppTextStyles.btn3TextStyle,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(
+                    width: 16,
+                  ),
                   ElevatedButton(
                     onPressed: () {
-                      if (_activeCurrentStep == 0) {
-                        return;
+                      if (addInvoiceController.selectedVendor != null) {
+                        if (_activeCurrentStep == 2) {
+                          addInvoiceController.addInvoiceAPi(context);
+                        }
+                        if (_activeCurrentStep < (3 - 1)) {
+                          setState(() {
+                            if (_activeCurrentStep == 1) {
+                              if (addInvoiceController.validateStep2() ==
+                                  true) {
+                                _activeCurrentStep += 1;
+                              }
+                            }
+                            if (_activeCurrentStep == 0) {
+                              _activeCurrentStep += 1;
+                            }
+                          });
+                        }
+                      } else {
+                        Helper.getToastMsg("Select vendor");
                       }
-                      setState(() {
-                        _activeCurrentStep -= 1;
-                      });
                     },
                     style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.hovered)) {
-                            return AppColors.btnBorderColor; //<-- SEE HERE
+                            return AppColors.hoverColor; //<-- SEE HERE
                           }
                           return null; // Defer to the widget's default.
                         },
                       ),
-                      side: MaterialStateProperty.all(
-                          const BorderSide(color: AppColors.btnBorderColor)),
                       padding: MaterialStateProperty.all(
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       ),
                       backgroundColor:
-                          MaterialStateProperty.all(AppColors.whiteColor),
+                          MaterialStateProperty.all(AppColors.primaryColor),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        "Back",
-                        //"strCancel".tr(),
-                        style: AppTextStyles.btn3TextStyle,
-                      ),
-                    ),
-                  ),
-                const SizedBox(
-                  width: 16,
-                ),
-                ElevatedButton(
+                        padding: const EdgeInsets.all(4.0),
+                        child: addInvoiceController.loading.isTrue
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                )))
+                            : Text(
+                                _activeCurrentStep == 2 ? "Submit" : "Next",
+                                style: AppTextStyles.btn1TextStyle,
+                              )),
+                  )
+                ],
+              ),
+            );
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                TextButton(
                   onPressed: () {
-                    if (addInvoiceController.selectedVendor != null) {
-                      if (_activeCurrentStep == 2) {
-                        addInvoiceController.addInvoiceAPi(context);
-                      }
-                      if (_activeCurrentStep < (3 - 1)) {
-                        setState(() {
-                          if (_activeCurrentStep == 1) {
-                            if (addInvoiceController.validateStep2() == true) {
-                              _activeCurrentStep += 1;
-                            }
-                          }
-                          if (_activeCurrentStep == 0) {
-                            _activeCurrentStep += 1;
-                          }
-                        });
-                      }
-                    } else {
-                      Helper.getToastMsg("Select vendor");
+                    if (_activeCurrentStep == 0) {
+                      return;
+                    }
+
+                    setState(() {
+                      _activeCurrentStep -= 1;
+                    });
+                  },
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_activeCurrentStep < (3 - 1)) {
+                      setState(() {
+                        _activeCurrentStep += 1;
+                        getProjectList();
+                      });
                     }
                   },
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered)) {
-                          return AppColors.hoverColor; //<-- SEE HERE
-                        }
-                        return null; // Defer to the widget's default.
-                      },
-                    ),
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    ),
-                    backgroundColor:
-                        MaterialStateProperty.all(AppColors.primaryColor),
-                  ),
-                  child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: addInvoiceController.loading.isTrue
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: Center(
-                                  child: CircularProgressIndicator(
-                                color: Colors.white,
-                              )))
-                          : Text(
-                              _activeCurrentStep == 2 ? "Submit" : "Next",
-                              style: AppTextStyles.btn1TextStyle,
-                            )),
-                )
+                  child: const Text('NEXT'),
+                ),
               ],
-            ),
-          );
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              TextButton(
-                onPressed: () {
-                  if (_activeCurrentStep == 0) {
-                    return;
-                  }
+            );
+          },
+          steps: [
+            stepOneUI(),
+            stepTwoUI(),
+            stepThreeUI(),
+          ],
 
-                  setState(() {
-                    _activeCurrentStep -= 1;
-                  });
-                },
-                child: const Text('CANCEL'),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (_activeCurrentStep < (3 - 1)) {
-                    setState(() {
-                      _activeCurrentStep += 1;
-                      getProjectList();
-                    });
-                  }
-                },
-                child: const Text('NEXT'),
-              ),
-            ],
-          );
-        },
-        steps: [
-          stepOneUI(),
-          stepTwoUI(),
-          stepThreeUI(),
-        ],
-
-        /*    // onStepContinue takes us to the next step
-        onStepContinue: () {
-          if (_activeCurrentStep < (3 - 1)) {
-            setState(() {
-              _activeCurrentStep += 1;
-              getProjectList();
-            });
-          }
-        },
-
-        // onStepCancel takes us to the previous step
-        onStepCancel: () {
-          if (_activeCurrentStep == 0) {
-            return;
-          }
-
-          setState(() {
-            _activeCurrentStep -= 1;
-          });
-        },
-
-        // onStepTap allows to directly click on the particular step we want
-        onStepTapped: (int index) {
-          setState(() {
-            _activeCurrentStep = index;
-          });
-        },*/
-      ),
-      /* floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
-        tooltip: 'Add',
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return addInvoiceDialog(context);
+          /*    // onStepContinue takes us to the next step
+          onStepContinue: () {
+            if (_activeCurrentStep < (3 - 1)) {
+              setState(() {
+                _activeCurrentStep += 1;
+                getProjectList();
               });
-        },
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),*/
+            }
+          },
+
+          // onStepCancel takes us to the previous step
+          onStepCancel: () {
+            if (_activeCurrentStep == 0) {
+              return;
+            }
+
+            setState(() {
+              _activeCurrentStep -= 1;
+            });
+          },
+
+          // onStepTap allows to directly click on the particular step we want
+          onStepTapped: (int index) {
+            setState(() {
+              _activeCurrentStep = index;
+            });
+          },*/
+        ),
+        /* floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
+          tooltip: 'Add',
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return addInvoiceDialog(context);
+                });
+          },
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),*/
+      ),
     );
   }
 
@@ -258,6 +268,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Form(
                 key: _addInvoiceFormKey,
                 child: Column(
@@ -453,7 +464,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (_addInvoiceFormKey.currentState!.validate()) {
-                              Navigator.pop(context);
                               addInvoiceController.addItems();
                             }
                           },
@@ -1200,54 +1210,123 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.70,
               child: addInvoiceController.step1Loading.value
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : Column(
-                      // mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Align(
-                        //   alignment: Alignment.topCenter,
-                        //   child: ElevatedButton(
-                        //       onPressed: () {}, child: const Text("Preview PDF")),
-                        // ),
-                        Container(
-                          width: 150,
-                          margin: const EdgeInsets.all(8),
-                          child: OutlinedButton(
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.picture_as_pdf,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                  height: 100,
-                                ),
-                                CustomTextStyle.regular(text: "Sample PDF"),
-                              ],
-                            ),
-                            onPressed: () {
-                              if (widget.scheduleId == "") {
-                                imageLogo = Helper.convertFilesToMemoryImages(
-                                    imageList);
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PdfPreviewPage(),
+                        addInvoiceController.isPdf == false
+                            ? Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 100,
+                                margin: const EdgeInsets.all(8),
+                                child: OutlinedButton(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.upload),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      CustomTextStyle.regular(
+                                          text: "drop a file here"),
+                                    ],
                                   ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PdfUrlView(
-                                            url: addInvoiceController.pdfUrl!,
-                                          )),
-                                );
-                              }
-                            },
-                          ),
-                        ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              MultiImageScreen(
+                                                isEdit: true,
+                                                onSubmit: () {
+                                                  addInvoiceController
+                                                      .isPdf.value = true;
+                                                  // Helper.getToastMsg("add");
+                                                },
+                                              )),
+                                    );
+                                  },
+                                ),
+                              )
+                            : Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.all(8),
+                                child: Stack(
+                                  children: [
+                                    OutlinedButton(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.picture_as_pdf,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                            height: 100,
+                                          ),
+                                          CustomTextStyle.regular(
+                                              text: "Sample PDF"),
+                                        ],
+                                      ),
+                                      onPressed: () {
+                                        if (widget.scheduleId == "") {
+                                          imageLogo =
+                                              Helper.convertFilesToMemoryImages(
+                                                  imageList);
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const PdfPreviewPage(),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PdfUrlView(
+                                                      url: addInvoiceController
+                                                          .pdfUrl!,
+                                                    )),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Helper.deleteDialog(context,
+                                              "Do you want to delete an file",
+                                              () {
+                                            addInvoiceController.isPdf.value =
+                                                false;
+                                            setState(() {});
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8),
+                                          child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(16))),
+                                              child: const Icon(
+                                                  Icons.delete_forever)),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
                         const SizedBox(
                           height: 8,
                         ),
@@ -1723,6 +1802,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   child: OutlinedButton.icon(
                     // <-- OutlinedButton
                     onPressed: () {
+                      FocusScope.of(context).unfocus();
                       addInvoiceController.clearAddFormData();
                       showDialog(
                           context: context,
@@ -1748,6 +1828,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       )
                     : ListView.builder(
                         scrollDirection: Axis.vertical,
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         physics: const ScrollPhysics(),
                         itemCount:
                             addInvoiceController.allInvoiceItemList.length,
@@ -1773,17 +1855,52 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                               fontSize: 16)),
                                     ),
                                     InkWell(
-                                        onTap: () {
-                                          addInvoiceController.onEditItem(
-                                              itemData: data);
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return addInvoiceDialog(
-                                                    context);
-                                              });
-                                        },
-                                        child: Icon(Icons.edit))
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        addInvoiceController.onEditItem(
+                                            itemData: data);
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return addInvoiceDialog(context);
+                                            });
+                                      },
+                                      child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(16))),
+                                          child: const Icon(Icons.edit)),
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        Helper.deleteDialog(context,
+                                            "Do you want to delete an item",
+                                            () {
+                                          FocusScope.of(context).unfocus();
+                                          addInvoiceController
+                                              .allInvoiceItemList
+                                              .remove(data);
+                                        });
+                                      },
+                                      child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(16))),
+                                          child:
+                                              const Icon(Icons.delete_forever)),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(

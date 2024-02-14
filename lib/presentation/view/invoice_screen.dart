@@ -1,7 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
@@ -140,7 +139,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MultiImageScreen()),
+              MaterialPageRoute(
+                  builder: (context) => MultiImageScreen(
+                        isEdit: false,
+                        onSubmit: () {
+                          // Helper.getToastMsg("invoice");
+                        },
+                      )),
             );
           },
           child: const Icon(Icons.camera_alt),
@@ -342,8 +347,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AddInvoiceScreen(
-                                scheduleId: invoiceList.data![index].invoiceId!,),),);
+                        builder: (context) => AddInvoiceScreen(
+                          scheduleId: invoiceList.data![index].invoiceId!,
+                        ),
+                      ),
+                    );
                   }
                 });
               },

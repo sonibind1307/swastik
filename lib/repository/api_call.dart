@@ -6,7 +6,6 @@ import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
-import '../config/Helper.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -132,7 +131,8 @@ class ApiRepo {
   }
 
   static Future<BaseModel?> addInvoiceData(
-      {required invDate,
+      {required invoice_id,
+      required invDate,
       required invRef,
       required invComments,
       required invProject,
@@ -153,6 +153,8 @@ class ApiRepo {
 
     // Define your form data
     var data = FormData.fromMap({
+      'invoice_id': invoice_id,
+      'upload_file': "0", // 0 - no changes // 1 - new changes
       'inv_date': invDate,
       'inv_ref': invRef,
       'invcomments': invComments,
@@ -172,11 +174,13 @@ class ApiRepo {
       ],
       'item_list': json.encode(itemList)
     });
-
-    Helper().showServerErrorDialog(context, "Request : ->${data.fields}");
-    return BaseModel();
-
     print(" Add body data => ${data.fields}");
+
+    // Helper().showServerErrorDialog(context, "Request : ->${data.fields}",
+    //     () async {
+    //   FocusScope.of(context).unfocus();
+    //   Navigator.of(context, rootNavigator: true).pop();
+
     try {
       // Initialize dio instance
       var dio = Dio();
@@ -186,6 +190,12 @@ class ApiRepo {
         url,
         data: data,
       );
+
+      // Helper().showServerErrorDialog(
+      //     context, "Response : ->${jsonDecode(response.data)}", () async {
+      //   FocusScope.of(context).unfocus();
+      //   Navigator.of(context, rootNavigator: true).pop();
+      // });
 
       // Check the response status code
       if (response.statusCode == 200) {
@@ -198,6 +208,9 @@ class ApiRepo {
     } catch (e) {
       print('Error: $e');
     }
+    // });
+    // return BaseModel();
+
     return baseModel;
     // return baseModel;
   }

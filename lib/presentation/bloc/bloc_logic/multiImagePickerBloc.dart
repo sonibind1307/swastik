@@ -63,5 +63,10 @@ class MultiImageCubit extends Cubit<MultiImageState> {
     }
   }
 
+  onDeleteImage(File file) {
+    imageList.remove(file);
+    emit(LoadedState(imageList));
+  }
+
   void generatePDf() {}
 }

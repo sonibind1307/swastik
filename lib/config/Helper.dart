@@ -98,18 +98,6 @@ class Helper {
   }
 
   static const Map<int, String> monthsInYear = {
-    // 1: "January",
-    // 2: "February",
-    // 3: "March",
-    // 4: "April",
-    // 5: "May",
-    // 6: "June",
-    // 7: "July",
-    // 8: "August",
-    // 9: "September",
-    // 10: "October",
-    // 11: "November",
-    // 12: "December",
     1: "Jan",
     2: "Feb",
     3: "Mar",
@@ -314,7 +302,8 @@ class Helper {
     }
   }
 
-  void showServerErrorDialog(BuildContext context, String error) {
+  void showServerErrorDialog(
+      BuildContext context, String error, VoidCallback callback) {
     showGeneralDialog(
       context: context,
       barrierLabel: "Barrier",
@@ -367,7 +356,7 @@ class Helper {
                     Material(
                       child: InkWell(
                         onTap: () async {
-                          Navigator.of(context, rootNavigator: true).pop();
+                          callback();
                         },
                         child: const Padding(
                           padding: EdgeInsets.only(
@@ -410,5 +399,203 @@ class Helper {
         );
       },
     );
+  }
+
+  void showServerSuccessDialog(
+      BuildContext context, String error, VoidCallback callback) {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: "Barrier",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (_, __, ___) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Container(
+                height: 200,
+                width: 220,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.check,
+                          color: Colors.green,
+                          size: 30,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: DefaultTextStyle(
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontStyle: FontStyle.normal),
+                        child: Text(
+                          error,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                    ),
+                    Material(
+                      child: InkWell(
+                        onTap: () async {
+                          callback();
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.only(
+                              left: 12.0, right: 12.0, top: 12.0, bottom: 2),
+                          child: DefaultTextStyle(
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                fontStyle: FontStyle.normal),
+                            child: Text(
+                              "Ok",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      transitionBuilder: (_, anim, __, child) {
+        Tween<Offset> tween;
+        if (anim.status == AnimationStatus.reverse) {
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
+        } else {
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+        }
+
+        return SlideTransition(
+          position: tween.animate(anim),
+          child: FadeTransition(
+            opacity: anim,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  static Future<bool> closeAppDialog(BuildContext context) async {
+    return (await showDialog(
+          barrierDismissible: false,
+          barrierColor: Colors.transparent,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              'Are you sure?',
+              style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2),
+            ),
+            content: const Text('Do you want to exit an App',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.2)),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No',
+                    style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2)),
+              ),
+              TextButton(
+                onPressed: () {
+                  // StorageUtil.instance.removeAll();
+                  // exit(0);
+                },
+                child: const Text('Yes',
+                    style: TextStyle(
+                        color: AppColors.blueColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2)),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
+  static Future<bool> deleteDialog(
+      BuildContext context, String title, VoidCallback callback) async {
+    return (await showDialog(
+          barrierDismissible: false,
+          barrierColor: Colors.transparent,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              'Are you sure?',
+              style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2),
+            ),
+            content: Text(title,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.2)),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No',
+                    style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                  callback();
+                  // StorageUtil.instance.removeAll();
+                  // exit(0);
+                },
+                child: const Text('Yes',
+                    style: TextStyle(
+                        color: AppColors.blueColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2)),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }

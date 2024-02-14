@@ -12,6 +12,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -41,9 +42,9 @@ class AddInvoiceController extends GetxController {
   TextEditingController searchProjectDropDown = TextEditingController();
   TextEditingController searchCategoryDropDown = TextEditingController();
 
-
   RxBool loading = false.obs;
   RxBool step1Loading = true.obs;
+  RxBool isPdf = true.obs;
 
   var selectedDate;
   RxBool cgstFlag = true.obs;
@@ -61,7 +62,6 @@ class AddInvoiceController extends GetxController {
 
   String? selectedVendor;
   String? selectedPo;
-
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -85,9 +85,9 @@ class AddInvoiceController extends GetxController {
     if (vendorModel.data != null) {
       vendorList.value = vendorModel.data!;
     }
-    Helper.getToastMsg(inVoiceId.toString());
+    // Helper.getToastMsg(inVoiceId.toString());
     if (inVoiceId != "" && inVoiceId != null) {
-      selectedVendor = invoiceIDetailModel.data!.companyName;
+      selectedVendor = invoiceIDetailModel.data!.vendorName;
       onVendorSelection(selectedVendor!);
     }
 
@@ -111,7 +111,6 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
-
   void onVendorSelection(String vendorName) {
     debugPrint("vendorName -> $vendorName");
     for (var element in vendorList) {
@@ -123,7 +122,6 @@ class AddInvoiceController extends GetxController {
     }
     update();
   }
-
 
   void onGstCalculation() {
     double _amount = 0.0;
@@ -161,7 +159,7 @@ class AddInvoiceController extends GetxController {
             .substring(0, igstValue1.value.length - 1)
             .toString());
         igstVal = (igstPer * _finalAmount) / 100;
-        _gst = _gst+igstVal;
+        _gst = _gst + igstVal;
       }
     }
     cgstController.text = cgstVal.toString();
@@ -169,7 +167,6 @@ class AddInvoiceController extends GetxController {
     igstController.text = igstVal.toString();
     amountTax.text = _gst.toString();
     amountFinal.text = (_finalAmount + _gst).toString();
-
 
     update();
   }
@@ -203,8 +200,7 @@ class AddInvoiceController extends GetxController {
     POModel data = await ApiRepo.getVendorPO(vendorId!, projectId);
     ledgerId = data.data!.ledgerId;
     if (data.data!.poList!.isNotEmpty) {
-      //poList.value = data.data!.poList!;
-      poList.add(data.data!.poList![0]);
+      poList.value = data.data!.poList!;
     }
     update();
   }
@@ -250,10 +246,12 @@ class AddInvoiceController extends GetxController {
     allItemData.itemTotal = amountFinal.text.toString();
     allItemData.itemVat = itemDesc.text.toString();
 
-    if(cgstValue1 != cgstList[0] || sgstValue1 != sgstList[0]||igstValue1 != igstList[0] ){
+    if (cgstValue1 != cgstList[0] ||
+        sgstValue1 != sgstList[0] ||
+        igstValue1 != igstList[0]) {
       Get.back();
       allInvoiceItemList.add(allItemData);
-    }else{
+    } else {
       Helper.getToastMsg("add gst");
     }
     update();
@@ -297,16 +295,26 @@ class AddInvoiceController extends GetxController {
 
           /// on project change
           itemList: allInvoiceItemList,
-          context: context))!;
+          context: context,
+          invoice_id: inVoiceId))!;
 
       if (baseModel.status == "true") {
         loading.value = false;
         Helper.getToastMsg(baseModel.message!);
-        // Get.offAll(InvoiceScreen());
+
+        Helper().showServerSuccessDialog(context, baseModel.message!, () async {
+          FocusScope.of(context).unfocus();
+          // Navigator.of(context, rootNavigator: true).pop();
+          Get.offAll(InvoiceScreen());
+        });
       } else {
         loading.value = false;
-        // Helper.getToastMsg("Server Error");
-
+        FocusScope.of(context).unfocus();
+        Helper().showServerErrorDialog(context, "Server error", () async {
+          FocusScope.of(context).unfocus();
+          Navigator.of(context, rootNavigator: true).pop();
+          // Get.offAll(InvoiceScreen());
+        });
         debugPrint("Not get response");
       }
     } else {
@@ -337,7 +345,6 @@ class AddInvoiceController extends GetxController {
   }
 
   void onEditItem({required InvoiceItems itemData}) {
-    
     debugPrint("soni ${jsonEncode(itemData)}");
     itemDesc.text = itemData.itemDescription.toString();
     hCode.text = itemData.hsnCode.toString();
@@ -345,45 +352,46 @@ class AddInvoiceController extends GetxController {
     amount.text = itemData.itemAmount.toString();
     // amountTax.text = itemData.itemTax.toString();
     // amountFinal.text = itemData.itemTotal.toString();
-    cgstValue1.value = itemData.itemCgst == "0" ? "0.0%":"${itemData.itemCgst}%";
-    sgstValue1.value = itemData.itemSgst == "0" ? "0.0%":"${itemData.itemSgst}%";
-    igstValue1.value = itemData.itemIgst == "0" ? "0.0%":"${itemData.itemIgst}%";
-    
-    
+    cgstValue1.value =
+        itemData.itemCgst == "0" ? "0.0%" : "${itemData.itemCgst}%";
+    sgstValue1.value =
+        itemData.itemSgst == "0" ? "0.0%" : "${itemData.itemSgst}%";
+    igstValue1.value =
+        itemData.itemIgst == "0" ? "0.0%" : "${itemData.itemIgst}%";
+
     onGstCalculation();
 
     update();
   }
 
-  clearAllData(){
-     vendorList.clear();
-     allInvoiceItemList.clear();
-     categoryItemList.clear();
-     projectList.clear();
-     buildList.clear();
-     poList.clear();
-     vendorData.clear();
-     invoiceIDetailModel = InvoiceIDetailModel();
-     invRefController.clear();
+  clearAllData() {
+    vendorList.clear();
+    allInvoiceItemList.clear();
+    categoryItemList.clear();
+    projectList.clear();
+    buildList.clear();
+    poList.clear();
+    vendorData.clear();
+    invoiceIDetailModel = InvoiceIDetailModel();
+    invRefController.clear();
 
-     itemDesc.clear();
-     hCode.clear();
-     amount.clear();
-     amountTax.clear();
-     amountFinal.clear();
-     quanity.clear();
-     noteController.clear();
+    itemDesc.clear();
+    hCode.clear();
+    amount.clear();
+    amountTax.clear();
+    amountFinal.clear();
+    quanity.clear();
+    noteController.clear();
 
-     cgstController.clear();
-     sgstController.clear();
-     igstController.clear();
+    cgstController.clear();
+    sgstController.clear();
+    igstController.clear();
 
-     searchProjectDropDown.clear();
-     searchCategoryDropDown.clear();
+    searchProjectDropDown.clear();
+    searchCategoryDropDown.clear();
 
-
-     loading.value = false;
-     step1Loading.value = false;
+    loading.value = false;
+    step1Loading.value = false;
 
     selectedDate;
     cgstFlag.value = true;
@@ -391,35 +399,30 @@ class AddInvoiceController extends GetxController {
 
     companyName.value = "";
 
-     selectedCategory = null;
-     selectedProject=null;
-     selectedBuild=null;
-     pdfUrl=null;
+    selectedCategory = null;
+    selectedProject = null;
+    selectedBuild = null;
+    pdfUrl = null;
 
-     selectedVendor=null;
-     selectedPo=null;
-
+    selectedVendor = null;
+    selectedPo = null;
 
     listofVenderData.clear();
     projectData.clear();
 
-
-
-
     // double? "totalAmount;
-     vendorId ="";
-     ledgerId="";
-     inVoiceId="";
-     projectId="";
+    vendorId = "";
+    ledgerId = "";
+    inVoiceId = "";
+    projectId = "";
 
     cgstPer = 0.0;
     sgstPer = 0.0;
     igstPer = 0.0;
+    isPdf.value = true;
 
-     VendorData data = VendorData();
-     vendorData.add(data);
-
+    VendorData data = VendorData();
+    vendorData.add(data);
     update();
-
   }
 }
