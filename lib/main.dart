@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:swastik/presentation/view/invoice_screen.dart';
 
@@ -6,6 +7,7 @@ import 'controller/add_invoice_controller.dart';
 
 void main() {
   Get.put(AddInvoiceController());
+  SystemChannels.textInput.invokeMethod('TextInput.hide');
   runApp(const MyApp());
 }
 

@@ -42,9 +42,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   void initState() {
     super.initState();
     addInvoiceController.init();
+    debugPrint("widget.scheduleId ${widget.scheduleId}");
+
     if (widget.scheduleId != "") {
       addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
       addInvoiceController.inVoiceId = widget.scheduleId;
+    }else{
+      addInvoiceController.clearAllData();
     }
     addInvoiceController.onGetVendor();
     addInvoiceController.onGetInvoiceCategoryItem();
@@ -54,194 +58,199 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Vendor Invoices',
-          style: TextStyle(color: Colors.white),
+    return GestureDetector(
+      onTap: (){
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Vendor Invoices',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-      // Here we have initialized the stepper widget
-      body: Stepper(
-        physics: const ScrollPhysics(),
-        type: StepperType.horizontal,
-        currentStep: _activeCurrentStep,
-        controlsBuilder: (context, controller) {
-          return Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (_activeCurrentStep != 0)
+        // Here we have initialized the stepper widget
+        body: Stepper(
+          physics: const ScrollPhysics(),
+          type: StepperType.horizontal,
+          currentStep: _activeCurrentStep,
+          controlsBuilder: (context, controller) {
+            return Obx(
+                  () => Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (_activeCurrentStep != 0)
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_activeCurrentStep == 0) {
+                          return;
+                        }
+                        setState(() {
+                          _activeCurrentStep -= 1;
+                        });
+                      },
+                      style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return AppColors.btnBorderColor; //<-- SEE HERE
+                            }
+                            return null; // Defer to the widget's default.
+                          },
+                        ),
+                        side: MaterialStateProperty.all(
+                            const BorderSide(color: AppColors.btnBorderColor)),
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        ),
+                        backgroundColor:
+                        MaterialStateProperty.all(AppColors.whiteColor),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          "Back",
+                          //"strCancel".tr(),
+                          style: AppTextStyles.btn3TextStyle,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(
+                    width: 16,
+                  ),
                   ElevatedButton(
                     onPressed: () {
-                      if (_activeCurrentStep == 0) {
-                        return;
+                      if (addInvoiceController.selectedVendor != null) {
+                        if (_activeCurrentStep == 2) {
+                          addInvoiceController.addInvoiceAPi(context);
+                        }
+                        if (_activeCurrentStep < (3 - 1)) {
+                          setState(() {
+                            if (_activeCurrentStep == 1) {
+                              if (addInvoiceController.validateStep2() == true) {
+                                _activeCurrentStep += 1;
+                              }
+                            }
+                            if (_activeCurrentStep == 0) {
+                              _activeCurrentStep += 1;
+                            }
+                          });
+                        }
+                      } else {
+                        Helper.getToastMsg("Select vendor");
                       }
-                      setState(() {
-                        _activeCurrentStep -= 1;
-                      });
                     },
                     style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
+                            (Set<MaterialState> states) {
                           if (states.contains(MaterialState.hovered)) {
-                            return AppColors.btnBorderColor; //<-- SEE HERE
+                            return AppColors.hoverColor; //<-- SEE HERE
                           }
                           return null; // Defer to the widget's default.
                         },
                       ),
-                      side: MaterialStateProperty.all(
-                          const BorderSide(color: AppColors.btnBorderColor)),
                       padding: MaterialStateProperty.all(
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       ),
                       backgroundColor:
-                          MaterialStateProperty.all(AppColors.whiteColor),
+                      MaterialStateProperty.all(AppColors.primaryColor),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        "Back",
-                        //"strCancel".tr(),
-                        style: AppTextStyles.btn3TextStyle,
-                      ),
-                    ),
-                  ),
-                const SizedBox(
-                  width: 16,
-                ),
-                ElevatedButton(
+                        padding: const EdgeInsets.all(4.0),
+                        child: addInvoiceController.loading.isTrue
+                            ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                )))
+                            : Text(
+                          _activeCurrentStep == 2 ? "Submit" : "Next",
+                          style: AppTextStyles.btn1TextStyle,
+                        )),
+                  )
+                ],
+              ),
+            );
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                TextButton(
                   onPressed: () {
-                    if (addInvoiceController.selectedVendor != null) {
-                      if (_activeCurrentStep == 2) {
-                        addInvoiceController.addInvoiceAPi(context);
-                      }
-                      if (_activeCurrentStep < (3 - 1)) {
-                        setState(() {
-                          if (_activeCurrentStep == 1) {
-                            if (addInvoiceController.validateStep2() == true) {
-                              _activeCurrentStep += 1;
-                            }
-                          }
-                          if (_activeCurrentStep == 0) {
-                            _activeCurrentStep += 1;
-                          }
-                        });
-                      }
-                    } else {
-                      Helper.getToastMsg("Select vendor");
+                    if (_activeCurrentStep == 0) {
+                      return;
+                    }
+
+                    setState(() {
+                      _activeCurrentStep -= 1;
+                    });
+                  },
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_activeCurrentStep < (3 - 1)) {
+                      setState(() {
+                        _activeCurrentStep += 1;
+                        getProjectList();
+                      });
                     }
                   },
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered)) {
-                          return AppColors.hoverColor; //<-- SEE HERE
-                        }
-                        return null; // Defer to the widget's default.
-                      },
-                    ),
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    ),
-                    backgroundColor:
-                        MaterialStateProperty.all(AppColors.primaryColor),
-                  ),
-                  child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: addInvoiceController.loading.isTrue
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: Center(
-                                  child: CircularProgressIndicator(
-                                color: Colors.white,
-                              )))
-                          : Text(
-                              _activeCurrentStep == 2 ? "Submit" : "Next",
-                              style: AppTextStyles.btn1TextStyle,
-                            )),
-                )
+                  child: const Text('NEXT'),
+                ),
               ],
-            ),
-          );
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              TextButton(
-                onPressed: () {
-                  if (_activeCurrentStep == 0) {
-                    return;
-                  }
+            );
+          },
+          steps: [
+            stepOneUI(),
+            stepTwoUI(),
+            stepThreeUI(),
+          ],
 
-                  setState(() {
-                    _activeCurrentStep -= 1;
-                  });
-                },
-                child: const Text('CANCEL'),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (_activeCurrentStep < (3 - 1)) {
-                    setState(() {
-                      _activeCurrentStep += 1;
-                      getProjectList();
-                    });
-                  }
-                },
-                child: const Text('NEXT'),
-              ),
-            ],
-          );
-        },
-        steps: [
-          stepOneUI(),
-          stepTwoUI(),
-          stepThreeUI(),
-        ],
-
-        /*    // onStepContinue takes us to the next step
-        onStepContinue: () {
-          if (_activeCurrentStep < (3 - 1)) {
-            setState(() {
-              _activeCurrentStep += 1;
-              getProjectList();
-            });
-          }
-        },
-
-        // onStepCancel takes us to the previous step
-        onStepCancel: () {
-          if (_activeCurrentStep == 0) {
-            return;
-          }
-
-          setState(() {
-            _activeCurrentStep -= 1;
-          });
-        },
-
-        // onStepTap allows to directly click on the particular step we want
-        onStepTapped: (int index) {
-          setState(() {
-            _activeCurrentStep = index;
-          });
-        },*/
-      ),
-      /* floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
-        tooltip: 'Add',
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return addInvoiceDialog(context);
+          /*    // onStepContinue takes us to the next step
+          onStepContinue: () {
+            if (_activeCurrentStep < (3 - 1)) {
+              setState(() {
+                _activeCurrentStep += 1;
+                getProjectList();
               });
-        },
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),*/
+            }
+          },
+
+          // onStepCancel takes us to the previous step
+          onStepCancel: () {
+            if (_activeCurrentStep == 0) {
+              return;
+            }
+
+            setState(() {
+              _activeCurrentStep -= 1;
+            });
+          },
+
+          // onStepTap allows to directly click on the particular step we want
+          onStepTapped: (int index) {
+            setState(() {
+              _activeCurrentStep = index;
+            });
+          },*/
+        ),
+        /* floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
+          tooltip: 'Add',
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return addInvoiceDialog(context);
+                });
+          },
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),*/
+      ),
     );
   }
 
@@ -258,6 +267,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Form(
                 key: _addInvoiceFormKey,
                 child: Column(
@@ -420,8 +430,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           },
                           style: ButtonStyle(
                             overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
+                            MaterialStateProperty.resolveWith<Color?>(
+                                  (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.hovered)) {
                                   return AppColors
                                       .btnBorderColor; //<-- SEE HERE
@@ -436,7 +446,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                   vertical: 10, horizontal: 15),
                             ),
                             backgroundColor:
-                                MaterialStateProperty.all(AppColors.whiteColor),
+                            MaterialStateProperty.all(AppColors.whiteColor),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(7.0),
@@ -453,14 +463,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (_addInvoiceFormKey.currentState!.validate()) {
-                              Navigator.pop(context);
+
                               addInvoiceController.addItems();
                             }
                           },
                           style: ButtonStyle(
                             overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
+                            MaterialStateProperty.resolveWith<Color?>(
+                                  (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.hovered)) {
                                   return AppColors.hoverColor; //<-- SEE HERE
                                 }
@@ -472,7 +482,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                   vertical: 10, horizontal: 15),
                             ),
                             backgroundColor:
-                                MaterialStateProperty.all(AppColors.bgColor),
+                            MaterialStateProperty.all(AppColors.bgColor),
                           ),
                           child: Padding(
                               padding: const EdgeInsets.all(7.0),
@@ -488,248 +498,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               ),
             ),
           ],
-      content: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          color: Colors.white,
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                child: Form(
-                  key: _addInvoiceFormKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Add Item",
-                            style: AppTextStyles.modalTitleText,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16.0,
-                      ),
-                      TextFormField(
-                        controller: addInvoiceController.itemDesc,
-                        textInputAction: TextInputAction.done,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "Item Description"),
-                        // inputFormatters: [
-                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                        // ],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextFormField(
-                        controller: addInvoiceController.hCode,
-                        textInputAction: TextInputAction.done,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "HSN/SAC Code"),
-                        // inputFormatters: [
-                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                        // ],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextFormField(
-                        key: _quantityKey,
-                        controller: addInvoiceController.quanity,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            signed: false, decimal: true),
-                        inputFormatters: [
-                          FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
-                        ],
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "Quantity"),
-                        // inputFormatters: [
-                        //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                        // ],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          } else if (value.trim().toString() == "0") {
-                            return "Quantity can not be 0";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          if (_quantityKey.currentState != null) {
-                            if (_quantityKey.currentState!.validate()) {}
-                          }
-                          addInvoiceController.onGstCalculation();
-                        },
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextFormField(
-                        key: _amountKey,
-                        controller: addInvoiceController.amount,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            signed: false, decimal: true),
-                        inputFormatters: [
-                          FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
-                        ],
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "Amount"),
-                        onChanged: (value) {
-                          if (_amountKey.currentState != null) {
-                            if (_amountKey.currentState!.validate()) {}
-                          }
-                          addInvoiceController.onGstCalculation();
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          } else if (value.trim().toString() == "0") {
-                            return "Amount can not be 0";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      cgstDropDownList(context, "CGST",
-                          addInvoiceController.cgstList, (value) {}),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
-                      sgstDropDownList(context, "SGST",
-                          addInvoiceController.sgstList, (value) {}),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      igstDropDownList(context, "IGST",
-                          addInvoiceController.igstList, (value) {}),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextFormField(
-                        controller: addInvoiceController.amountFinal,
-                        readOnly: true,
-                        enabled: false,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "Final Amount"),
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextFormField(
-                        controller: addInvoiceController.amountTax,
-                        readOnly: true,
-                        enabled: false,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: "Tax Amount"),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ButtonStyle(
-                              overlayColor:
-                                  MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return AppColors
-                                        .btnBorderColor; //<-- SEE HERE
-                                  }
-                                  return null; // Defer to the widget's default.
-                                },
-                              ),
-                              side: MaterialStateProperty.all(const BorderSide(
-                                  color: AppColors.btnBorderColor)),
-                              padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 15),
-                              ),
-                              backgroundColor:
-                                  MaterialStateProperty.all(AppColors.whiteColor),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(7.0),
-                              child: Text(
-                                "Cancel",
-                                //"strCancel".tr(),
-                                style: AppTextStyles.btn3TextStyle,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_addInvoiceFormKey.currentState!.validate()) {
-                                Navigator.pop(context);
-                                addInvoiceController.addItems();
-                              }
-                            },
-                            style: ButtonStyle(
-                              overlayColor:
-                                  MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return AppColors.hoverColor; //<-- SEE HERE
-                                  }
-                                  return null; // Defer to the widget's default.
-                                },
-                              ),
-                              padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 15),
-                              ),
-                              backgroundColor:
-                                  MaterialStateProperty.all(AppColors.bgColor),
-                            ),
-                            child: Padding(
-                                padding: const EdgeInsets.all(7.0),
-                                child: Text(
-                                  "Submit",
-                                  style: AppTextStyles.btn1TextStyle,
-                                )),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -801,7 +569,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   Widget cgstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -820,14 +588,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   ),
                   items: listOfData
                       .map((item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ))
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ))
                       .toList(),
                   value: addInvoiceController.cgstValue1.value,
 
@@ -835,19 +603,19 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   onChanged: addInvoiceController.cgstFlag.value == false
                       ? null
                       : (value) {
-                          addInvoiceController.cgstValue1.value = value!;
-                          if (value == addInvoiceController.cgstList[0] &&
-                              addInvoiceController.sgstValue1.value ==
-                                  addInvoiceController.sgstList[0]) {
-                            addInvoiceController.cgstFlag.value = true;
-                            addInvoiceController.igstFlag.value = true;
-                          } else {
-                            addInvoiceController.cgstFlag.value = true;
-                            addInvoiceController.igstFlag.value = false;
-                          }
+                    addInvoiceController.cgstValue1.value = value!;
+                    if (value == addInvoiceController.cgstList[0] &&
+                        addInvoiceController.sgstValue1.value ==
+                            addInvoiceController.sgstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                    } else {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = false;
+                    }
 
-                          addInvoiceController.onGstCalculation();
-                        },
+                    addInvoiceController.onGstCalculation();
+                  },
                   buttonStyleData: Helper.buttonStyleData(context),
                   iconStyleData: const IconStyleData(
                     icon: Icon(
@@ -888,7 +656,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   Widget sgstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -907,14 +675,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   ),
                   items: listOfData
                       .map((item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ))
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ))
                       .toList(),
                   value: addInvoiceController.sgstValue1.value,
 
@@ -922,20 +690,20 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   onChanged: addInvoiceController.cgstFlag.value == false
                       ? null
                       : (value) {
-                          addInvoiceController.sgstValue1.value = value!;
-                          voidCallback(addInvoiceController.sgstValue1.value);
-                          if (value == addInvoiceController.sgstList[0] &&
-                              addInvoiceController.cgstValue1.value ==
-                                  addInvoiceController.cgstList[0]) {
-                            addInvoiceController.cgstFlag.value = true;
-                            addInvoiceController.igstFlag.value = true;
-                          } else {
-                            addInvoiceController.cgstFlag.value = true;
-                            addInvoiceController.igstFlag.value = false;
-                          }
+                    addInvoiceController.sgstValue1.value = value!;
+                    voidCallback(addInvoiceController.sgstValue1.value);
+                    if (value == addInvoiceController.sgstList[0] &&
+                        addInvoiceController.cgstValue1.value ==
+                            addInvoiceController.cgstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                    } else {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = false;
+                    }
 
-                          addInvoiceController.onGstCalculation();
-                        },
+                    addInvoiceController.onGstCalculation();
+                  },
                   buttonStyleData: Helper.buttonStyleData(context),
                   iconStyleData: const IconStyleData(
                     icon: Icon(
@@ -976,7 +744,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   Widget igstDropDownList(BuildContext context, String key,
       List<String> listOfData, Function(String value) voidCallback) {
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -995,29 +763,29 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   ),
                   items: listOfData
                       .map((item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ))
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ))
                       .toList(),
                   value: addInvoiceController.igstValue1.value,
                   onChanged: addInvoiceController.igstFlag.value == false
                       ? null
                       : (value) {
-                          addInvoiceController.igstValue1.value = value!;
-                          if (value == addInvoiceController.igstList[0]) {
-                            addInvoiceController.cgstFlag.value = true;
-                            addInvoiceController.igstFlag.value = true;
-                          } else {
-                            addInvoiceController.cgstFlag.value = false;
-                            addInvoiceController.igstFlag.value = true;
-                          }
-                          addInvoiceController.onGstCalculation();
-                        },
+                    addInvoiceController.igstValue1.value = value!;
+                    if (value == addInvoiceController.igstList[0]) {
+                      addInvoiceController.cgstFlag.value = true;
+                      addInvoiceController.igstFlag.value = true;
+                    } else {
+                      addInvoiceController.cgstFlag.value = false;
+                      addInvoiceController.igstFlag.value = true;
+                    }
+                    addInvoiceController.onGstCalculation();
+                  },
                   buttonStyleData: Helper.buttonStyleData(context),
                   iconStyleData: const IconStyleData(
                     icon: Icon(
@@ -1058,7 +826,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   Widget dropDownList(BuildContext context, VoidCallback onSelection) {
     TextEditingController searchBar = TextEditingController();
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: DropdownButtonHideUnderline(
           child: DropdownButton2<String>(
@@ -1072,14 +840,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.vendorList
                 .map((item) => DropdownMenuItem(
-                      value: item.companyName,
-                      child: Text(
-                        item.companyName!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ))
+              value: item.companyName,
+              child: Text(
+                item.companyName!,
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ))
                 .toList(),
             value: addInvoiceController.selectedVendor,
             onChanged: (value) {
@@ -1165,14 +933,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           ),
           items: addInvoiceController.projectList
               .map((item) => DropdownMenuItem(
-                    value: item.projectname,
-                    child: Text(
-                      item.projectname!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ))
+            value: item.projectname,
+            child: Text(
+              item.projectname!,
+              style: const TextStyle(
+                fontSize: 14,
+              ),
+            ),
+          ))
               .toList(),
           value: addInvoiceController.selectedProject,
           onChanged: (value) {
@@ -1266,14 +1034,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           ),
           items: addInvoiceController.categoryItemList
               .map((item) => DropdownMenuItem(
-                    value: item.categoryName,
-                    child: Text(
-                      item.categoryName!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ))
+            value: item.categoryName,
+            child: Text(
+              item.categoryName!,
+              style: const TextStyle(
+                fontSize: 14,
+              ),
+            ),
+          ))
               .toList(),
           value: addInvoiceController.selectedCategory,
           onChanged: (value) {
@@ -1339,13 +1107,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   Widget buildDropDownList(BuildContext context) {
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: DropdownButtonHideUnderline(
           child: DropdownButton2<String>(
             isExpanded: true,
             hint: Text(
-              'Other',
+              'Select building',
               style: TextStyle(
                 fontSize: 14,
                 color: Theme.of(context).hintColor,
@@ -1353,14 +1121,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.buildList
                 .map((item) => DropdownMenuItem(
-                      value: item.buildingcode,
-                      child: Text(
-                        item.nameofbuilding!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ))
+              value: item.buildingcode,
+              child: Text(
+                item.nameofbuilding!,
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ))
                 .toList(),
             value: addInvoiceController.selectedBuild,
             onChanged: (value) {
@@ -1385,7 +1153,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
   Widget PODropDownList(BuildContext context) {
     return Obx(
-      () => Padding(
+          () => Padding(
         padding: const EdgeInsets.only(),
         child: DropdownButtonHideUnderline(
           child: DropdownButton2<String>(
@@ -1399,14 +1167,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.poList
                 .map((item) => DropdownMenuItem(
-                      value: item.id,
-                      child: Text(
-                        "${item.companyName!} | ${item.poDt!}",
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ))
+              value: item.id,
+              child: Text(
+                "${item.companyName!} | ${item.poDt!}",
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ))
                 .toList(),
             value: addInvoiceController.selectedPo,
             onChanged: (value) {
@@ -1436,260 +1204,275 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       state: _activeCurrentStep <= 0 ? StepState.editing : StepState.complete,
       isActive: _activeCurrentStep >= 0,
       title: const Text('Step 1'),
-      content: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.70,
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Align(
-                //   alignment: Alignment.topCenter,
-                //   child: ElevatedButton(
-                //       onPressed: () {}, child: const Text("Preview PDF")),
-                // ),
-                Container(
-                  width: 150,
-                  margin: const EdgeInsets.all(8),
-                  child: OutlinedButton(
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.picture_as_pdf,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        CustomTextStyle.regular(text: "Sample PDF"),
-                      ],
-                    ),
-                    onPressed: () {
-                      if (widget.scheduleId == "") {
-                        imageLogo =
-                            Helper.convertFilesToMemoryImages(imageList);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => PdfPreviewPage(),
-                          ),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PdfUrlView(
-                                    url: addInvoiceController.pdfUrl!,
-                                  )),
-                        );
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Obx(
-                  () => Card(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+      content: Obx(
+            () => Stack(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.70,
+              child: addInvoiceController.step1Loading.value
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                // mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Align(
+                  //   alignment: Alignment.topCenter,
+                  //   child: ElevatedButton(
+                  //       onPressed: () {}, child: const Text("Preview PDF")),
+                  // ),
+                  Container(
+                    width: 150,
+                    margin: const EdgeInsets.all(8),
+                    child: OutlinedButton(
+                      child: Row(
                         children: [
-                          CustomTextStyle.bold(
-                              text: "Vendor Details",
-                              fontSize: 14,
-                              color: AppColors.blueColor),
-                          const SizedBox(
-                            height: 16,
+                          const Icon(
+                            Icons.picture_as_pdf,
+                            color: Colors.green,
                           ),
-                          Obx(() => CustomTextStyle.regular(
-                              text:
-                                  "Company name: ${addInvoiceController.companyName}")),
                           const SizedBox(
-                            height: 16,
+                            width: 8,
+                            height: 100,
                           ),
-                          dropDownList(context, () {}),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomTextStyle.bold(
-                                  text: "Address : ", fontSize: 16),
+                          CustomTextStyle.regular(text: "Sample PDF"),
+                        ],
+                      ),
+                      onPressed: () {
+                        if (widget.scheduleId == "") {
+                          imageLogo = Helper.convertFilesToMemoryImages(
+                              imageList);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PdfPreviewPage(),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PdfUrlView(
+                                  url: addInvoiceController.pdfUrl!,
+                                )),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Obx(
+                        () => Card(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomTextStyle.bold(
+                                text: "Vendor Details",
+                                fontSize: 14,
+                                color: AppColors.blueColor),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Obx(() => CustomTextStyle.regular(
+                                text:
+                                "Company name: ${addInvoiceController.companyName}")),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            dropDownList(context, () {}),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                CustomTextStyle.bold(
+                                    text: "Address : ", fontSize: 16),
+                                Expanded(
+                                  child: CustomTextStyle.regular(
+                                      text: addInvoiceController
+                                          .vendorData[0].address ??
+                                          "NA",
+                                      fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      CustomTextStyle.bold(
+                                          text: "PAN : ", fontSize: 16),
+                                      CustomTextStyle.regular(
+                                          text: addInvoiceController
+                                              .vendorData[0].pan ??
+                                              "NA",
+                                          fontSize: 14)
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      CustomTextStyle.bold(
+                                          text: "GST : ", fontSize: 16),
+                                      Expanded(
+                                        child: CustomTextStyle.regular(
+                                            text: addInvoiceController
+                                                .vendorData[0].gst ??
+                                                "NA",
+                                            fontSize: 14),
+                                      )
+                                    ],
+                                  ),
+                                ),
+
+                                /* Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.bold(
+                                      text: "PAN :".trim(), fontSize: 16)),
                               Expanded(
-                                child: CustomTextStyle.regular(
+                                  flex: 2,
+                                  child: CustomTextStyle.regular(
+                                      text: addInvoiceController.vendorData.pan ?? "NA",
+                                      fontSize: 14)),
+                              Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.bold(
+                                      text: "GST :".trim(), fontSize: 16)),
+                              Expanded(
+                                  flex: 2,
+                                  child: CustomTextStyle.regular(
+                                      text: addInvoiceController.vendorData.gst ?? "NA",
+                                      fontSize: 14)),*/
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      CustomTextStyle.bold(
+                                          text: "Contact : ",
+                                          fontSize: 16),
+                                      Expanded(
+                                        child: CustomTextStyle.regular(
+                                            text: addInvoiceController
+                                                .vendorData[0]
+                                                .contactName ??
+                                                "NA",
+                                            fontSize: 14),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      CustomTextStyle.bold(
+                                          text: "Mobile : ",
+                                          fontSize: 16),
+                                      CustomTextStyle.regular(
+                                          text: addInvoiceController
+                                              .vendorData[0]
+                                              .contactNo ??
+                                              "NA",
+                                          fontSize: 14)
+                                    ],
+                                  ),
+                                ),
+
+                                /* Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.bold(
+                                      text: "Contact :", fontSize: 16)),
+                              Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.regular(
+                                      text:
+                                          addInvoiceController.vendorData.contactName ??
+                                              "NA",
+                                      fontSize: 14)),
+                              Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.bold(
+                                      text: "Mobile :".trim(), fontSize: 16)),
+                              Expanded(
+                                  flex: 1,
+                                  child: CustomTextStyle.regular(
+                                      text: addInvoiceController.vendorData.contactNo ??
+                                          "NA",
+                                      fontSize: 14)),*/
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                CustomTextStyle.bold(
+                                    text: "Email : ", fontSize: 16),
+                                CustomTextStyle.regular(
                                     text: addInvoiceController
-                                            .vendorData[0].address ??
+                                        .vendorData[0].email ??
                                         "NA",
                                     fontSize: 14),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    CustomTextStyle.bold(
-                                        text: "PAN : ", fontSize: 16),
-                                    CustomTextStyle.regular(
-                                        text: addInvoiceController
-                                                .vendorData[0].pan ??
-                                            "NA",
-                                        fontSize: 14)
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomTextStyle.bold(
-                                        text: "GST : ", fontSize: 16),
-                                    Expanded(
-                                      child: CustomTextStyle.regular(
-                                          text: addInvoiceController
-                                                  .vendorData[0].gst ??
-                                              "NA",
-                                          fontSize: 14),
-                                    )
-                                  ],
-                                ),
-                              ),
+                              ],
+                            ),
 
-                              /* Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.bold(
-                                    text: "PAN :".trim(), fontSize: 16)),
-                            Expanded(
-                                flex: 2,
-                                child: CustomTextStyle.regular(
-                                    text: addInvoiceController.vendorData.pan ?? "NA",
-                                    fontSize: 14)),
-                            Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.bold(
-                                    text: "GST :".trim(), fontSize: 16)),
-                            Expanded(
-                                flex: 2,
-                                child: CustomTextStyle.regular(
-                                    text: addInvoiceController.vendorData.gst ?? "NA",
-                                    fontSize: 14)),*/
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomTextStyle.bold(
-                                        text: "Contact : ", fontSize: 16),
-                                    Expanded(
-                                      child: CustomTextStyle.regular(
-                                          text: addInvoiceController
-                                                  .vendorData[0].contactName ??
-                                              "NA",
-                                          fontSize: 14),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    CustomTextStyle.bold(
-                                        text: "Mobile : ", fontSize: 16),
-                                    CustomTextStyle.regular(
-                                        text: addInvoiceController
-                                                .vendorData[0].contactNo ??
-                                            "NA",
-                                        fontSize: 14)
-                                  ],
-                                ),
-                              ),
-
-                              /* Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.bold(
-                                    text: "Contact :", fontSize: 16)),
-                            Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.regular(
-                                    text:
-                                        addInvoiceController.vendorData.contactName ??
-                                            "NA",
-                                    fontSize: 14)),
-                            Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.bold(
-                                    text: "Mobile :".trim(), fontSize: 16)),
-                            Expanded(
-                                flex: 1,
-                                child: CustomTextStyle.regular(
-                                    text: addInvoiceController.vendorData.contactNo ??
-                                        "NA",
-                                    fontSize: 14)),*/
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomTextStyle.bold(
-                                  text: "Email : ", fontSize: 16),
-                              CustomTextStyle.regular(
-                                  text: addInvoiceController
-                                          .vendorData[0].email ??
-                                      "NA",
-                                  fontSize: 14),
-                            ],
-                          ),
-
-                          /* builderToShowData(
-                            "Address ",
-                            addInvoiceController.vendorData.address ?? "NA",
-                            "Address ",
-                            addInvoiceController.vendorData.address ?? "NA"),
-                        builderToShowData(
-                            "Contact Person",
-                            addInvoiceController.vendorData.contactName ?? "NA",
-                            "Mobile",
-                            addInvoiceController.vendorData.contactNo ?? "NA"),
-                        builderToShowData(
-                            "Email ",
-                            addInvoiceController.vendorData.email ?? "NA",
-                            "GST ",
-                            addInvoiceController.vendorData.gst ?? "NA"),*/
-                        ],
+                            /* builderToShowData(
+                              "Address ",
+                              addInvoiceController.vendorData.address ?? "NA",
+                              "Address ",
+                              addInvoiceController.vendorData.address ?? "NA"),
+                          builderToShowData(
+                              "Contact Person",
+                              addInvoiceController.vendorData.contactName ?? "NA",
+                              "Mobile",
+                              addInvoiceController.vendorData.contactNo ?? "NA"),
+                          builderToShowData(
+                              "Email ",
+                              addInvoiceController.vendorData.email ?? "NA",
+                              "GST ",
+                              addInvoiceController.vendorData.gst ?? "NA"),*/
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-              ],
+                  const SizedBox(
+                    height: 16,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1746,8 +1529,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CustomTextStyle.bold(
+                text: "${addInvoiceController.selectedVendor}",
+                fontSize: 16,
+              ),
               const SizedBox(
-                height: 8,
+                height: 16,
               ),
               CustomTextStyle.regular(
                 text: Constant.project,
@@ -1789,11 +1576,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               InkWell(
                 onTap: () {
                   CustomDateTime.buildShowDatePicker(context)
-                      .then((DateTime? onValue) {
-                    if (onValue != null) {
-                      String date = "${onValue.year}-"
-                          "${Helper.padWithZero(onValue.month)}-"
-                          "${Helper.padWithZero(onValue.day)}";
+                      .then((DateTime? dateTime) {
+                    if (dateTime != null) {
+                      String date =
+                          "${Helper.padWithZero(dateTime.day)}-${Helper.padWithZero(dateTime.month)}-${dateTime.year}";
+
                       addInvoiceController.selectedDate = date;
                     }
                     setState(() {});
@@ -1934,147 +1721,179 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: OutlinedButton.icon(
-                // <-- OutlinedButton
-                onPressed: () {
-                  addInvoiceController.clearAddFormData();
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return addInvoiceDialog(context);
-                      });
-                },
-                icon: const Icon(
-                  Icons.add,
-                  size: 24.0,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomTextStyle.bold(
+                  text: "${addInvoiceController.selectedVendor}",
+                  fontSize: 16,
                 ),
-                label: const Text('Add Item'),
-              ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: OutlinedButton.icon(
+                    // <-- OutlinedButton
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      addInvoiceController.clearAddFormData();
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return addInvoiceDialog(context);
+                          });
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      size: 24.0,
+                    ),
+                    label: const Text('Add Item'),
+                  ),
+                ),
+              ],
             ),
             Obx(
-              () => SizedBox(
+                  () => SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: addInvoiceController.allInvoiceItemList.isEmpty
                     ? Center(
-                        child: CustomTextStyle.regular(text: "No Item Added"),
-                      )
+                  child: CustomTextStyle.regular(text: "No Item Added"),
+                )
                     : ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        physics: const ScrollPhysics(),
-                        itemCount:
-                            addInvoiceController.allInvoiceItemList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          InvoiceItems data =
-                              addInvoiceController.allInvoiceItemList[index];
-                          return Card(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      // flex: 2,
-                                      child: Container(
-                                          // color: Colors.red,
-                                          child: CustomTextStyle.bold(
-                                              text:
-                                                  data.itemDescription ?? "NA",
-                                              fontSize: 16)),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        flex: 2,
-                                        child: CustomTextStyle.regular(
-                                            text: data.hsnCode ?? "0.0")),
-                                    Expanded(
-                                        flex: 1,
-                                        child: CustomTextStyle.regular(
-                                            text: 'Qty: ${data.qty ?? "NA"}',
-                                            fontSize: 12)),
-                                    Expanded(
-                                        child: CustomTextStyle.bold(
-                                            text: data.itemAmount ?? "0.0",
-                                            fontSize: 16)),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Container(),
-                                    ),
-                                    Expanded(
-                                        flex: 1,
-                                        child: CustomTextStyle.regular(
-                                            text: 'Rate: ${data.itemAmount}',
-                                            fontSize: 12)),
-                                    Expanded(
-                                        child: Row(
-                                      children: [
-                                        CustomTextStyle.regular(
-                                            text: 'GST', fontSize: 12),
-                                        const SizedBox(
-                                          width: 4.0,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return gstDialog(
-                                                      context,
-                                                      data.itemCgst,
-                                                      data.itemSgst,
-                                                      data.itemIgst);
-                                                });
-                                          },
-                                          child: const Icon(
-                                            Icons.info_rounded,
-                                            color: Colors.grey,
-                                          ),
-                                        )
-                                      ],
-                                    )),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(),
-                                    ),
-                                    Expanded(
-                                      child: Container(),
-                                    ),
-                                    Expanded(
+                  scrollDirection: Axis.vertical,
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  physics: const ScrollPhysics(),
+                  itemCount:
+                  addInvoiceController.allInvoiceItemList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    InvoiceItems data =
+                    addInvoiceController.allInvoiceItemList[index];
+                    return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    // flex: 2,
+                                    child: Container(
+                                      // color: Colors.red,
                                         child: CustomTextStyle.bold(
                                             text:
-                                                'RS. ${data.itemTotal ?? "0.0"}',
+                                            data.itemDescription ?? "NA",
                                             fontSize: 16)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ));
-                        },
-                      ),
+                                  ),
+                                  InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        addInvoiceController.onEditItem(
+                                            itemData: data);
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return addInvoiceDialog(
+                                                  context);
+                                            });
+                                      },
+                                      child: const Icon(Icons.edit)),
+                                  SizedBox(width: 16,),
+
+                                  InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                      addInvoiceController.allInvoiceItemList.remove(data);
+                                      },
+                                      child: const Icon(Icons.delete,color: Colors.red,))
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      flex: 2,
+                                      child: CustomTextStyle.regular(
+                                          text: data.hsnCode ?? "0.0")),
+                                  Expanded(
+                                      flex: 1,
+                                      child: CustomTextStyle.regular(
+                                          text: 'Qty: ${data.qty ?? "NA"}',
+                                          fontSize: 12)),
+                                  Expanded(
+                                      child: CustomTextStyle.bold(
+                                          text: data.itemAmount ?? "0.0",
+                                          fontSize: 16)),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                      flex: 1,
+                                      child: CustomTextStyle.regular(
+                                          text: 'Rate: ${data.itemAmount}',
+                                          fontSize: 12)),
+                                  Expanded(
+                                      child: Row(
+                                        children: [
+                                          CustomTextStyle.regular(
+                                              text: 'GST', fontSize: 12),
+                                          const SizedBox(
+                                            width: 4.0,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return gstDialog(
+                                                        context,
+                                                        data.itemCgst,
+                                                        data.itemSgst,
+                                                        data.itemIgst);
+                                                  });
+                                            },
+                                            child: const Icon(
+                                              Icons.info_rounded,
+                                              color: Colors.grey,
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                      child: CustomTextStyle.bold(
+                                          text:
+                                          'RS. ${data.itemTotal ?? "0.0"}',
+                                          fontSize: 16)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ));
+                  },
+                ),
               ),
             )
           ],

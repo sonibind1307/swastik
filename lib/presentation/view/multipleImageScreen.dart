@@ -39,9 +39,7 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
                   MaterialPageRoute(
                     builder: (context) => const AddInvoiceScreen(
                       scheduleId: "",
-                    ),
-                  ),
-                );
+                    ),),);
                 generatePdf();
               } else {
                 Helper.getSnackBarError(context, "Select image to create PDF");
