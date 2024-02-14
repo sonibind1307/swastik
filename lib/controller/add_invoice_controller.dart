@@ -22,28 +22,9 @@ class AddInvoiceController extends GetxController {
   var projectList = <ProjectData>[].obs;
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
-  RxBool loading = false.obs;
-  RxBool step1Loading = true.obs;
-  var selectedDate;
   var vendorData = <VendorData>[].obs;
   InvoiceIDetailModel invoiceIDetailModel = InvoiceIDetailModel();
-  RxBool cgstFlag = true.obs;
-  RxBool igstFlag = true.obs;
-
-  RxString cgstValue1 = "CGST".obs;
-  RxString sgstValue1 = "SGST".obs;
-  RxString igstValue1 = "IGST".obs;
-  RxString companyName = "".obs;
-
-  String? selectedCategory;
-  String? selectedProject;
-  String? selectedBuild;
-  String? pdfUrl;
-
   TextEditingController invRefController = TextEditingController();
-
-  String? selectedVendor;
-  String? selectedPo;
 
   TextEditingController itemDesc = TextEditingController();
   TextEditingController hCode = TextEditingController();
@@ -60,17 +41,43 @@ class AddInvoiceController extends GetxController {
   TextEditingController searchProjectDropDown = TextEditingController();
   TextEditingController searchCategoryDropDown = TextEditingController();
 
+
+  RxBool loading = false.obs;
+  RxBool step1Loading = true.obs;
+
+  var selectedDate;
+  RxBool cgstFlag = true.obs;
+  RxBool igstFlag = true.obs;
+
+  RxString cgstValue1 = "CGST".obs;
+  RxString sgstValue1 = "SGST".obs;
+  RxString igstValue1 = "IGST".obs;
+  RxString companyName = "".obs;
+
+  String? selectedCategory;
+  String? selectedProject;
+  String? selectedBuild;
+  String? pdfUrl;
+
+  String? selectedVendor;
+  String? selectedPo;
+
+
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
-  List<String> cgstList = ["CGST", "0%", "2.5%", "6.0%", "9.0%", "14.0%"];
-  List<String> sgstList = ["SGST", "0%", "2.5%", "6.0%", "9.0%", "14.0%"];
-  List<String> igstList = ["IGST", "0%", "5.0%", "12.0%", "18.0%", "28.0%"];
+  List<String> cgstList = ["CGST", "0.0%", "2.5%", "6.0%", "9.0%", "14.0%"];
+  List<String> sgstList = ["SGST", "0.0%", "2.5%", "6.0%", "9.0%", "14.0%"];
+  List<String> igstList = ["IGST", "0.0%", "5.0%", "12.0%", "18.0%", "28.0%"];
 
   // double? totalAmount;
   String? vendorId;
   String? ledgerId;
   String? inVoiceId;
   String? projectId;
+
+  double cgstPer = 0.0;
+  double sgstPer = 0.0;
+  double igstPer = 0.0;
 
   Future<void> onGetVendor() async {
     step1Loading.value = true;
@@ -104,6 +111,7 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
+
   void onVendorSelection(String vendorName) {
     debugPrint("vendorName -> $vendorName");
     for (var element in vendorList) {
@@ -116,9 +124,6 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
-  double cgstPer = 0.0;
-  double sgstPer = 0.0;
-  double igstPer = 0.0;
 
   void onGstCalculation() {
     double _amount = 0.0;
@@ -156,7 +161,7 @@ class AddInvoiceController extends GetxController {
             .substring(0, igstValue1.value.length - 1)
             .toString());
         igstVal = (igstPer * _finalAmount) / 100;
-        _gst = igstVal;
+        _gst = _gst+igstVal;
       }
     }
     cgstController.text = cgstVal.toString();
@@ -164,6 +169,9 @@ class AddInvoiceController extends GetxController {
     igstController.text = igstVal.toString();
     amountTax.text = _gst.toString();
     amountFinal.text = (_finalAmount + _gst).toString();
+
+
+    update();
   }
 
   Future<void> onGetInvoiceCategoryItem() async {
@@ -209,7 +217,6 @@ class AddInvoiceController extends GetxController {
     if (invoiceIDetailModel.data != null) {
       debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
       await onGetBuilding(invoiceIDetailModel.data!.project!);
-
       companyName.value = invoiceIDetailModel.data!.companyname!;
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
@@ -242,7 +249,13 @@ class AddInvoiceController extends GetxController {
     allItemData.itemTax = amountTax.text.toString();
     allItemData.itemTotal = amountFinal.text.toString();
     allItemData.itemVat = itemDesc.text.toString();
-    allInvoiceItemList.add(allItemData);
+
+    if(cgstValue1 != cgstList[0] || sgstValue1 != sgstList[0]||igstValue1 != igstList[0] ){
+      Get.back();
+      allInvoiceItemList.add(allItemData);
+    }else{
+      Helper.getToastMsg("add gst");
+    }
     update();
   }
 
@@ -324,13 +337,89 @@ class AddInvoiceController extends GetxController {
   }
 
   void onEditItem({required InvoiceItems itemData}) {
+    
+    debugPrint("soni ${jsonEncode(itemData)}");
     itemDesc.text = itemData.itemDescription.toString();
     hCode.text = itemData.hsnCode.toString();
     quanity.text = itemData.qty.toString();
     amount.text = itemData.itemAmount.toString();
-    cgstValue1.value = "${itemData.itemCgst}%";
-    sgstValue1.value = "${itemData.itemSgst}%";
-    igstValue1.value = "${itemData.itemIgst}%";
+    // amountTax.text = itemData.itemTax.toString();
+    // amountFinal.text = itemData.itemTotal.toString();
+    cgstValue1.value = itemData.itemCgst == "0" ? "0.0%":"${itemData.itemCgst}%";
+    sgstValue1.value = itemData.itemSgst == "0" ? "0.0%":"${itemData.itemSgst}%";
+    igstValue1.value = itemData.itemIgst == "0" ? "0.0%":"${itemData.itemIgst}%";
+    
+    
     onGstCalculation();
+
+    update();
+  }
+
+  clearAllData(){
+     vendorList.clear();
+     allInvoiceItemList.clear();
+     categoryItemList.clear();
+     projectList.clear();
+     buildList.clear();
+     poList.clear();
+     vendorData.clear();
+     invoiceIDetailModel = InvoiceIDetailModel();
+     invRefController.clear();
+
+     itemDesc.clear();
+     hCode.clear();
+     amount.clear();
+     amountTax.clear();
+     amountFinal.clear();
+     quanity.clear();
+     noteController.clear();
+
+     cgstController.clear();
+     sgstController.clear();
+     igstController.clear();
+
+     searchProjectDropDown.clear();
+     searchCategoryDropDown.clear();
+
+
+     loading.value = false;
+     step1Loading.value = false;
+
+    selectedDate;
+    cgstFlag.value = true;
+    igstFlag.value = true;
+
+    companyName.value = "";
+
+     selectedCategory = null;
+     selectedProject=null;
+     selectedBuild=null;
+     pdfUrl=null;
+
+     selectedVendor=null;
+     selectedPo=null;
+
+
+    listofVenderData.clear();
+    projectData.clear();
+
+
+
+
+    // double? "totalAmount;
+     vendorId ="";
+     ledgerId="";
+     inVoiceId="";
+     projectId="";
+
+    cgstPer = 0.0;
+    sgstPer = 0.0;
+    igstPer = 0.0;
+
+     VendorData data = VendorData();
+     vendorData.add(data);
+
+    update();
+
   }
 }

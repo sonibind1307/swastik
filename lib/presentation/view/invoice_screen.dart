@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
@@ -334,13 +335,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 openBottomSheet(context, (key) {
                   if (key == "edit") {
                     Navigator.pop(context);
+                    // Get.to(AddInvoiceScreen(
+                    //   scheduleId: invoiceList.data![index].invoiceId!,
+                    // ));
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => AddInvoiceScreen(
-                                scheduleId: invoiceList.data![index].invoiceId!,
-                              )),
-                    );
+                                scheduleId: invoiceList.data![index].invoiceId!,),),);
                   }
                 });
               },
