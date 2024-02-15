@@ -307,7 +307,7 @@ class Helper {
     showGeneralDialog(
       context: context,
       barrierLabel: "Barrier",
-      barrierDismissible: true,
+      barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (_, __, ___) {
@@ -315,7 +315,7 @@ class Helper {
           builder: (BuildContext context, StateSetter setState) {
             return Center(
               child: Container(
-                height: 200,
+                height: MediaQuery.of(context).size.height,
                 width: 220,
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -406,7 +406,7 @@ class Helper {
     showGeneralDialog(
       context: context,
       barrierLabel: "Barrier",
-      barrierDismissible: true,
+      barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (_, __, ___) {

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:swastik/presentation/view/multipleImageScreen.dart';
@@ -34,23 +33,23 @@ class PdfPreviewPage extends StatelessWidget {
     for (MemoryImage memoryImage in imageLogo) {
       pdf.addPage(
         pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
+          // pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) => [
             // Header
             pw.Container(
-              alignment: pw.Alignment.centerRight,
+              alignment: pw.Alignment.topRight,
               // margin: const pw.EdgeInsets.only(top: 10.0),
               child: pw.Text('UserName: soni.b '),
             ),
             // Image
-            pw.SizedBox(height: 10),
+            // pw.SizedBox(height: 10),
             pw.Center(
               child: buildPdfImage(memoryImage),
             ),
-            pw.SizedBox(height: 10),
+            // pw.SizedBox(height: 10),
             // Footer
             pw.Container(
-              alignment: pw.Alignment.centerRight,
+              alignment: pw.Alignment.bottomRight,
               // margin: const pw.EdgeInsets.only(bottom: 10.0),
               child: pw.Text('Date : ${DateTime.now()}',
                   style: const pw.TextStyle(fontSize: 20)),

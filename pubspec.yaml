@@ -48,6 +48,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^24.2.4
   path_provider:
   fluttertoast: ^8.2.4
+  flutter_easyloading: ^3.0.5
 
 
 dev_dependencies:

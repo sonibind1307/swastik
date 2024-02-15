@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:swastik/config/Helper.dart';
 import 'package:swastik/presentation/bloc/state/invoice_state.dart';
 
+import '../../../model/responses/base_model.dart';
 import '../../../model/responses/invoice_model.dart';
 import '../../../model/responses/project_model.dart';
+import '../../../repository/api_call.dart';
 
 class InvoiceBloc extends Cubit<InvoiceState> {
   InvoiceBloc() : super(InitialState()) {
@@ -115,6 +118,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   Future<void> getInvoiceList() async {
+    emit(LoadingState());
     var dio = Dio();
     var response = await dio.request(
       'https://swastik.online/Mobile/get_invoice_list/92',
@@ -133,6 +137,17 @@ class InvoiceBloc extends Cubit<InvoiceState> {
       emit(LoadedState(listProject, listInvoice));
     } else {
       print(response.statusMessage);
+    }
+  }
+
+  Future<void> deleteInvoice(String invoiceId) async {
+    BaseModel data = await ApiRepo.deleteInvoice(invoiceId);
+    if (data.status == "true") {
+      Helper.getToastMsg(data.message ?? "Invoice deleted");
+
+      getInvoiceList();
+    } else {
+      Helper.getToastMsg(data.message ?? "Try Again");
     }
   }
 }

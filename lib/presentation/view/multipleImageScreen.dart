@@ -32,7 +32,8 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
       create: (BuildContext context) => MultiImageCubit(),
       child: WillPopScope(
         onWillPop: () async {
-          widget.onSubmit();
+          Navigator.pop(context);
+          // widget.onSubmit();
           return true;
         },
         child: Scaffold(

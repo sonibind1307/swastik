@@ -122,25 +122,29 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (addInvoiceController.selectedVendor != null) {
-                        if (_activeCurrentStep == 2) {
-                          addInvoiceController.addInvoiceAPi(context);
-                        }
-                        if (_activeCurrentStep < (3 - 1)) {
-                          setState(() {
-                            if (_activeCurrentStep == 1) {
-                              if (addInvoiceController.validateStep2() ==
-                                  true) {
+                      if (addInvoiceController.isPdf.value == false) {
+                        Helper.getToastMsg("Attach pdf");
+                      } else {
+                        if (addInvoiceController.selectedVendor != null) {
+                          if (_activeCurrentStep == 2) {
+                            addInvoiceController.addInvoiceAPi(context);
+                          }
+                          if (_activeCurrentStep < (3 - 1)) {
+                            setState(() {
+                              if (_activeCurrentStep == 1) {
+                                if (addInvoiceController.validateStep2() ==
+                                    true) {
+                                  _activeCurrentStep += 1;
+                                }
+                              }
+                              if (_activeCurrentStep == 0) {
                                 _activeCurrentStep += 1;
                               }
-                            }
-                            if (_activeCurrentStep == 0) {
-                              _activeCurrentStep += 1;
-                            }
-                          });
+                            });
+                          }
+                        } else {
+                          Helper.getToastMsg("Select vendor");
                         }
-                      } else {
-                        Helper.getToastMsg("Select vendor");
                       }
                     },
                     style: ButtonStyle(
@@ -1240,9 +1244,17 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                               MultiImageScreen(
                                                 isEdit: true,
                                                 onSubmit: () {
+                                                  if (widget.scheduleId == "") {
+                                                    addInvoiceController
+                                                        .isPdfChange
+                                                        .value = "0";
+                                                  } else {
+                                                    addInvoiceController
+                                                        .isPdfChange
+                                                        .value = "1";
+                                                  }
                                                   addInvoiceController
                                                       .isPdf.value = true;
-                                                  // Helper.getToastMsg("add");
                                                 },
                                               )),
                                     );
@@ -1283,15 +1295,36 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                             ),
                                           );
                                         } else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
+                                          // Helper.getToastMsg(
+                                          //     addInvoiceController
+                                          //         .isPdfChange.value);
+                                          if (addInvoiceController
+                                                  .isPdfChange.value ==
+                                              "0") {
+                                            if (addInvoiceController.pdfUrl !=
+                                                null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PdfUrlView(
+                                                          url:
+                                                              addInvoiceController
+                                                                  .pdfUrl!,
+                                                        )),
+                                              );
+                                            }
+                                          } else {
+                                            imageLogo = Helper
+                                                .convertFilesToMemoryImages(
+                                                    imageList);
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
                                                 builder: (context) =>
-                                                    PdfUrlView(
-                                                      url: addInvoiceController
-                                                          .pdfUrl!,
-                                                    )),
-                                          );
+                                                    const PdfPreviewPage(),
+                                              ),
+                                            );
+                                          }
                                         }
                                       },
                                     ),

@@ -1,7 +1,7 @@
 class BaseModel {
   String? status;
   String? message;
-  int? data;
+  String? data;
 
   BaseModel({this.status, this.message, this.data});
 

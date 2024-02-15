@@ -12,7 +12,6 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
-import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -59,6 +58,11 @@ class AddInvoiceController extends GetxController {
   String? selectedProject;
   String? selectedBuild;
   String? pdfUrl;
+  RxString isPdfChange = "0".obs;
+
+  /// 0 for new pdf uploaded and 1for existing pdf uploaded
+
+  ///
 
   String? selectedVendor;
   String? selectedPo;
@@ -208,11 +212,12 @@ class AddInvoiceController extends GetxController {
   Future<void> onGetInvoiceDetails(String invoiceId) async {
     invoiceIDetailModel = await ApiRepo.getInvoiceDetails(invoiceId);
     // invoiceDetail.value = data.data!;
-    debugPrint("vendorData 2024 -> ${jsonEncode(invoiceIDetailModel)}");
+    // debugPrint("vendorData 2024 -> ${jsonEncode(invoiceIDetailModel)}");
 
     if (invoiceIDetailModel.data != null) {
-      debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
-      await onGetBuilding(invoiceIDetailModel.data!.project!);
+      // debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
+      projectId = invoiceIDetailModel.data!.project;
+      await onGetBuilding(projectId!);
       companyName.value = invoiceIDetailModel.data!.companyname!;
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
@@ -220,7 +225,7 @@ class AddInvoiceController extends GetxController {
       selectedDate = invoiceIDetailModel.data!.invDate!;
       invRefController.text = invoiceIDetailModel.data!.invref.toString();
       pdfUrl = invoiceIDetailModel.data!.filename.toString();
-      debugPrint("pdfUrl -> $pdfUrl");
+      noteController.text = invoiceIDetailModel.data!.invcomments!;
       if (invoiceIDetailModel.data!.invoiceItems!.isNotEmpty) {
         allInvoiceItemList.value = invoiceIDetailModel.data!.invoiceItems!;
         update();
@@ -278,6 +283,8 @@ class AddInvoiceController extends GetxController {
     BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
       // loading.value = true;
+      // EasyLoading.show(status: 'loading...');
+
       baseModel = (await ApiRepo.addInvoiceData(
           invDate: selectedDate,
           invRef: invRefController.text.trim(),
@@ -296,27 +303,28 @@ class AddInvoiceController extends GetxController {
           /// on project change
           itemList: allInvoiceItemList,
           context: context,
-          invoice_id: inVoiceId))!;
+          invoice_id: inVoiceId == "" ? "0" : inVoiceId,
+          upload_file: isPdfChange.value,
+          file: pdfUrl))!;
 
-      if (baseModel.status == "true") {
+      /*if (baseModel.status == "true") {
+        EasyLoading.dismiss();
         loading.value = false;
         Helper.getToastMsg(baseModel.message!);
-
         Helper().showServerSuccessDialog(context, baseModel.message!, () async {
           FocusScope.of(context).unfocus();
-          // Navigator.of(context, rootNavigator: true).pop();
           Get.offAll(InvoiceScreen());
         });
-      } else {
+      }
+      else {
+        EasyLoading.dismiss();
         loading.value = false;
         FocusScope.of(context).unfocus();
         Helper().showServerErrorDialog(context, "Server error", () async {
           FocusScope.of(context).unfocus();
           Navigator.of(context, rootNavigator: true).pop();
-          // Get.offAll(InvoiceScreen());
         });
-        debugPrint("Not get response");
-      }
+      }*/
     } else {
       Helper.getToastMsg("add at least one item");
     }
@@ -420,6 +428,7 @@ class AddInvoiceController extends GetxController {
     sgstPer = 0.0;
     igstPer = 0.0;
     isPdf.value = true;
+    isPdfChange.value = "0";
 
     VendorData data = VendorData();
     vendorData.add(data);

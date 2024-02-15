@@ -8,7 +8,7 @@ class AppColors {
   static const Color blackColor = Color(0xFF000000);
   static const Color bgColor = Color(0xFFA12047);
   static const Color bgColor1 = Color(0xFFffd966);
-  static const Color redColor = Color(0xFFec0f0f);
+  static const Color redColor = Color(0xFFBB0000);
   static const Color greenColor = Color(0xFF129f3a);
   static const Color blackColor200 = Color(0xFF121212);
   static const Color byContinueColor = Color(0xFFA9A9A9);
@@ -34,4 +34,6 @@ class AppColors {
   static const Color hoverColor = Color(0xFF02A783);
   static const Color btnBorderColor = Color(0xFFADBDB9);
   static const Color disabledColor = Color(0xFFBABDBC);
+  static const Color cherryRedColor = Color(0xFF990F02);
+  static const Color chilliRed = Color(0xFFC21A09);
 }

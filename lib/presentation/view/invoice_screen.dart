@@ -1,7 +1,9 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/RupeesConverter.dart';
+import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../../model/responses/invoice_model.dart';
@@ -328,154 +330,108 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     if (invoiceList.data == null) {
       return const Expanded(child: Center(child: CircularProgressIndicator()));
     } else {
-      return Expanded(
-        child: ListView.builder(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: invoiceList.data == null ? 0 : invoiceList.data!.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () {
-                openBottomSheet(context, (key) {
-                  if (key == "edit") {
-                    Navigator.pop(context);
-                    // Get.to(AddInvoiceScreen(
-                    //   scheduleId: invoiceList.data![index].invoiceId!,
-                    // ));
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddInvoiceScreen(
-                          scheduleId: invoiceList.data![index].invoiceId!,
+      print("object");
+      if (invoiceList.data!.length == 0) {
+        return Expanded(
+          child: Center(
+            child: Container(
+              child: CustomTextStyle.regular(text: "No invoice added"),
+            ),
+          ),
+        );
+      } else {
+        return Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: invoiceList.data == null ? 0 : invoiceList.data!.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () {
+                  openBottomSheet(context, (key) {
+                    if (key == "edit") {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddInvoiceScreen(
+                            scheduleId: invoiceList.data![index].invoiceId!,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                });
-              },
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(4))),
-                            child: getIcon(
-                                invoiceList.data![index].invoiceStatus!)),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextStyle.extraBold(
-                              text: invoiceList.data![index].vendorCmpny),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                decoration: const BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(4))),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: CustomTextStyle.regular(
-                                      text: invoiceList
-                                              .data![index].projectname ??
-                                          "NA",
-                                      color: Colors.white),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              CustomTextStyle.regular(
-                                  text: invoiceList.data![index].invDate),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          CustomTextStyle.regular(
-                              text:
-                                  "Inv.no: ${invoiceList.data![index].invoiceNo}"),
-                          CustomTextStyle.regular(
-                              text: invoiceList.data![index].invcat),
-                        ],
-                      ),
-                      const Spacer(),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomTextStyle.extraBold(
-                              text: double.parse(invoiceList
-                                      .data![index].totalamount
-                                      .toString())
-                                  .toInt()
-                                  .inRupeesFormat()),
-                          const SizedBox(height: 50),
-                          CustomTextStyle.regular(
-                              text: _getStatusText(invoiceList
-                                  .data![index].invoiceStatus
-                                  .toString())),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            );
-            return Card(
-              child: ClipPath(
-                clipper: ShapeBorderClipper(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3))),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(
-                          color: _getStatusColor(
-                              invoiceList.data![index].status.toString()),
-                          width: 5),
-                    ),
-                  ),
-                  child: IntrinsicHeight(
+                      );
+                    } else if (key == "delete") {
+                      Navigator.pop(context);
+                      Helper.deleteDialog(context,
+                          "Do you want to delete an invoice no ${invoiceList.data![index].invoiceNo!}",
+                          () {
+                        context.read<InvoiceBloc>().deleteInvoice(
+                            invoiceList.data![index].invoiceId!.toString());
+                      });
+                    }
+                  });
+                },
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(4))),
+                              child: getIcon(
+                                  invoiceList.data![index].invoiceStatus!)),
+                        ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomTextStyle.extraBold(
-                                text: invoiceList.data![index].projectname),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            CustomTextStyle.regular(
-                                text: invoiceList.data![index].invDate),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            CustomTextStyle.regular(
                                 text: invoiceList.data![index].vendorCmpny),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      color: AppColors.chilliRed,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(4))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: CustomTextStyle.regular(
+                                        text: invoiceList
+                                                .data![index].projectname ??
+                                            "NA",
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                CustomTextStyle.regular(
+                                    text: invoiceList.data![index].invDate),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            CustomTextStyle.regular(
+                                text:
+                                    "Inv.no: ${invoiceList.data![index].invoiceNo}"),
+                            CustomTextStyle.regular(
+                                text: invoiceList.data![index].invcat),
                           ],
                         ),
-                        // SizedBox(width: 200,),
+                        const Spacer(),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             CustomTextStyle.extraBold(
@@ -484,9 +440,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                         .toString())
                                     .toInt()
                                     .inRupeesFormat()),
+                            const SizedBox(height: 50),
                             CustomTextStyle.regular(
                                 text: _getStatusText(invoiceList
-                                    .data![index].status
+                                    .data![index].invoiceStatus
                                     .toString())),
                           ],
                         )
@@ -494,11 +451,71 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
-      );
+              );
+              return Card(
+                child: ClipPath(
+                  clipper: ShapeBorderClipper(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3))),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                            color: _getStatusColor(
+                                invoiceList.data![index].status.toString()),
+                            width: 5),
+                      ),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomTextStyle.extraBold(
+                                  text: invoiceList.data![index].projectname),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              CustomTextStyle.regular(
+                                  text: invoiceList.data![index].invDate),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              CustomTextStyle.regular(
+                                  text: invoiceList.data![index].vendorCmpny),
+                            ],
+                          ),
+                          // SizedBox(width: 200,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomTextStyle.extraBold(
+                                  text: double.parse(invoiceList
+                                          .data![index].totalamount
+                                          .toString())
+                                      .toInt()
+                                      .inRupeesFormat()),
+                              CustomTextStyle.regular(
+                                  text: _getStatusText(invoiceList
+                                      .data![index].status
+                                      .toString())),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      }
     }
   }
 
@@ -649,18 +666,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   ),
                 ),
               ),
-              ListTile(
-                title: const Text("Delete"),
-                leading: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
-                      child: const Icon(Icons.delete)),
+              InkWell(
+                onTap: () {
+                  onClick("delete");
+                },
+                child: ListTile(
+                  title: const Text("Delete"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.delete)),
+                  ),
                 ),
               ),
             ],
