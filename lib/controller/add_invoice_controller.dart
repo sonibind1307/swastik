@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:swastik/config/Helper.dart';
@@ -12,6 +13,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -218,14 +220,17 @@ class AddInvoiceController extends GetxController {
       // debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
       projectId = invoiceIDetailModel.data!.project;
       await onGetBuilding(projectId!);
+
       companyName.value = invoiceIDetailModel.data!.companyname!;
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
       selectedBuild = invoiceIDetailModel.data!.building;
+
       selectedDate = invoiceIDetailModel.data!.invDate!;
       invRefController.text = invoiceIDetailModel.data!.invref.toString();
       pdfUrl = invoiceIDetailModel.data!.filename.toString();
       noteController.text = invoiceIDetailModel.data!.invcomments!;
+      // await onGetVendorPO(projectId!);
       if (invoiceIDetailModel.data!.invoiceItems!.isNotEmpty) {
         allInvoiceItemList.value = invoiceIDetailModel.data!.invoiceItems!;
         update();
@@ -235,9 +240,9 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
-  addItems() {
+  addItems({required String itemId}) {
     InvoiceItems allItemData = InvoiceItems();
-    //allItemData.invoiceItemId = "1234";
+    allItemData.invoiceItemId = itemId;
     allItemData.itemDescription = itemDesc.text.toString();
     allItemData.invoiceId = inVoiceId;
     allItemData.itemAmount = amount.text.toString();
@@ -282,8 +287,57 @@ class AddInvoiceController extends GetxController {
   Future<BaseModel?> addInvoiceAPi(BuildContext context) async {
     BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
+      baseModel = (await ApiRepo.addInvoiceData(
+          invDate: selectedDate,
+          invRef: invRefController.text.trim(),
+          invComments: noteController.text.trim(),
+          invProject: projectId,
+          invBuilding: selectedBuild,
+          invCategory: selectedCategory,
+          ldgrTdsPcnt: "0",
+
+          ///invoice details
+          invPo: selectedPo,
+          vendorId: vendorId,
+          createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+          vendorLinkedLdgr: ledgerId,
+
+          /// on project change
+          itemList: allInvoiceItemList,
+          context: context,
+          invoice_id: inVoiceId == "" ? "0" : inVoiceId,
+          upload_file: isPdfChange.value,
+          file: pdfUrl))!;
+
+      /* if (baseModel.status == "true") {
+        EasyLoading.dismiss();
+        loading.value = false;
+        Helper.getToastMsg(baseModel.message!);
+        Helper().showServerSuccessDialog(context, baseModel.message!, () async {
+          FocusScope.of(context).unfocus();
+          Get.offAll(InvoiceScreen());
+        });
+      }
+      else {
+        EasyLoading.dismiss();
+        loading.value = false;
+        FocusScope.of(context).unfocus();
+        Helper().showServerErrorDialog(context, "Server error", () async {
+          FocusScope.of(context).unfocus();
+          Navigator.of(context, rootNavigator: true).pop();
+        });
+      }*/
+    } else {
+      Helper.getToastMsg("add at least one item");
+    }
+    return baseModel;
+  }
+
+  Future<BaseModel?> addInvoiceAPi1(BuildContext context) async {
+    BaseModel baseModel = BaseModel();
+    if (allInvoiceItemList.isNotEmpty) {
       // loading.value = true;
-      // EasyLoading.show(status: 'loading...');
+      EasyLoading.show(status: 'loading...');
 
       baseModel = (await ApiRepo.addInvoiceData(
           invDate: selectedDate,
@@ -307,7 +361,7 @@ class AddInvoiceController extends GetxController {
           upload_file: isPdfChange.value,
           file: pdfUrl))!;
 
-      /*if (baseModel.status == "true") {
+      if (baseModel.status == "true") {
         EasyLoading.dismiss();
         loading.value = false;
         Helper.getToastMsg(baseModel.message!);
@@ -315,8 +369,7 @@ class AddInvoiceController extends GetxController {
           FocusScope.of(context).unfocus();
           Get.offAll(InvoiceScreen());
         });
-      }
-      else {
+      } else {
         EasyLoading.dismiss();
         loading.value = false;
         FocusScope.of(context).unfocus();
@@ -324,7 +377,7 @@ class AddInvoiceController extends GetxController {
           FocusScope.of(context).unfocus();
           Navigator.of(context, rootNavigator: true).pop();
         });
-      }*/
+      }
     } else {
       Helper.getToastMsg("add at least one item");
     }
@@ -368,7 +421,6 @@ class AddInvoiceController extends GetxController {
         itemData.itemIgst == "0" ? "0.0%" : "${itemData.itemIgst}%";
 
     onGstCalculation();
-
     update();
   }
 

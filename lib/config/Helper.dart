@@ -262,6 +262,7 @@ class Helper {
     );
   }
 */
+
   static customGetDialogWithoutButton(
       {String? title,
       String? subTitle,
@@ -315,89 +316,91 @@ class Helper {
           builder: (BuildContext context, StateSetter setState) {
             return Center(
               child: Container(
-                height: MediaQuery.of(context).size.height,
+                height: 200,
                 width: 220,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15)),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.signal_wifi_connected_no_internet_4,
-                          color: Colors.red,
-                          size: 30,
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: DefaultTextStyle(
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            fontStyle: FontStyle.normal),
-                        child: Text(
-                          error,
-                          textAlign: TextAlign.center,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.signal_wifi_connected_no_internet_4,
+                            color: Colors.red,
+                            size: 30,
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: DefaultTextStyle(
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              fontStyle: FontStyle.normal),
+                          child: SelectableText(
+                            error,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      color: Colors.grey.shade300,
-                      thickness: 1,
-                    ),
-                    Material(
-                      child: InkWell(
-                        onTap: () async {
-                          callback();
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.only(
-                              left: 12.0, right: 12.0, top: 12.0, bottom: 2),
-                          child: DefaultTextStyle(
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FontStyle.normal),
-                            child: Text(
-                              "Ok",
-                              textAlign: TextAlign.center,
+                      Divider(
+                        color: Colors.grey.shade300,
+                        thickness: 1,
+                      ),
+                      Material(
+                        child: InkWell(
+                          onTap: () async {
+                            callback();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0, bottom: 2),
+                            child: DefaultTextStyle(
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  fontStyle: FontStyle.normal),
+                              child: Text(
+                                "Ok",
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
           },
         );
       },
-      transitionBuilder: (_, anim, __, child) {
-        Tween<Offset> tween;
-        if (anim.status == AnimationStatus.reverse) {
-          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
-        } else {
-          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
-        }
-
-        return SlideTransition(
-          position: tween.animate(anim),
-          child: FadeTransition(
-            opacity: anim,
-            child: child,
-          ),
-        );
-      },
+      // transitionBuilder: (_, anim, __, child) {
+      //   Tween<Offset> tween;
+      //   if (anim.status == AnimationStatus.reverse) {
+      //     tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
+      //   } else {
+      //     tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+      //   }
+      //
+      //   return SlideTransition(
+      //     position: tween.animate(anim),
+      //     child: FadeTransition(
+      //       opacity: anim,
+      //       child: child,
+      //     ),
+      //   );
+      // },
     );
   }
 

@@ -264,7 +264,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     addInvoiceController.projectData = projectModel.data!;
   }
 
-  AlertDialog addInvoiceDialog(BuildContext context) {
+  AlertDialog addInvoiceDialog(
+      BuildContext context, String event, Function onSubmit) {
     return AlertDialog(
       content: Container(
         width: MediaQuery.of(context).size.width,
@@ -468,7 +469,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (_addInvoiceFormKey.currentState!.validate()) {
-                              addInvoiceController.addItems();
+                              if (event == "add") {
+                                addInvoiceController.addItems(itemId: '0');
+                              } else {
+                                onSubmit();
+                              }
                             }
                           },
                           style: ButtonStyle(
@@ -491,7 +496,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           child: Padding(
                               padding: const EdgeInsets.all(7.0),
                               child: Text(
-                                "Add Item",
+                                event == "add" ? "Add Item" : "Update Item",
                                 style: AppTextStyles.btn1TextStyle,
                               )),
                         )
@@ -953,7 +958,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               if (element.projectname == value) {
                 addInvoiceController.projectId = element.projectcode!;
                 addInvoiceController.onGetBuilding(element.projectcode!);
-                addInvoiceController.onGetVendorPO(element.projectcode!);
+                // addInvoiceController.onGetVendorPO(element.projectcode!);
               }
             }
 
@@ -1215,106 +1220,79 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               height: MediaQuery.of(context).size.height * 0.70,
               child: addInvoiceController.step1Loading.value
                   ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        addInvoiceController.isPdf == false
-                            ? Container(
-                                width: MediaQuery.of(context).size.width,
-                                height: 100,
-                                margin: const EdgeInsets.all(8),
-                                child: OutlinedButton(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.upload),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      CustomTextStyle.regular(
-                                          text: "drop a file here"),
-                                    ],
+                  : SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          addInvoiceController.isPdf == false
+                              ? Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 100,
+                                  margin: const EdgeInsets.all(8),
+                                  child: OutlinedButton(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.upload),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        CustomTextStyle.regular(
+                                            text: "drop a file here"),
+                                      ],
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                MultiImageScreen(
+                                                  isEdit: true,
+                                                  onSubmit: () {
+                                                    if (widget.scheduleId ==
+                                                        "") {
+                                                      addInvoiceController
+                                                          .isPdfChange
+                                                          .value = "0";
+                                                    } else {
+                                                      addInvoiceController
+                                                          .isPdfChange
+                                                          .value = "1";
+                                                    }
+                                                    addInvoiceController
+                                                        .isPdf.value = true;
+                                                  },
+                                                )),
+                                      );
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              MultiImageScreen(
-                                                isEdit: true,
-                                                onSubmit: () {
-                                                  if (widget.scheduleId == "") {
-                                                    addInvoiceController
-                                                        .isPdfChange
-                                                        .value = "0";
-                                                  } else {
-                                                    addInvoiceController
-                                                        .isPdfChange
-                                                        .value = "1";
-                                                  }
-                                                  addInvoiceController
-                                                      .isPdf.value = true;
-                                                },
-                                              )),
-                                    );
-                                  },
-                                ),
-                              )
-                            : Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(8),
-                                child: Stack(
-                                  children: [
-                                    OutlinedButton(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.picture_as_pdf,
-                                            color: Colors.green,
-                                          ),
-                                          const SizedBox(
-                                            width: 8,
-                                            height: 100,
-                                          ),
-                                          CustomTextStyle.regular(
-                                              text: "Sample PDF"),
-                                        ],
-                                      ),
-                                      onPressed: () {
-                                        if (widget.scheduleId == "") {
-                                          imageLogo =
-                                              Helper.convertFilesToMemoryImages(
-                                                  imageList);
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const PdfPreviewPage(),
+                                )
+                              : Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: const EdgeInsets.all(8),
+                                  child: Stack(
+                                    children: [
+                                      OutlinedButton(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Icons.picture_as_pdf,
+                                              color: Colors.green,
                                             ),
-                                          );
-                                        } else {
-                                          // Helper.getToastMsg(
-                                          //     addInvoiceController
-                                          //         .isPdfChange.value);
-                                          if (addInvoiceController
-                                                  .isPdfChange.value ==
-                                              "0") {
-                                            if (addInvoiceController.pdfUrl !=
-                                                null) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PdfUrlView(
-                                                          url:
-                                                              addInvoiceController
-                                                                  .pdfUrl!,
-                                                        )),
-                                              );
-                                            }
-                                          } else {
+                                            const SizedBox(
+                                              width: 8,
+                                              height: 100,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text: "Sample PDF"),
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          if (widget.scheduleId == "") {
                                             imageLogo = Helper
                                                 .convertFilesToMemoryImages(
                                                     imageList);
@@ -1324,253 +1302,290 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                     const PdfPreviewPage(),
                                               ),
                                             );
+                                          } else {
+                                            // Helper.getToastMsg(
+                                            //     addInvoiceController
+                                            //         .isPdfChange.value);
+                                            if (addInvoiceController
+                                                    .isPdfChange.value ==
+                                                "0") {
+                                              if (addInvoiceController.pdfUrl !=
+                                                  null) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PdfUrlView(
+                                                            url:
+                                                                addInvoiceController
+                                                                    .pdfUrl!,
+                                                          )),
+                                                );
+                                              }
+                                            } else {
+                                              imageLogo = Helper
+                                                  .convertFilesToMemoryImages(
+                                                      imageList);
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const PdfPreviewPage(),
+                                                ),
+                                              );
+                                            }
                                           }
-                                        }
-                                      },
-                                    ),
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Helper.deleteDialog(context,
-                                              "Do you want to delete an file",
-                                              () {
-                                            addInvoiceController.isPdf.value =
-                                                false;
-                                            setState(() {});
-                                          });
                                         },
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 8),
-                                          child: Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.grey.shade300,
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(16))),
-                                              child: const Icon(
-                                                  Icons.delete_forever)),
-                                        ),
                                       ),
-                                    )
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Helper.deleteDialog(context,
+                                                "Do you want to delete an file",
+                                                () {
+                                              addInvoiceController.isPdf.value =
+                                                  false;
+                                              setState(() {});
+                                            });
+                                          },
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 8),
+                                            child: Container(
+                                                width: 32,
+                                                height: 32,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey.shade300,
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                16))),
+                                                child: const Icon(
+                                                    Icons.delete_forever)),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Obx(
+                            () => Card(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: "Vendor Details",
+                                        fontSize: 14,
+                                        color: AppColors.blueColor),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Obx(() => CustomTextStyle.regular(
+                                        text:
+                                            "Company name: ${addInvoiceController.companyName}")),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    dropDownList(context, () {}),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomTextStyle.bold(
+                                            text: "Address : ", fontSize: 16),
+                                        Expanded(
+                                          child: CustomTextStyle.regular(
+                                              text: addInvoiceController
+                                                      .vendorData[0].address ??
+                                                  "NA",
+                                              fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              CustomTextStyle.bold(
+                                                  text: "PAN : ", fontSize: 16),
+                                              CustomTextStyle.regular(
+                                                  text: addInvoiceController
+                                                          .vendorData[0].pan ??
+                                                      "NA",
+                                                  fontSize: 14)
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomTextStyle.bold(
+                                                  text: "GST : ", fontSize: 16),
+                                              Expanded(
+                                                child: CustomTextStyle.regular(
+                                                    text: addInvoiceController
+                                                            .vendorData[0]
+                                                            .gst ??
+                                                        "NA",
+                                                    fontSize: 14),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+
+                                        /* Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.bold(
+                                        text: "PAN :".trim(), fontSize: 16)),
+                                Expanded(
+                                    flex: 2,
+                                    child: CustomTextStyle.regular(
+                                        text: addInvoiceController.vendorData.pan ?? "NA",
+                                        fontSize: 14)),
+                                Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.bold(
+                                        text: "GST :".trim(), fontSize: 16)),
+                                Expanded(
+                                    flex: 2,
+                                    child: CustomTextStyle.regular(
+                                        text: addInvoiceController.vendorData.gst ?? "NA",
+                                        fontSize: 14)),*/
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomTextStyle.bold(
+                                                  text: "Contact : ",
+                                                  fontSize: 16),
+                                              Expanded(
+                                                child: CustomTextStyle.regular(
+                                                    text: addInvoiceController
+                                                            .vendorData[0]
+                                                            .contactName ??
+                                                        "NA",
+                                                    fontSize: 14),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              CustomTextStyle.bold(
+                                                  text: "Mobile : ",
+                                                  fontSize: 16),
+                                              CustomTextStyle.regular(
+                                                  text: addInvoiceController
+                                                          .vendorData[0]
+                                                          .contactNo ??
+                                                      "NA",
+                                                  fontSize: 14)
+                                            ],
+                                          ),
+                                        ),
+
+                                        /* Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.bold(
+                                        text: "Contact :", fontSize: 16)),
+                                Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.regular(
+                                        text:
+                                            addInvoiceController.vendorData.contactName ??
+                                                "NA",
+                                        fontSize: 14)),
+                                Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.bold(
+                                        text: "Mobile :".trim(), fontSize: 16)),
+                                Expanded(
+                                    flex: 1,
+                                    child: CustomTextStyle.regular(
+                                        text: addInvoiceController.vendorData.contactNo ??
+                                            "NA",
+                                        fontSize: 14)),*/
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomTextStyle.bold(
+                                            text: "Email : ", fontSize: 16),
+                                        CustomTextStyle.regular(
+                                            text: addInvoiceController
+                                                    .vendorData[0].email ??
+                                                "NA",
+                                            fontSize: 14),
+                                      ],
+                                    ),
+
+                                    /* builderToShowData(
+                                "Address ",
+                                addInvoiceController.vendorData.address ?? "NA",
+                                "Address ",
+                                addInvoiceController.vendorData.address ?? "NA"),
+                            builderToShowData(
+                                "Contact Person",
+                                addInvoiceController.vendorData.contactName ?? "NA",
+                                "Mobile",
+                                addInvoiceController.vendorData.contactNo ?? "NA"),
+                            builderToShowData(
+                                "Email ",
+                                addInvoiceController.vendorData.email ?? "NA",
+                                "GST ",
+                                addInvoiceController.vendorData.gst ?? "NA"),*/
                                   ],
                                 ),
                               ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Obx(
-                          () => Card(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text: "Vendor Details",
-                                      fontSize: 14,
-                                      color: AppColors.blueColor),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Obx(() => CustomTextStyle.regular(
-                                      text:
-                                          "Company name: ${addInvoiceController.companyName}")),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  dropDownList(context, () {}),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      CustomTextStyle.bold(
-                                          text: "Address : ", fontSize: 16),
-                                      Expanded(
-                                        child: CustomTextStyle.regular(
-                                            text: addInvoiceController
-                                                    .vendorData[0].address ??
-                                                "NA",
-                                            fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            CustomTextStyle.bold(
-                                                text: "PAN : ", fontSize: 16),
-                                            CustomTextStyle.regular(
-                                                text: addInvoiceController
-                                                        .vendorData[0].pan ??
-                                                    "NA",
-                                                fontSize: 14)
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            CustomTextStyle.bold(
-                                                text: "GST : ", fontSize: 16),
-                                            Expanded(
-                                              child: CustomTextStyle.regular(
-                                                  text: addInvoiceController
-                                                          .vendorData[0].gst ??
-                                                      "NA",
-                                                  fontSize: 14),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-
-                                      /* Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.bold(
-                                      text: "PAN :".trim(), fontSize: 16)),
-                              Expanded(
-                                  flex: 2,
-                                  child: CustomTextStyle.regular(
-                                      text: addInvoiceController.vendorData.pan ?? "NA",
-                                      fontSize: 14)),
-                              Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.bold(
-                                      text: "GST :".trim(), fontSize: 16)),
-                              Expanded(
-                                  flex: 2,
-                                  child: CustomTextStyle.regular(
-                                      text: addInvoiceController.vendorData.gst ?? "NA",
-                                      fontSize: 14)),*/
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            CustomTextStyle.bold(
-                                                text: "Contact : ",
-                                                fontSize: 16),
-                                            Expanded(
-                                              child: CustomTextStyle.regular(
-                                                  text: addInvoiceController
-                                                          .vendorData[0]
-                                                          .contactName ??
-                                                      "NA",
-                                                  fontSize: 14),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            CustomTextStyle.bold(
-                                                text: "Mobile : ",
-                                                fontSize: 16),
-                                            CustomTextStyle.regular(
-                                                text: addInvoiceController
-                                                        .vendorData[0]
-                                                        .contactNo ??
-                                                    "NA",
-                                                fontSize: 14)
-                                          ],
-                                        ),
-                                      ),
-
-                                      /* Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.bold(
-                                      text: "Contact :", fontSize: 16)),
-                              Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.regular(
-                                      text:
-                                          addInvoiceController.vendorData.contactName ??
-                                              "NA",
-                                      fontSize: 14)),
-                              Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.bold(
-                                      text: "Mobile :".trim(), fontSize: 16)),
-                              Expanded(
-                                  flex: 1,
-                                  child: CustomTextStyle.regular(
-                                      text: addInvoiceController.vendorData.contactNo ??
-                                          "NA",
-                                      fontSize: 14)),*/
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      CustomTextStyle.bold(
-                                          text: "Email : ", fontSize: 16),
-                                      CustomTextStyle.regular(
-                                          text: addInvoiceController
-                                                  .vendorData[0].email ??
-                                              "NA",
-                                          fontSize: 14),
-                                    ],
-                                  ),
-
-                                  /* builderToShowData(
-                              "Address ",
-                              addInvoiceController.vendorData.address ?? "NA",
-                              "Address ",
-                              addInvoiceController.vendorData.address ?? "NA"),
-                          builderToShowData(
-                              "Contact Person",
-                              addInvoiceController.vendorData.contactName ?? "NA",
-                              "Mobile",
-                              addInvoiceController.vendorData.contactNo ?? "NA"),
-                          builderToShowData(
-                              "Email ",
-                              addInvoiceController.vendorData.email ?? "NA",
-                              "GST ",
-                              addInvoiceController.vendorData.gst ?? "NA"),*/
-                                ],
-                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 16,
+                          ),
+                        ],
+                      ),
                     ),
             ),
           ],
@@ -1819,41 +1834,51 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       state: StepState.complete,
       isActive: _activeCurrentStep >= 2,
       title: const Text('Step 3'),
-      content: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomTextStyle.bold(
-                  text: "${addInvoiceController.selectedVendor}",
-                  fontSize: 16,
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: OutlinedButton.icon(
-                    // <-- OutlinedButton
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      addInvoiceController.clearAddFormData();
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return addInvoiceDialog(context);
-                          });
-                    },
-                    icon: const Icon(
-                      Icons.add,
-                      size: 24.0,
-                    ),
-                    label: const Text('Add Item'),
+      content: Obx(
+        () => SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomTextStyle.bold(
+                    text: "${addInvoiceController.selectedVendor}",
+                    fontSize: 16,
                   ),
-                ),
-              ],
-            ),
-            Obx(
-              () => SizedBox(
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: OutlinedButton.icon(
+                      // <-- OutlinedButton
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        addInvoiceController.clearAddFormData();
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return addInvoiceDialog(context, "add", () {});
+                            });
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        size: 24.0,
+                      ),
+                      label: const Text('Add Item'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              CustomTextStyle.regular(
+                  text:
+                      "Count ${addInvoiceController.allInvoiceItemList.length}  "),
+              const SizedBox(
+                height: 8,
+              ),
+              SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: addInvoiceController.allInvoiceItemList.isEmpty
                     ? Center(
@@ -1895,7 +1920,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                         showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return addInvoiceDialog(context);
+                                              return addInvoiceDialog(
+                                                  context, "edit", () {
+                                                addInvoiceController
+                                                    .allInvoiceItemList
+                                                    .remove(data);
+                                                addInvoiceController.addItems(
+                                                    itemId:
+                                                        data.invoiceItemId!);
+                                              });
                                             });
                                       },
                                       child: Container(
@@ -2023,9 +2056,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                           ));
                         },
                       ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

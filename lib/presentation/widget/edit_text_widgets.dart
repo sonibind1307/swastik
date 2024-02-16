@@ -69,8 +69,8 @@ class CustomEditTestWidgets {
       textInputAction: TextInputAction.done,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       maxLines: 1,
-      decoration:
-          CustomTextDecoration.textFieldDecoration(labelText: Constant.remark),
+      decoration: CustomTextDecoration.textFieldDecoration(
+          labelText: Constant.txtRemarks),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return Constant.enterTextError;
