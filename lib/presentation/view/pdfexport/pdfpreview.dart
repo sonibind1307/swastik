@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:swastik/presentation/view/multipleImageScreen.dart';
+
+import '../../../config/Helper.dart';
 
 class PdfPreviewPage extends StatelessWidget {
   const PdfPreviewPage({Key? key}) : super(key: key);
@@ -30,56 +33,64 @@ class PdfPreviewPage extends StatelessWidget {
 
   Future<Uint8List> generatePdf() async {
     final pdf = pw.Document();
-    for (MemoryImage memoryImage in imageLogo) {
-      pdf.addPage(
-        pw.MultiPage(
-          // pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) => [
-            // Header
-            pw.Container(
-              alignment: pw.Alignment.topRight,
-              // margin: const pw.EdgeInsets.only(top: 10.0),
-              child: pw.Text('UserName: soni.b '),
-            ),
-            // Image
-            // pw.SizedBox(height: 10),
-            pw.Center(
-              child: buildPdfImage(memoryImage),
-            ),
-            // pw.SizedBox(height: 10),
-            // Footer
-            pw.Container(
-              alignment: pw.Alignment.bottomRight,
-              // margin: const pw.EdgeInsets.only(bottom: 10.0),
-              child: pw.Text('Date : ${DateTime.now()}',
-                  style: const pw.TextStyle(fontSize: 20)),
-            ),
-          ],
-        ),
+    try {
+      for (MemoryImage memoryImage in imageLogo) {
+        // pdf.addPage(pw.Page(
+        //     build: (context) => pw.Column(children: [
+        //           pw.Align(
+        //               alignment: pw.Alignment.centerRight,
+        //               child: pw.Text('User Name : soni.b')),
+        //           pw.Center(
+        //             child: pw.Container(child: buildPdfImage(memoryImage)),
+        //           ),
+        //           pw.Align(
+        //               alignment: pw.Alignment.centerRight,
+        //               child: pw.Text(
+        //                   'Date : ${DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now())}')),
+        //         ])));
 
-        //     pw.Page(
-        //   build: (context) => pw.Column(
-        //     children: [
-        //       pw.Center(
-        //         child: buildPdfImage(memoryImage),
-        //       ),
-        //     ]
-        //   )
-        // )
-      );
+        pdf.addPage(
+          pw.Page(
+            build: (context) => pw.Wrap(
+              children: [
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Align(
+                      alignment: pw.Alignment.centerRight,
+                      child: pw.Text('User Name : soni.b'),
+                    ),
+                    pw.Center(
+                      child: pw.Container(child: buildPdfImage(memoryImage)),
+                    ),
+                    pw.Align(
+                      alignment: pw.Alignment.centerRight,
+                      child: pw.Text(
+                        'Date : ${DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now())}',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      // Get temporary directory or application documents directory
+      final directory = await getApplicationDocumentsDirectory();
+      // final directory = await getApplicationDocumentsDirectory();
+
+      // Create the path for the PDF file
+      final path = '${directory.path}/example.pdf';
+
+      // Save the PDF to the path
+      final File file = File(path);
+
+      await file.writeAsBytes(await pdf.save());
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
     }
-
-    // Get temporary directory or application documents directory
-    final directory = await getApplicationDocumentsDirectory();
-    // final directory = await getApplicationDocumentsDirectory();
-
-    // Create the path for the PDF file
-    final path = '${directory.path}/example.pdf';
-
-    // Save the PDF to the path
-    final File file = File(path);
-
-    await file.writeAsBytes(await pdf.save());
 
     // debugPrint("Soni ==> $path");
 

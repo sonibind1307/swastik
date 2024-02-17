@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart' as gt;
+import 'package:path_provider/path_provider.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
@@ -178,6 +179,16 @@ class ApiRepo {
 
     print("invoice_id - >$invoice_id");
     print("upload_file - >$upload_file");
+    final directory = await getApplicationDocumentsDirectory();
+    // final directory = await getApplicationDocumentsDirectory();
+
+    // Create the path for the PDF file
+    final path = '${directory.path}/example.pdf';
+
+    print("pdf_pathe - ${path}");
+
+    // Save the PDF to the path
+    // final File file = File(path);
     try {
       // Define your form data
       var data = FormData.fromMap({
@@ -197,11 +208,7 @@ class ApiRepo {
         'vendor_linked_ldgr': vendorLinkedLdgr,
         'file': upload_file == "0" && invoice_id != "0"
             ? file
-            : [
-                await MultipartFile.fromFile(
-                    '/data/user/0/com.swastik.swastik/app_flutter/example.pdf',
-                    filename: 'example.pdf')
-              ],
+            : [await MultipartFile.fromFile(path, filename: 'example.pdf')],
         'item_list': json.encode(itemList)
       });
       print(" RequestData => ${data.fields}");
@@ -238,6 +245,11 @@ class ApiRepo {
         }
       });
     } catch (e) {
+      Helper().showServerErrorDialog(context, "File error : ->${e}", () async {
+        FocusScope.of(context).unfocus();
+        Navigator.of(context, rootNavigator: true).pop();
+        // gt.Get.offAll(InvoiceScreen());
+      });
       Helper.getToastMsg("${e}");
       print('Error: $e');
     }
