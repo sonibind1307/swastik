@@ -15,6 +15,7 @@ class PdfPreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("soni 123=> $imgHeight");
     return Scaffold(
       appBar: AppBar(
         title: const Text('PDF Preview'),
@@ -28,7 +29,10 @@ class PdfPreviewPage extends StatelessWidget {
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;
     final pdfImage = pw.MemoryImage(imageData);
-    return pw.Image(pdfImage);
+    return pw.Container(
+      height: imgHeight, // Adjust this value as needed
+      child: pw.Image(pdfImage),
+    );
   }
 
   Future<Uint8List> generatePdf() async {
@@ -51,25 +55,22 @@ class PdfPreviewPage extends StatelessWidget {
 
         pdf.addPage(
           pw.Page(
-            build: (context) => pw.Wrap(
+            build: (pw.Context context) => pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Align(
-                      alignment: pw.Alignment.centerRight,
-                      child: pw.Text('User Name : soni.b'),
-                    ),
-                    pw.Center(
-                      child: pw.Container(child: buildPdfImage(memoryImage)),
-                    ),
-                    pw.Align(
-                      alignment: pw.Alignment.centerRight,
-                      child: pw.Text(
-                        'Date : ${DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now())}',
-                      ),
-                    ),
-                  ],
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Text('User Name : soni.b'),
+                ),
+                pw.Center(
+                  child: pw.Container(
+                      child: buildPdfImage(memoryImage)),
+                ),
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Text(
+                    'Date : ${DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now())}',
+                  ),
                 ),
               ],
             ),
