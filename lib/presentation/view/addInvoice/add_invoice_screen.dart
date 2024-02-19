@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/controller/add_invoice_controller.dart';
@@ -41,6 +46,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   @override
   void initState() {
     super.initState();
+    addInvoiceController.clearDirectory();
     addInvoiceController.clearAllData();
     addInvoiceController.init();
     debugPrint("widget.scheduleId ${widget.scheduleId}");
@@ -64,8 +70,10 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Vendor Invoices',
+          title: Text(
+            widget.scheduleId == ""
+                ? "Add Vendor Invoice"
+                : "Update Vendor Invoice",
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -77,7 +85,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           controlsBuilder: (context, controller) {
             return Obx(
               () => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (_activeCurrentStep != 0)
@@ -138,6 +146,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                 }
                               }
                               if (_activeCurrentStep == 0) {
+                                if (widget.scheduleId == "") {
+                                  generatePdf();
+                                } else {
+                                  if (addInvoiceController.isPdfChange.value ==
+                                      "1") {
+                                    generatePdf();
+                                  }
+                                }
                                 _activeCurrentStep += 1;
                               }
                             });
@@ -173,7 +189,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                   color: Colors.white,
                                 )))
                             : Text(
-                                _activeCurrentStep == 2 ? "Submit" : "Next",
+                                _activeCurrentStep == 2 ? "Save" : "Next",
                                 style: AppTextStyles.btn1TextStyle,
                               )),
                   )
@@ -316,9 +332,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
                           labelText: "HSN/SAC Code"),
-                      // inputFormatters: [
-                      //   FilteringTextInputFormatter(RegExp(r'[a-z A-Z]'), allow: true)
-                      // ],
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: false, decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter(RegExp(r'\d+'), allow: true)
+                      ],
+                      maxLength: 15,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return Constant.enterTextError;
@@ -373,7 +392,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       ],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Amount"),
+                          labelText: "Rate"),
                       onChanged: (value) {
                         if (_amountKey.currentState != null) {
                           if (_amountKey.currentState!.validate()) {}
@@ -384,7 +403,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                         if (value == null || value.isEmpty) {
                           return Constant.enterTextError;
                         } else if (value.trim().toString() == "0") {
-                          return "Amount can not be 0";
+                          return "Rate can not be 0";
                         }
                         return null;
                       },
@@ -405,25 +424,47 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     igstDropDownList(context, "IGST",
                         addInvoiceController.igstList, (value) {}),
                     const SizedBox(
-                      height: 8.0,
+                      height: 16.0,
                     ),
-                    TextFormField(
-                      controller: addInvoiceController.amountFinal,
-                      readOnly: true,
-                      enabled: false,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Final Amount"),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CustomTextStyle.regular(text: "Tax Amount"),
+                        CustomTextStyle.bold(
+                            text: "${addInvoiceController.amountTax.text}")
+                      ],
                     ),
                     const SizedBox(
                       height: 8.0,
                     ),
-                    TextFormField(
-                      controller: addInvoiceController.amountTax,
-                      readOnly: true,
-                      enabled: false,
-                      decoration: CustomTextDecoration.textFieldDecoration(
-                          labelText: "Tax Amount"),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CustomTextStyle.regular(text: "Final Amount"),
+                        CustomTextStyle.bold(
+                            text: "${addInvoiceController.amountFinal.text}")
+                      ],
                     ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    // TextFormField(
+                    //   controller: addInvoiceController.amountFinal,
+                    //   readOnly: true,
+                    //   enabled: false,
+                    //   decoration: CustomTextDecoration.textFieldDecoration(
+                    //       labelText: "Final Amount"),
+                    // ),
+                    // const SizedBox(
+                    //   height: 8.0,
+                    // ),
+                    // TextFormField(
+                    //   controller: addInvoiceController.amountTax,
+                    //   readOnly: true,
+                    //   enabled: false,
+                    //   decoration: CustomTextDecoration.textFieldDecoration(
+                    //       labelText: "Tax Amount"),
+                    // ),
                     const SizedBox(
                       height: 16,
                     ),
@@ -491,14 +532,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                   vertical: 10, horizontal: 15),
                             ),
                             backgroundColor:
-                                MaterialStateProperty.all(AppColors.bgColor),
+                                MaterialStateProperty.all(Colors.blue),
                           ),
                           child: Padding(
                               padding: const EdgeInsets.all(7.0),
-                              child: Text(
-                                event == "add" ? "Add Item" : "Update Item",
-                                style: AppTextStyles.btn1TextStyle,
-                              )),
+                              child: CustomTextStyle.regular(
+                                  text: event == "add"
+                                      ? "Add Item"
+                                      : "Update Item",
+                                  color: Colors.white)),
                         )
                       ],
                     )
@@ -1281,14 +1323,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                           children: [
                                             const Icon(
                                               Icons.picture_as_pdf,
-                                              color: Colors.green,
+                                              color: Colors.red,
                                             ),
                                             const SizedBox(
                                               width: 8,
                                               height: 100,
                                             ),
                                             CustomTextStyle.regular(
-                                                text: "Sample PDF"),
+                                                text: "Invoice PDF"),
                                           ],
                                         ),
                                         onPressed: () {
@@ -1380,20 +1422,32 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    CustomTextStyle.bold(
-                                        text: "Vendor Details",
-                                        fontSize: 14,
-                                        color: AppColors.blueColor),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Obx(() => CustomTextStyle.regular(
-                                        text:
-                                            "Company name: ${addInvoiceController.companyName}")),
+                                    Obx(() => Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 8),
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.blue,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(4))),
+                                          child: CustomTextStyle.bold(
+                                              text:
+                                                  "Company name: ${addInvoiceController.companyName}",
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        )),
                                     const SizedBox(
                                       height: 16,
                                     ),
                                     dropDownList(context, () {}),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    CustomTextStyle.bold(
+                                        text: "Vendor Details",
+                                        fontSize: 14,
+                                        color: AppColors.blueColor),
                                     const SizedBox(
                                       height: 16,
                                     ),
@@ -1646,9 +1700,16 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextStyle.bold(
-                text: "${addInvoiceController.selectedVendor}",
-                fontSize: 16,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                child: CustomTextStyle.bold(
+                    text: "${addInvoiceController.selectedVendor}",
+                    color: Colors.white,
+                    fontSize: 16),
               ),
               const SizedBox(
                 height: 16,
@@ -1836,17 +1897,37 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       title: const Text('Step 3'),
       content: Obx(
         () => SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.7,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomTextStyle.bold(
-                    text: "${addInvoiceController.selectedVendor}",
-                    fontSize: 16,
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8),
+                      decoration: const BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.all(Radius.circular(4))),
+                      child: CustomTextStyle.bold(
+                          text: "${addInvoiceController.selectedVendor}",
+                          color: Colors.white,
+                          fontSize: 16),
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomTextStyle.regular(
+                      text:
+                          "Count ${addInvoiceController.allInvoiceItemList.length}  "),
                   Align(
                     alignment: Alignment.topRight,
                     child: OutlinedButton.icon(
@@ -1872,19 +1953,174 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               const SizedBox(
                 height: 8,
               ),
-              CustomTextStyle.regular(
-                  text:
-                      "Count ${addInvoiceController.allInvoiceItemList.length}  "),
-              const SizedBox(
-                height: 8,
-              ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.4,
                 child: addInvoiceController.allInvoiceItemList.isEmpty
                     ? Center(
                         child: CustomTextStyle.regular(text: "No Item Added"),
                       )
-                    : ListView.builder(
+                    : ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const SizedBox(
+                          height: 4,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          InvoiceItems data =
+                              addInvoiceController.allInvoiceItemList[index];
+                          return Card(
+                            elevation: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+                                    Expanded(
+                                      // flex: 2,
+                                      child: Container(
+                                          // color: Colors.red,
+                                          child: CustomTextStyle.bold(
+                                              text:
+                                                  data.itemDescription ?? "NA",
+                                              fontSize: 16)),
+                                    ),
+                                    Expanded(
+                                        child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: CustomTextStyle.bold(
+                                          text: data.itemTotal ?? "0.0",
+                                          fontSize: 16),
+                                    )),
+                                  ]),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          FocusScope.of(context).unfocus();
+                                          addInvoiceController.onEditItem(
+                                              itemData: data);
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return addInvoiceDialog(
+                                                    context, "edit", () {
+                                                  addInvoiceController
+                                                      .allInvoiceItemList
+                                                      .remove(data);
+
+                                                  addInvoiceController.addItems(
+                                                      itemId:
+                                                          data.invoiceItemId!);
+                                                });
+                                              });
+                                        },
+                                        child: Container(
+                                            width: 22,
+                                            height: 22,
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10))),
+                                            child: const Icon(
+                                              Icons.edit,
+                                              color: Colors.grey,
+                                              size: 20,
+                                            )),
+                                      ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          FocusScope.of(context).unfocus();
+                                          Helper.deleteDialog(context,
+                                              "Do you want to delete an item",
+                                              () {
+                                            FocusScope.of(context).unfocus();
+                                            addInvoiceController
+                                                .allInvoiceItemList
+                                                .remove(data);
+                                            addInvoiceController
+                                                .updateSummaryItem();
+                                          });
+                                        },
+                                        child: Container(
+                                            width: 22,
+                                            height: 22,
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(14))),
+                                            child: const Icon(
+                                              Icons.delete_forever,
+                                              color: Colors.grey,
+                                              size: 20,
+                                            )),
+                                      )
+                                    ],
+                                  ),
+/*                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(),
+                                      ),
+                                      Expanded(
+                                          flex: 1,
+                                          child: CustomTextStyle.regular(
+                                              text: 'Rate: ${data.itemAmount}',
+                                              fontSize: 12)),
+                                      Expanded(
+                                          child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            CustomTextStyle.regular(
+                                                text: 'GST', fontSize: 12),
+                                            const SizedBox(
+                                              width: 4.0,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return gstDialog(
+                                                          context,
+                                                          data.itemCgst,
+                                                          data.itemSgst,
+                                                          data.itemIgst);
+                                                    });
+                                              },
+                                              child: const Icon(
+                                                Icons.info_rounded,
+                                                color: Colors.grey,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                                    ],
+                                  ),*/
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount:
+                            addInvoiceController.allInvoiceItemList.length,
+                      )
+                /*ListView.builder(
                         scrollDirection: Axis.vertical,
                         keyboardDismissBehavior:
                             ScrollViewKeyboardDismissBehavior.onDrag,
@@ -2055,12 +2291,153 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                             ),
                           ));
                         },
-                      ),
-              )
+                      )*/
+                ,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Obx(
+                () => Expanded(
+                  child: Container(
+                    // margin: EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade400,
+                            blurRadius: 4.0, // soften the shadow
+                            // spreadRadius: 4.0, //extend the shadow
+                            offset: Offset(
+                              0.0, // Move to right 5  horizontally
+                              0.0, // Move to bottom 5 Vertically
+                            ),
+                          )
+                        ]),
+
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: ListView(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 1,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
+                          ),
+                          child: CustomTextStyle.extraBold(
+                              text: "Items Summary",
+                              fontSize: 16,
+                              color: Colors.white),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomTextStyle.regular(text: "Subtotal"),
+                            CustomTextStyle.bold(
+                                text:
+                                    "RS. ${addInvoiceController.subtotal ?? "0.0"}")
+                          ],
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomTextStyle.regular(text: "Tax Amount"),
+                            CustomTextStyle.bold(
+                                text:
+                                    "RS. ${addInvoiceController.taxTotal ?? "0.0"}")
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomTextStyle.regular(text: "Total"),
+                            CustomTextStyle.bold(
+                                text:
+                                    "RS. ${(addInvoiceController.subtotal.value + addInvoiceController.taxTotal.value) ?? "0.0"}",
+                                fontSize: 16)
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<Uint8List> generatePdf() async {
+    final pdf = pw.Document();
+    for (MemoryImage memoryImage in imageLogo) {
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) => [
+            // Image
+            pw.Container(
+              width: 500,
+              height: 650,
+              child: pw.Center(child: buildPdfImage(memoryImage)),
+            ),
+
+            // Footer
+            pw.Container(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Directory directory = await getApplicationDocumentsDirectory();
+    String folderName = "swastik";
+    Directory newDirectory = Directory('${directory.path}/$folderName');
+    final path = '${newDirectory.path}/invoice.pdf';
+
+    if (await newDirectory.exists()) {
+      Helper.getToastMsg("folder already exists");
+      print('Folder already exists, deleting...');
+      await newDirectory.delete(recursive: true);
+    }
+    await newDirectory.create();
+    final File file = File(path);
+    await file.writeAsBytes(await pdf.save());
+    debugPrint("Soni ==> $path");
+    Helper.getToastMsg("File saved");
+    return pdf.save();
+  }
+
+  pw.Widget buildPdfImage(MemoryImage memoryImage) {
+    final Uint8List imageData = memoryImage.bytes;
+    final pdfImage = pw.MemoryImage(imageData);
+    return pw.Image(pdfImage);
   }
 }

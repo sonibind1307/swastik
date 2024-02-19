@@ -567,7 +567,7 @@ class Helper {
                   letterSpacing: 0.2),
             ),
             content: Text(title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.w400,

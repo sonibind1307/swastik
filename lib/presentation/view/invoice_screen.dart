@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/config/colorConstant.dart';
@@ -45,6 +46,96 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return BlocProvider(
       create: (BuildContext context) => InvoiceBloc(),
       child: Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(color: Colors.blue),
+                  accountName: Text(
+                    "Soni bind",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  accountEmail: Text("abhishekm977@gmail.com"),
+                  currentAccountPictureSize: Size.square(50),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Color.fromARGB(255, 165, 255, 137),
+                    child: Text(
+                      "A",
+                      style: TextStyle(fontSize: 30.0, color: Colors.blue),
+                    ), //Text
+                  ), //circleAvatar
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.dashboard_customize_outlined),
+                title: Text('Dashboard'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.add),
+                title: Text('Dashboard'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.ballot_outlined),
+                title: Text('Invoice'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.people_alt_rounded),
+                title: Text('Vendors'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.fire_truck),
+                title: Text('RMS'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.line_style_outlined),
+                title: Text('Steel'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.content_paste_sharp),
+                title: Text('PO/WO'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.business),
+                title: Text('Site Report'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.fingerprint),
+                title: Text('Attendance'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Setting'),
+                trailing: Icon(Icons.arrow_forward_ios_outlined),
+              ),
+              Container(
+                margin: EdgeInsets.all(4),
+                child: ElevatedButton(
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout),
+                        Text("Logout"),
+                      ],
+                    )),
+              )
+            ],
+          ),
+        ),
         key: key,
         appBar: AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
           IconButton(
@@ -87,57 +178,67 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             if (state is LoadingState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is LoadedState) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  dropDownList(context, state.dataProject),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Wrap(
-                      spacing: 8.0,
-                      children: listOfStatus.map((status) {
-                        return ChoiceChip(
-                          labelPadding:
-                              const EdgeInsets.only(left: 8, right: 8),
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          selectedColor: Colors.blue,
-                          label: Text(_getChipStatusText(status)),
-                          selected: _selectedStatus == status,
-                          onSelected: (isSelected) {
-                            if (isSelected) {
-                              _selectedStatus = status;
-                            }
-                            context.read<InvoiceBloc>().chipChoiceCardSelected(
-                                _selectedStatus.toString());
-                          },
-                        );
-                      }).toList(),
+              return RefreshIndicator(
+                onRefresh: () async {
+                  // Helper.getToastMsg("toastMessage");
+                  context.read<InvoiceBloc>().getInvoiceList();
+                  return;
+                  // return true;
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 8,
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 32.0),
-                    child: Align(
-                        alignment: Alignment.topRight,
-                        child: CustomTextStyle.regular(
-                            text:
-                                "Count: ${state.dataInvoice.data == null ? "0.0" : state.dataInvoice.data!.length}")),
-                  ),
-                  listBuilder(context, state.dataInvoice)
-                ],
+                    dropDownList(context, state.dataProject),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        children: listOfStatus.map((status) {
+                          return ChoiceChip(
+                            labelPadding:
+                                const EdgeInsets.only(left: 8, right: 8),
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            selectedColor: Colors.blue,
+                            label: Text(_getChipStatusText(status)),
+                            selected: _selectedStatus == status,
+                            onSelected: (isSelected) {
+                              if (isSelected) {
+                                _selectedStatus = status;
+                              }
+                              context
+                                  .read<InvoiceBloc>()
+                                  .chipChoiceCardSelected(
+                                      _selectedStatus.toString());
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 32.0),
+                      child: Align(
+                          alignment: Alignment.topRight,
+                          child: CustomTextStyle.regular(
+                              text:
+                                  "Count: ${state.dataInvoice.data == null ? "0.0" : state.dataInvoice.data!.length}")),
+                    ),
+                    listBuilder(context, state.dataInvoice)
+                  ],
+                ),
               );
             }
             return const Center(child: CircularProgressIndicator());
           },
           listener: (context, state) {},
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(
               context,
@@ -150,7 +251,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       )),
             );
           },
-          child: const Icon(Icons.camera_alt),
+          label: const Text("New Invoice"),
+          icon: const Icon(Icons.camera_alt),
         ),
       ),
     );
@@ -159,7 +261,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   String _getChipStatusText(String status) {
     switch (status) {
       case "0":
-        return 'ALl';
+        return 'All';
       case "PENDING":
         return 'Pending';
       case "VERIFIED":
@@ -368,6 +470,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         context.read<InvoiceBloc>().deleteInvoice(
                             invoiceList.data![index].invoiceId!.toString());
                       });
+                    } else if (key == "share") {
+                      Share.share("https://swastik.online/");
                     }
                   });
                 },
@@ -425,7 +529,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             ),
                             CustomTextStyle.regular(
                                 text:
-                                    "Inv.no: ${invoiceList.data![index].invoiceNo}"),
+                                    "Inv Ref: ${invoiceList.data![index].invref}"),
                             CustomTextStyle.regular(
                                 text: invoiceList.data![index].invcat),
                           ],
@@ -619,18 +723,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListTile(
-                title: const Text("Share"),
-                leading: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
-                      child: const Icon(Icons.share)),
+              InkWell(
+                onTap: () async {
+                  onClick("share");
+                },
+                child: ListTile(
+                  title: const Text("Share"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.share)),
+                  ),
                 ),
               ),
               ListTile(

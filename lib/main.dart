@@ -19,8 +19,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+
       title: 'Flutter Demo',
       home: InvoiceScreen(),
+
       builder: EasyLoading.init(),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -179,11 +180,10 @@ class ApiRepo {
 
     print("invoice_id - >$invoice_id");
     print("upload_file - >$upload_file");
-    final directory = await getApplicationDocumentsDirectory();
-    // final directory = await getApplicationDocumentsDirectory();
-
-    // Create the path for the PDF file
-    final path = '${directory.path}/example.pdf';
+    Directory directory = await getApplicationDocumentsDirectory();
+    String folderName = "swastik";
+    Directory newDirectory = Directory('${directory.path}/$folderName');
+    final path = '${newDirectory.path}/invoice.pdf';
 
     print("pdf_pathe - ${path}");
 

@@ -1,9 +1,10 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
@@ -54,7 +55,7 @@ class AddInvoiceController extends GetxController {
   RxString cgstValue1 = "CGST".obs;
   RxString sgstValue1 = "SGST".obs;
   RxString igstValue1 = "IGST".obs;
-  RxString companyName = "".obs;
+  RxString companyName = "NA".obs;
 
   String? selectedCategory;
   String? selectedProject;
@@ -233,6 +234,7 @@ class AddInvoiceController extends GetxController {
       // await onGetVendorPO(projectId!);
       if (invoiceIDetailModel.data!.invoiceItems!.isNotEmpty) {
         allInvoiceItemList.value = invoiceIDetailModel.data!.invoiceItems!;
+        updateSummaryItem();
         update();
       }
     }
@@ -264,6 +266,7 @@ class AddInvoiceController extends GetxController {
     } else {
       Helper.getToastMsg("add gst");
     }
+    updateSummaryItem();
     update();
   }
 
@@ -406,11 +409,14 @@ class AddInvoiceController extends GetxController {
   }
 
   void onEditItem({required InvoiceItems itemData}) {
-    debugPrint("soni ${jsonEncode(itemData)}");
+    int qty = int.tryParse(itemData.qty.toString().split('.').first) ?? 0;
+    int intamt =
+        int.tryParse(itemData.itemAmount.toString().split('.').first) ?? 0;
     itemDesc.text = itemData.itemDescription.toString();
     hCode.text = itemData.hsnCode.toString();
-    quanity.text = itemData.qty.toString();
-    amount.text = itemData.itemAmount.toString();
+
+    quanity.text = qty.toString();
+    amount.text = intamt.toString();
     // amountTax.text = itemData.itemTax.toString();
     // amountFinal.text = itemData.itemTotal.toString();
     cgstValue1.value =
@@ -481,9 +487,44 @@ class AddInvoiceController extends GetxController {
     igstPer = 0.0;
     isPdf.value = true;
     isPdfChange.value = "0";
+    subtotal.value = 0.0;
+    taxTotal.value = 0.0;
 
     VendorData data = VendorData();
     vendorData.add(data);
+    update();
+  }
+
+  Future<void> clearDirectory() async {
+    print('delete function');
+    Directory directory = await getApplicationDocumentsDirectory();
+    String folderName = "swastik";
+    Directory newDirectory = Directory('${directory.path}/$folderName');
+    if (await newDirectory.exists()) {
+      Helper.getToastMsg("folder already exists");
+      print('Folder already exists, deleting...');
+      await newDirectory.delete(recursive: true);
+    }
+  }
+
+  var subtotal = 0.0.obs;
+  var taxTotal = 0.0.obs;
+
+  updateSummaryItem() {
+    subtotal.value = 0.0;
+    taxTotal.value = 0.0;
+    if (allInvoiceItemList.isNotEmpty) {
+      for (var element in allInvoiceItemList) {
+        subtotal.value = subtotal.value +
+            (double.parse(element.itemAmount.toString()) *
+                double.parse(element.qty.toString()));
+        taxTotal.value =
+            taxTotal.value + double.parse(element.itemTax.toString());
+
+        debugPrint("subtotal ->$subtotal");
+        debugPrint("taxTotal ->$taxTotal");
+      }
+    }
     update();
   }
 }

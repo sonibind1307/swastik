@@ -9,8 +9,7 @@ class CustomDateTime {
         context: context,
         initialDate: now,
         firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101)
-    );
+        lastDate: DateTime(2101));
   }
 
   static int getDaysInMonth(int year, int month) {

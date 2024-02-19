@@ -11,6 +11,7 @@ class MultiImageCubit extends Cubit<MultiImageState> {
   MultiImageCubit() : super(InitialState()) {
     getImageList();
   }
+
   late XFile pickedImageFile;
 
   List<File> imageList = [];
@@ -26,9 +27,7 @@ class MultiImageCubit extends Cubit<MultiImageState> {
     if (pickedFile != null) {
       pickedImageFile = pickedFile;
       File selectedImg = File(pickedImageFile.path);
-      imageList.add(selectedImg);
-      emit(LoadedState(imageList));
-      //cropImage(selectedImg);
+      cropImage(selectedImg);
     }
   }
 
@@ -54,11 +53,6 @@ class MultiImageCubit extends Cubit<MultiImageState> {
 
     if (croppedFile != null) {
       imageList.add(File(croppedFile.path));
-      // setState(() {
-      //   drawing_img = File(croppedFile.path);
-      //   // isIconSelected= true;
-      // });
-
       emit(LoadedState(imageList));
     }
   }
