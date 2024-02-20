@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/controller/add_invoice_controller.dart';
@@ -430,8 +431,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomTextStyle.regular(text: "Tax Amount"),
-                        CustomTextStyle.bold(
-                            text: "${addInvoiceController.amountTax.text}")
+                        Obx(() => CustomTextStyle.bold(
+                            text: "${addInvoiceController.amountTax.value}"))
                       ],
                     ),
                     const SizedBox(
@@ -2394,19 +2395,22 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   }
 
   Future<Uint8List> generatePdf() async {
+    Helper.getToastMsg("Genertae function call");
+
+    ///pdf creation
     final pdf = pw.Document();
-    for (MemoryImage memoryImage in imageLogo) {
+    try {
+      // for (MemoryImage memoryImage in imageLogo) {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) => [
             // Image
-            pw.Container(
-              width: 500,
-              height: 650,
-              child: pw.Center(child: buildPdfImage(memoryImage)),
-            ),
-
+            // pw.Container(
+            //   width: 450,
+            //   height: 500,
+            //   child: pw.Center(child: buildPdfImage(memoryImage)),
+            // ),
             // Footer
             pw.Container(
               alignment: pw.Alignment.centerRight,
@@ -2415,29 +2419,106 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
           ],
         ),
       );
+      // }
+
+      ///file related login
+      final path = await FileStorage.localPath;
+      String folderName = "swastik";
+      Directory newDirectory = Directory('${path}/$folderName');
+      print('newDirectory:$newDirectory');
+
+      if (await newDirectory.exists()) {
+        print('Folder already exists, deleting...');
+        await newDirectory.delete(recursive: true);
+      }
+      await newDirectory.create();
+      final newpath = '${newDirectory.path}/invoice.pdf';
+      print('new_path:$newpath');
+
+      File file = File('$newpath');
+
+      await file.writeAsBytes(await pdf.save());
+      Helper.getToastMsg("Invoice.pdf saved");
+    } catch (e) {
+      print('error:${e.toString()}');
+      // Helper.getToastMsg(e.toString());
     }
 
-    Directory directory = await getApplicationDocumentsDirectory();
-    String folderName = "swastik";
-    Directory newDirectory = Directory('${directory.path}/$folderName');
-    final path = '${newDirectory.path}/invoice.pdf';
-
-    if (await newDirectory.exists()) {
-      Helper.getToastMsg("folder already exists");
-      print('Folder already exists, deleting...');
-      await newDirectory.delete(recursive: true);
-    }
-    await newDirectory.create();
-    final File file = File(path);
-    await file.writeAsBytes(await pdf.save());
-    debugPrint("Soni ==> $path");
-    Helper.getToastMsg("File saved");
     return pdf.save();
   }
 
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;
     final pdfImage = pw.MemoryImage(imageData);
-    return pw.Image(pdfImage);
+    return pw.Image(pdfImage,fit:pw.BoxFit.contain);
+  }
+}
+
+class FileStorage {
+  static Future<String> getExternalDocumentPath() async {
+    // To check whether permission is given for this app or not.
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      // If not we will ask for permission first
+      await Permission.storage.request();
+    }
+    Directory _directory = Directory("");
+    if (Platform.isAndroid) {
+      // Redirects it to download folder in android
+      _directory = Directory("/storage/emulated/0/Download");
+    } else {
+      _directory = await getApplicationDocumentsDirectory();
+    }
+
+    final exPath = _directory.path;
+    // print("Saved Path: $exPath");
+    await Directory(exPath).create(recursive: true);
+    return exPath;
+  }
+
+  static Future<String> get localPath async {
+    // final directory = await getApplicationDocumentsDirectory();
+    // return directory.path;
+    // To get the external path from device of download folder
+    final String directory = await getExternalDocumentPath();
+    return directory;
+  }
+
+  static Future<Uint8List> writeCounter(String bytes, String name) async {
+    ///pdf creation
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) => [
+          pw.Container(
+            alignment: pw.Alignment.centerRight,
+            child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
+          ),
+        ],
+      ),
+    );
+
+    ///file related login
+    final path = await FileStorage.localPath;
+
+    String folderName = "swastik";
+
+    Directory newDirectory = Directory('${path}/$folderName');
+
+    if (await newDirectory.exists()) {
+      Helper.getToastMsg("Folder already exists, deleting...");
+      print('Folder already exists, deleting...');
+      await newDirectory.delete(recursive: true);
+    }
+    await newDirectory.create();
+    final newpath = '${newDirectory.path}/invoice.pdf';
+
+    print('new_path:$newpath');
+
+    File file = File('$newpath');
+
+    await file.writeAsBytes(await pdf.save());
+    return pdf.save();
   }
 }

@@ -240,6 +240,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
+            // const myList = {"name": "GeeksForGeeks"};
+            // FileStorage.writeCounter(myList.toString(), "geeksforgeeks.txt");
+
+            // return;
             Navigator.push(
               context,
               MaterialPageRoute(

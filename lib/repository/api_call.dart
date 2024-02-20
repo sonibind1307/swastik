@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart' as gt;
-import 'package:path_provider/path_provider.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
+import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../config/Helper.dart';
 import '../model/responses/category_model.dart';
@@ -180,10 +180,13 @@ class ApiRepo {
 
     print("invoice_id - >$invoice_id");
     print("upload_file - >$upload_file");
-    Directory directory = await getApplicationDocumentsDirectory();
+    final downloadPath = await FileStorage.localPath;
     String folderName = "swastik";
-    Directory newDirectory = Directory('${directory.path}/$folderName');
-    final path = '${newDirectory.path}/invoice.pdf';
+    Directory newDirectory = Directory('${downloadPath}/$folderName');
+    var path = "";
+    if (await newDirectory.exists()) {
+      path = '${newDirectory.path}/invoice.pdf';
+    }
 
     print("pdf_pathe - ${path}");
 
@@ -213,7 +216,8 @@ class ApiRepo {
       });
       print(" RequestData => ${data.fields}");
 
-      Helper().showServerErrorDialog(context, "Request : ->${data.fields}",
+      Helper().showServerErrorDialog(context,
+          "File_path:${path == "" ? file : path} \n Request : ->${data.fields}",
           () async {
         FocusScope.of(context).unfocus();
         Navigator.of(context, rootNavigator: true).pop();

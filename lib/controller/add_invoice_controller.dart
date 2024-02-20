@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
@@ -14,6 +13,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/addInvoice/add_invoice_screen.dart';
 import '../presentation/view/invoice_screen.dart';
 import '../repository/api_call.dart';
 
@@ -32,7 +32,7 @@ class AddInvoiceController extends GetxController {
   TextEditingController itemDesc = TextEditingController();
   TextEditingController hCode = TextEditingController();
   TextEditingController amount = TextEditingController();
-  TextEditingController amountTax = TextEditingController();
+  RxString amountTax = "0.0".obs;
   TextEditingController amountFinal = TextEditingController();
   TextEditingController quanity = TextEditingController();
   TextEditingController noteController = TextEditingController();
@@ -172,7 +172,7 @@ class AddInvoiceController extends GetxController {
     cgstController.text = cgstVal.toString();
     sgstController.text = sgstVal.toString();
     igstController.text = igstVal.toString();
-    amountTax.text = _gst.toString();
+    amountTax.value = _gst.toString();
     amountFinal.text = (_finalAmount + _gst).toString();
 
     update();
@@ -254,7 +254,7 @@ class AddInvoiceController extends GetxController {
     allItemData.itemSgst = sgstPer.toString();
     allItemData.itemIgst = igstPer.toString();
     allItemData.itemTds = itemDesc.text.toString();
-    allItemData.itemTax = amountTax.text.toString();
+    allItemData.itemTax = amountTax.value.toString();
     allItemData.itemTotal = amountFinal.text.toString();
     allItemData.itemVat = itemDesc.text.toString();
 
@@ -274,7 +274,7 @@ class AddInvoiceController extends GetxController {
     itemDesc.clear();
     hCode.clear();
     amount.clear();
-    amountTax.clear();
+    amountTax.value = "0.0";
     amountFinal.clear();
     quanity.clear();
     cgstController.clear();
@@ -444,7 +444,7 @@ class AddInvoiceController extends GetxController {
     itemDesc.clear();
     hCode.clear();
     amount.clear();
-    amountTax.clear();
+    amountTax.value = "0.0";
     amountFinal.clear();
     quanity.clear();
     noteController.clear();
@@ -497,11 +497,11 @@ class AddInvoiceController extends GetxController {
 
   Future<void> clearDirectory() async {
     print('delete function');
-    Directory directory = await getApplicationDocumentsDirectory();
+    final path = await FileStorage.localPath;
     String folderName = "swastik";
-    Directory newDirectory = Directory('${directory.path}/$folderName');
+    Directory newDirectory = Directory('${path}/$folderName');
     if (await newDirectory.exists()) {
-      Helper.getToastMsg("folder already exists");
+      Helper.getToastMsg("Folder already exists, deleting...");
       print('Folder already exists, deleting...');
       await newDirectory.delete(recursive: true);
     }

@@ -35,8 +35,8 @@ class PdfPreviewPage extends StatelessWidget {
           build: (pw.Context context) => [
             // Image
             pw.Container(
-              width: 500,
-              height: 650,
+              width: 450,
+              height: 600,
               child: pw.Center(child: buildPdfImage(memoryImage)),
             ),
 
