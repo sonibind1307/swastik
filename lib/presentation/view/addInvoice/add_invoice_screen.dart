@@ -25,12 +25,12 @@ import '../multipleImageScreen.dart';
 import '../pdfexport/pdf_url_viewer.dart';
 import '../pdfexport/pdfpreview.dart';
 
-List<MemoryImage> imageLogo = [];
-
 class AddInvoiceScreen extends StatefulWidget {
   final String scheduleId;
+  List<MemoryImage> imageLogo = [];
 
-  const AddInvoiceScreen({Key? key, required this.scheduleId})
+  AddInvoiceScreen(
+      {Key? key, required this.scheduleId, required this.imageLogo})
       : super(key: key);
 
   @override
@@ -148,11 +148,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                               }
                               if (_activeCurrentStep == 0) {
                                 if (widget.scheduleId == "") {
-                                  generatePdf();
+                                  generatePdf(widget.imageLogo);
                                 } else {
                                   if (addInvoiceController.isPdfChange.value ==
                                       "1") {
-                                    generatePdf();
+                                    generatePdf(widget.imageLogo);
                                   }
                                 }
                                 _activeCurrentStep += 1;
@@ -1293,7 +1293,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                             builder: (context) =>
                                                 MultiImageScreen(
                                                   isEdit: true,
-                                                  onSubmit: () {
+                                                  onSubmit: (imageLogo) {
+                                                    widget!.imageLogo =
+                                                        imageLogo;
                                                     if (widget.scheduleId ==
                                                         "") {
                                                       addInvoiceController
@@ -1336,13 +1338,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                         ),
                                         onPressed: () {
                                           if (widget.scheduleId == "") {
-                                            imageLogo = Helper
-                                                .convertFilesToMemoryImages(
-                                                    imageList);
+                                            // imageLogo = Helper
+                                            //     .convertFilesToMemoryImages(
+                                            //         imageList);
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const PdfPreviewPage(),
+                                                    PdfPreviewPage(
+                                                  imageLogo: widget.imageLogo,
+                                                ),
                                               ),
                                             );
                                           } else {
@@ -1366,13 +1370,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                 );
                                               }
                                             } else {
-                                              imageLogo = Helper
-                                                  .convertFilesToMemoryImages(
-                                                      imageList);
+                                              // imageLogo = Helper
+                                              //     .convertFilesToMemoryImages(
+                                              //         imageList);
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const PdfPreviewPage(),
+                                                      PdfPreviewPage(
+                                                          imageLogo:
+                                                              widget.imageLogo),
                                                 ),
                                               );
                                             }
@@ -2394,32 +2400,32 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
-  Future<Uint8List> generatePdf() async {
-    Helper.getToastMsg("Genertae function call");
+  Future<Uint8List> generatePdf(List<MemoryImage> imageLogo) async {
+    // Helper.getToastMsg("images${imageLogo.length}");
 
     ///pdf creation
     final pdf = pw.Document();
     try {
-      // for (MemoryImage memoryImage in imageLogo) {
-      pdf.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) => [
-            // Image
-            // pw.Container(
-            //   width: 450,
-            //   height: 500,
-            //   child: pw.Center(child: buildPdfImage(memoryImage)),
-            // ),
-            // Footer
-            pw.Container(
-              alignment: pw.Alignment.centerRight,
-              child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
-            ),
-          ],
-        ),
-      );
-      // }
+      for (MemoryImage memoryImage in imageLogo) {
+        pdf.addPage(
+          pw.MultiPage(
+            pageFormat: PdfPageFormat.a4,
+            build: (pw.Context context) => [
+              // Image
+              pw.Container(
+                width: 450,
+                height: 500,
+                child: pw.Center(child: buildPdfImage(memoryImage)),
+              ),
+              // Footer
+              pw.Container(
+                alignment: pw.Alignment.centerRight,
+                child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
+              ),
+            ],
+          ),
+        );
+      }
 
       ///file related login
       final path = await FileStorage.localPath;
@@ -2450,7 +2456,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;
     final pdfImage = pw.MemoryImage(imageData);
-    return pw.Image(pdfImage,fit:pw.BoxFit.contain);
+    return pw.Image(pdfImage, fit: pw.BoxFit.contain);
   }
 }
 
@@ -2470,6 +2476,7 @@ class FileStorage {
       _directory = await getApplicationDocumentsDirectory();
     }
 
+    _directory = await getApplicationDocumentsDirectory();
     final exPath = _directory.path;
     // print("Saved Path: $exPath");
     await Directory(exPath).create(recursive: true);

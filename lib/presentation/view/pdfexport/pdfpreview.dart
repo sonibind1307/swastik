@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:swastik/presentation/view/multipleImageScreen.dart';
 
 class PdfPreviewPage extends StatelessWidget {
-  const PdfPreviewPage({Key? key}) : super(key: key);
+  final List<MemoryImage> imageLogo;
+  PdfPreviewPage({Key? key, required this.imageLogo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class PdfPreviewPage extends StatelessWidget {
         title: const Text('PDF Preview'),
       ),
       body: PdfPreview(
-        build: (context) => generatePdf(),
+        build: (context) => generatePdf(imageLogo!),
       ),
     );
   }
@@ -26,7 +26,7 @@ class PdfPreviewPage extends StatelessWidget {
     return pw.Image(pdfImage);
   }
 
-  Future<Uint8List> generatePdf() async {
+  Future<Uint8List> generatePdf(List<MemoryImage> imageLogo) async {
     final pdf = pw.Document();
     for (MemoryImage memoryImage in imageLogo) {
       pdf.addPage(

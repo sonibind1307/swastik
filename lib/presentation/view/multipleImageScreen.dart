@@ -9,11 +9,8 @@ import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 import '../bloc/bloc_logic/multiImagePickerBloc.dart';
 import '../bloc/state/multi_image_state.dart';
 
-List<MemoryImage> imageLogo = [];
-List<File> imageList = [];
-
 class MultiImageScreen extends StatefulWidget {
-  final Function onSubmit;
+  final Function(List<MemoryImage> imageLogo) onSubmit;
   final bool isEdit;
 
   MultiImageScreen({super.key, required this.isEdit, required this.onSubmit});
@@ -23,6 +20,9 @@ class MultiImageScreen extends StatefulWidget {
 }
 
 class _MultiImageScreenState extends State<MultiImageScreen> {
+  List<MemoryImage> imageLogo = [];
+  List<File> imageList = [];
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -39,18 +39,19 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
                 if (imageList.isNotEmpty) {
                   imageLogo = convertFilesToMemoryImages(imageList);
                   if (widget.isEdit == true) {
+                    widget.onSubmit(imageLogo);
                     Navigator.pop(context);
                   } else {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const AddInvoiceScreen(
+                        builder: (context) => AddInvoiceScreen(
                           scheduleId: "",
+                          imageLogo: imageLogo,
                         ),
                       ),
                     );
                     // generatePdf();
                   }
-                  widget.onSubmit();
                 } else {
                   Helper.getToastMsg("Select image to create PDF");
                 }
