@@ -70,8 +70,10 @@ class AddInvoiceController extends GetxController {
   ///
 
   String? selectedVendor;
-  String? selectedUser;
+ // String? selectedUser;
   String? selectedPo;
+
+  RxString selectedUser = "".obs;
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -470,7 +472,7 @@ class AddInvoiceController extends GetxController {
 
     companyName.value = "";
 
-    selectedUser = null;
+    selectedUser.value;
     selectedCategory = null;
     selectedProject = null;
     selectedBuild = null;
