@@ -3,14 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
+import 'package:swastik/presentation/view/pdfGenertae/logic.dart';
 
 import '../bloc/bloc_logic/multiImagePickerBloc.dart';
 import '../bloc/state/multi_image_state.dart';
 
 class MultiImageScreen extends StatefulWidget {
-  final Function(List<MemoryImage> imageLogo) onSubmit;
+  final Function(List<MemoryImage> imageLogo, List<File> imageList) onSubmit;
   final bool isEdit;
 
   MultiImageScreen({super.key, required this.isEdit, required this.onSubmit});
@@ -22,6 +24,7 @@ class MultiImageScreen extends StatefulWidget {
 class _MultiImageScreenState extends State<MultiImageScreen> {
   List<MemoryImage> imageLogo = [];
   List<File> imageList = [];
+  var data = Get.put(Logic());
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +38,32 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
         },
         child: Scaffold(
           floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
+              onPressed: () async {
                 if (imageList.isNotEmpty) {
                   imageLogo = convertFilesToMemoryImages(imageList);
                   if (widget.isEdit == true) {
-                    widget.onSubmit(imageLogo);
+                    widget.onSubmit(imageLogo, imageList);
                     Navigator.pop(context);
                   } else {
+                    // await ImageToPdf.imageList(listOfFiles: data.fileList)
+                    //     .then((value) async {
+                    //   data.pdf.value = File(value.path);
+                    // Get.to(const ExitScreen());
+                    //await OpenFilex.open(value.path);
+                    // final bytes = await value.save();
+                    // await value.writeAsBytes(bytes,flush: true);
+
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => AddInvoiceScreen(
                           scheduleId: "",
                           imageLogo: imageLogo,
+                          imageList: imageList,
                         ),
                       ),
                     );
+                    // });
+
                     // generatePdf();
                   }
                 } else {
@@ -64,6 +78,7 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
           body: BlocConsumer<MultiImageCubit, MultiImageState>(
             builder: (BuildContext context, state) {
               if (state is LoadedState) {
+                data.fileList.value = state.imageList;
                 imageList = state.imageList;
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

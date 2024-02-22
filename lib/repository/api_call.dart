@@ -10,6 +10,7 @@ import 'package:swastik/model/responses/invoice_item_model.dart';
 import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../config/Helper.dart';
+import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -155,6 +156,24 @@ class ApiRepo {
     return categoryModel;
   }
 
+  static Future<ValidateUserModel> getAssignUserList() async {
+    ValidateUserModel model = ValidateUserModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/mobile/get_allusers',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      model = ValidateUserModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return model;
+  }
+
   static Future<BaseModel?> addInvoiceData(
       {required invoice_id,
       required upload_file,
@@ -171,6 +190,7 @@ class ApiRepo {
       required vendorLinkedLdgr,
       required List<InvoiceItems> itemList,
       required var file,
+      required step2_userid,
       required context}) async {
     BaseModel baseModel = BaseModel();
 
@@ -208,6 +228,7 @@ class ApiRepo {
         'vendor_id': vendorId,
         'created_date': createdDate,
         'user_id': "92",
+        'step2_userid': step2_userid,
         'vendor_linked_ldgr': vendorLinkedLdgr,
         'file': upload_file == "0" && invoice_id != "0"
             ? file

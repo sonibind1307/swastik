@@ -27,6 +27,8 @@ class MultiImageCubit extends Cubit<MultiImageState> {
     if (pickedFile != null) {
       pickedImageFile = pickedFile;
       File selectedImg = File(pickedImageFile.path);
+      // imageList.add(selectedImg);
+      // emit(LoadedState(imageList));
       cropImage(selectedImg);
     }
   }
@@ -42,7 +44,7 @@ class MultiImageCubit extends Cubit<MultiImageState> {
     ], uiSettings: [
       AndroidUiSettings(
           toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
+          toolbarColor: Colors.blue,
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false),

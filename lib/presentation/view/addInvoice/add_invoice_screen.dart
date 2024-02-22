@@ -22,15 +22,20 @@ import '../../widget/custom_text_decoration.dart';
 import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
 import '../multipleImageScreen.dart';
+import '../pdfGenertae/logic.dart';
 import '../pdfexport/pdf_url_viewer.dart';
 import '../pdfexport/pdfpreview.dart';
 
 class AddInvoiceScreen extends StatefulWidget {
   final String scheduleId;
   List<MemoryImage> imageLogo = [];
+  List<File> imageList = [];
 
   AddInvoiceScreen(
-      {Key? key, required this.scheduleId, required this.imageLogo})
+      {Key? key,
+      required this.scheduleId,
+      required this.imageLogo,
+      required this.imageList})
       : super(key: key);
 
   @override
@@ -43,6 +48,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   final _addInvoiceFormKey = GlobalKey<FormState>();
   final _quantityKey = GlobalKey<FormState>();
   final _amountKey = GlobalKey<FormState>();
+  final data = Get.find<Logic>();
 
   @override
   void initState() {
@@ -57,6 +63,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       addInvoiceController.inVoiceId = widget.scheduleId;
     }
     addInvoiceController.onGetVendor();
+    addInvoiceController.getAssignUserList();
     addInvoiceController.onGetInvoiceCategoryItem();
     addInvoiceController.onGetProject();
     setState(() {});
@@ -136,7 +143,52 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       } else {
                         if (addInvoiceController.selectedVendor != null) {
                           if (_activeCurrentStep == 2) {
-                            addInvoiceController.addInvoiceAPi(context);
+                            if (addInvoiceController
+                                .allInvoiceItemList.isNotEmpty) {
+                              showDialog(
+                                barrierDismissible: false,
+                                barrierColor: Colors.transparent,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    'Assign user',
+                                    style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2),
+                                  ),
+                                  content: dropDownUserList(context, () {}),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text('No',
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.2)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        addInvoiceController
+                                            .addInvoiceAPi(context);
+                                        Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text('Yes',
+                                          style: TextStyle(
+                                              color: AppColors.blueColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.2)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              Helper.getToastMsg("add at least one item");
+                            }
                           }
                           if (_activeCurrentStep < (3 - 1)) {
                             setState(() {
@@ -148,11 +200,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                               }
                               if (_activeCurrentStep == 0) {
                                 if (widget.scheduleId == "") {
-                                  generatePdf(widget.imageLogo);
+                                  generatePdf(widget.imageList);
                                 } else {
                                   if (addInvoiceController.isPdfChange.value ==
                                       "1") {
-                                    generatePdf(widget.imageLogo);
+                                    generatePdf(widget.imageList);
                                   }
                                 }
                                 _activeCurrentStep += 1;
@@ -969,6 +1021,99 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
+  Widget dropDownUserList(BuildContext context, VoidCallback onSelection) {
+    TextEditingController searchBar = TextEditingController();
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.only(),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton2<String>(
+            isExpanded: true,
+            hint: Text(
+              'Select user',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            items: addInvoiceController.userList
+                .map((item) => DropdownMenuItem(
+                      value: item.userId,
+                      child: Text(
+                        item.userName!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                .toList(),
+            value: addInvoiceController.selectedUser,
+            onChanged: (value) {
+              setState(() {
+                addInvoiceController.selectedUser = value;
+              });
+            },
+            buttonStyleData: Helper.buttonStyleData(context),
+            iconStyleData: const IconStyleData(
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+              ),
+              // iconSize: 14,
+              iconEnabledColor: Colors.black,
+              iconDisabledColor: Colors.grey,
+            ),
+            dropdownStyleData: Helper.dropdownStyleData(context),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+              padding: EdgeInsets.only(left: 14, right: 14),
+            ),
+            dropdownSearchData: DropdownSearchData(
+              searchController: searchBar,
+              searchInnerWidgetHeight: 50,
+              searchInnerWidget: Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 4,
+                  right: 8,
+                  left: 8,
+                ),
+                child: TextFormField(
+                  expands: true,
+                  maxLines: null,
+                  controller: searchBar,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    hintText: 'Search...',
+                    hintStyle: const TextStyle(fontSize: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              searchMatchFn: (item, searchValue) {
+                return item.value!
+                    .toLowerCase()
+                    .contains(searchValue.toLowerCase());
+              },
+            ),
+            onMenuStateChange: (isOpen) {
+              if (!isOpen) {
+                searchBar.clear();
+                // addInvoiceController.searchTextBar.clear();
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget projectDropDownList(BuildContext context) {
     TextEditingController searchBar = TextEditingController();
     return Padding(
@@ -1293,9 +1438,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                             builder: (context) =>
                                                 MultiImageScreen(
                                                   isEdit: true,
-                                                  onSubmit: (imageLogo) {
-                                                    widget!.imageLogo =
+                                                  onSubmit:
+                                                      (imageLogo, imageList) {
+                                                    widget.imageLogo =
                                                         imageLogo;
+                                                    widget.imageList =
+                                                        imageList;
                                                     if (widget.scheduleId ==
                                                         "") {
                                                       addInvoiceController
@@ -1346,6 +1494,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                 builder: (context) =>
                                                     PdfPreviewPage(
                                                   imageLogo: widget.imageLogo,
+                                                  imageList: widget.imageList,
                                                 ),
                                               ),
                                             );
@@ -1377,8 +1526,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                 MaterialPageRoute(
                                                   builder: (context) =>
                                                       PdfPreviewPage(
-                                                          imageLogo:
-                                                              widget.imageLogo),
+                                                    imageLogo: widget.imageLogo,
+                                                    imageList: widget.imageList,
+                                                  ),
                                                 ),
                                               );
                                             }
@@ -2400,29 +2550,51 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     );
   }
 
-  Future<Uint8List> generatePdf(List<MemoryImage> imageLogo) async {
+  Future<Uint8List> generatePdf(List<File> imageList) async {
     // Helper.getToastMsg("images${imageLogo.length}");
 
     ///pdf creation
     final pdf = pw.Document();
     try {
-      for (MemoryImage memoryImage in imageLogo) {
+      // for (File memoryImage in imageList) {
+      //
+      //   pdf.addPage(
+      //     pw.MultiPage(
+      //       pageFormat: PdfPageFormat.a4,
+      //       build: (pw.Context context) => [
+      //         // Image
+      //         // pw.Container(
+      //         //   width: 450,
+      //         //   height: 500,
+      //         //   child: pw.Center(child: buildPdfImage(memoryImage)),
+      //         // ),
+      //
+      //         pw.Center(child: buildPdfImage(memoryImage))
+      //         // Footer
+      //         // pw.Container(
+      //         //   alignment: pw.Alignment.centerRight,
+      //         //   child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
+      //         // ),
+      //       ],
+      //     ),
+      //   );
+      // }
+      for (var image in imageList) {
+        var pdfImage = pw.MemoryImage(
+          image!.readAsBytesSync(),
+        );
         pdf.addPage(
-          pw.MultiPage(
-            pageFormat: PdfPageFormat.a4,
-            build: (pw.Context context) => [
-              // Image
-              pw.Container(
-                width: 450,
-                height: 500,
-                child: pw.Center(child: buildPdfImage(memoryImage)),
-              ),
-              // Footer
-              pw.Container(
-                alignment: pw.Alignment.centerRight,
-                child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
-              ),
-            ],
+          pw.Page(
+            build: (pw.Context context) {
+              return pw.Stack(children: [
+                pw.Image(pdfImage, fit: pw.BoxFit.contain),
+                pw.Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: pw.Text('Username: soni.b, Date: ${DateTime.now()}',
+                        style: pw.TextStyle(fontSize: 16)))
+              ]); // Center
+            },
           ),
         );
       }
@@ -2452,6 +2624,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
     return pdf.save();
   }
+
+  // Future<void> generatePdf(List<File> imageList) async {
+  //   DocumentFileSavePlus documentFileSavePlus = DocumentFileSavePlus();
+  //   await documentFileSavePlus.saveFile(
+  //       data.pdf.value!.readAsBytesSync(), "invoice.pdf", "appliation/pdf");
+  // }
 
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;

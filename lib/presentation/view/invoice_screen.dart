@@ -249,7 +249,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               MaterialPageRoute(
                   builder: (context) => MultiImageScreen(
                         isEdit: false,
-                        onSubmit: (imageLogo) {
+                        onSubmit: (imageLogo, imageList) {
                           // Helper.getToastMsg("invoice");
                         },
                       )),
@@ -464,6 +464,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           builder: (context) => AddInvoiceScreen(
                             scheduleId: invoiceList.data![index].invoiceId!,
                             imageLogo: [],
+                            imageList: [],
                           ),
                         ),
                       );

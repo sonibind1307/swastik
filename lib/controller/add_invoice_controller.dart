@@ -9,6 +9,7 @@ import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
 import 'package:swastik/model/responses/vendor_model.dart';
 
+import '../model/responses/assign_user_model.dart';
 import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
@@ -23,6 +24,7 @@ class AddInvoiceController extends GetxController {
   var allInvoiceItemList = <InvoiceItems>[].obs;
   var categoryItemList = <CategoryData>[].obs;
   var projectList = <ProjectData>[].obs;
+  var userList = <UserData>[].obs;
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
   var vendorData = <VendorData>[].obs;
@@ -68,6 +70,7 @@ class AddInvoiceController extends GetxController {
   ///
 
   String? selectedVendor;
+  String? selectedUser;
   String? selectedPo;
 
   List<VendorData> listofVenderData = [];
@@ -291,26 +294,27 @@ class AddInvoiceController extends GetxController {
     BaseModel baseModel = BaseModel();
     if (allInvoiceItemList.isNotEmpty) {
       baseModel = (await ApiRepo.addInvoiceData(
-          invDate: selectedDate,
-          invRef: invRefController.text.trim(),
-          invComments: noteController.text.trim(),
-          invProject: projectId,
-          invBuilding: selectedBuild,
-          invCategory: selectedCategory,
-          ldgrTdsPcnt: "0",
+        invDate: selectedDate,
+        invRef: invRefController.text.trim(),
+        invComments: noteController.text.trim(),
+        invProject: projectId,
+        invBuilding: selectedBuild,
+        invCategory: selectedCategory,
+        ldgrTdsPcnt: "0",
 
-          ///invoice details
-          invPo: selectedPo,
-          vendorId: vendorId,
-          createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
-          vendorLinkedLdgr: ledgerId,
+        ///invoice details
+        invPo: selectedPo,
+        vendorId: vendorId,
+        createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+        vendorLinkedLdgr: ledgerId,
 
-          /// on project change
-          itemList: allInvoiceItemList,
-          context: context,
-          invoice_id: inVoiceId == "" ? "0" : inVoiceId,
-          upload_file: isPdfChange.value,
-          file: pdfUrl))!;
+        /// on project change
+        itemList: allInvoiceItemList,
+        context: context,
+        invoice_id: inVoiceId == "" ? "0" : inVoiceId,
+        upload_file: isPdfChange.value,
+        file: pdfUrl, step2_userid: selectedUser,
+      ))!;
 
       /* if (baseModel.status == "true") {
         EasyLoading.dismiss();
@@ -362,7 +366,8 @@ class AddInvoiceController extends GetxController {
           context: context,
           invoice_id: inVoiceId == "" ? "0" : inVoiceId,
           upload_file: isPdfChange.value,
-          file: pdfUrl))!;
+          file: pdfUrl,
+          step2_userid: selectedUser))!;
 
       if (baseModel.status == "true") {
         EasyLoading.dismiss();
@@ -465,6 +470,7 @@ class AddInvoiceController extends GetxController {
 
     companyName.value = "";
 
+    selectedUser = null;
     selectedCategory = null;
     selectedProject = null;
     selectedBuild = null;
@@ -502,6 +508,7 @@ class AddInvoiceController extends GetxController {
     Directory newDirectory = Directory('${path}/$folderName');
     if (await newDirectory.exists()) {
       Helper.getToastMsg("Folder already exists, deleting...");
+
       print('Folder already exists, deleting...');
       await newDirectory.delete(recursive: true);
     }
@@ -525,6 +532,12 @@ class AddInvoiceController extends GetxController {
         debugPrint("taxTotal ->$taxTotal");
       }
     }
+    update();
+  }
+
+  Future<void> getAssignUserList() async {
+    ValidateUserModel projectModel = await ApiRepo.getAssignUserList();
+    userList.value = projectModel.data!;
     update();
   }
 }
