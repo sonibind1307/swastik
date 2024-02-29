@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:swastik/presentation/view/invoice_screen.dart';
+import 'package:material_color_gen/material_color_gen.dart';
+import 'package:swastik/config/colorConstant.dart';
+import 'package:swastik/presentation/view/splash/splash_screen.dart';
 
 import 'controller/add_invoice_controller.dart';
 
@@ -19,8 +21,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      theme: ThemeData(
+        primarySwatch: AppColors.primaryColor.toMaterialColor(),
+        // fontFamily: 'Poppins',
+      ),
       title: 'Flutter Demo',
-      home: InvoiceScreen(),
+      home: SplashScreen(),
       builder: EasyLoading.init(),
     );
   }

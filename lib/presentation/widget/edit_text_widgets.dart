@@ -79,4 +79,45 @@ class CustomEditTestWidgets {
       },
     );
   }
+
+  static Widget textEditTextLogin(
+      {TextEditingController? controller,
+      BuildContext? context,
+      required String hint}) {
+    return Container(
+      height: 48,
+      margin: EdgeInsets.only(left: 4),
+      padding: EdgeInsets.only(left: 4),
+      // color: Colors.red,
+      color: Colors.grey.shade200,
+      child: TextFormField(
+        controller: controller,
+        textInputAction: TextInputAction.done,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        maxLines: 1,
+        decoration: CustomTextDecoration.loginDecoration(labelText: hint),
+      ),
+    );
+  }
+
+  static Widget textEditPhoneLogin(
+      {TextEditingController? controller,
+      BuildContext? context,
+      required String hint}) {
+    return Container(
+      height: 48,
+      margin: EdgeInsets.only(left: 4),
+      padding: EdgeInsets.only(left: 4),
+      // color: Colors.red,
+      color: Colors.grey.shade200,
+      child: TextFormField(
+        keyboardType: TextInputType.phone,
+        controller: controller,
+        textInputAction: TextInputAction.done,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        maxLines: 1,
+        decoration: CustomTextDecoration.loginDecoration(labelText: hint),
+      ),
+    );
+  }
 }

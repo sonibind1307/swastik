@@ -5,14 +5,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/config/colorConstant.dart';
-import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
-import '../../model/responses/invoice_model.dart';
-import '../../model/responses/project_model.dart';
-import '../bloc/bloc_logic/invoice_bloc.dart';
-import '../bloc/state/invoice_state.dart';
-import '../widget/custom_text_style.dart';
-import 'multipleImageScreen.dart';
+import '../../../model/responses/invoice_model.dart';
+import '../../../model/responses/project_model.dart';
+import '../../bloc/bloc_logic/invoice_bloc.dart';
+import '../../bloc/state/invoice_state.dart';
+import '../../widget/custom_text_style.dart';
+import '../pdfexport/multipleImageScreen.dart';
+import 'add_invoice_screen.dart';
 
 class InvoiceScreen extends StatefulWidget {
   @override
@@ -205,7 +205,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             labelPadding:
                                 const EdgeInsets.only(left: 8, right: 8),
                             padding: const EdgeInsets.only(left: 8, right: 8),
-                            selectedColor: Colors.blue,
+                            selectedColor: AppColors.primaryColor,
                             label: Text(_getChipStatusText(status)),
                             selected: _selectedStatus == status,
                             onSelected: (isSelected) {
@@ -477,7 +477,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             invoiceList.data![index].invoiceId!.toString());
                       });
                     } else if (key == "share") {
-                      Share.share("https://swastik.online/");
+                      Share.share(invoiceList.data![index].shareUrl!);
                     }
                   });
                 },

@@ -3,13 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
-import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
-import 'package:swastik/presentation/view/pdfGenertae/logic.dart';
 
-import '../bloc/bloc_logic/multiImagePickerBloc.dart';
-import '../bloc/state/multi_image_state.dart';
+import '../../bloc/bloc_logic/multiImagePickerBloc.dart';
+import '../../bloc/state/multi_image_state.dart';
+import '../invoice/add_invoice_screen.dart';
 
 class MultiImageScreen extends StatefulWidget {
   final Function(List<MemoryImage> imageLogo, List<File> imageList) onSubmit;
@@ -24,7 +22,6 @@ class MultiImageScreen extends StatefulWidget {
 class _MultiImageScreenState extends State<MultiImageScreen> {
   List<MemoryImage> imageLogo = [];
   List<File> imageList = [];
-  var data = Get.put(Logic());
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +75,6 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
           body: BlocConsumer<MultiImageCubit, MultiImageState>(
             builder: (BuildContext context, state) {
               if (state is LoadedState) {
-                data.fileList.value = state.imageList;
                 imageList = state.imageList;
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

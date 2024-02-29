@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swastik/config/Helper.dart';
+import 'package:swastik/config/sharedPreferences.dart';
 import 'package:swastik/presentation/bloc/state/invoice_state.dart';
 
 import '../../../model/responses/base_model.dart';
@@ -119,9 +120,11 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
   Future<void> getInvoiceList() async {
     emit(LoadingState());
+
+    String? userId = await Auth.getUserID();
     var dio = Dio();
     var response = await dio.request(
-      'https://swastik.online/Mobile/get_invoice_list/92',
+      'https://swastik.online/Mobile/get_invoice_list/$userId',
       options: Options(
         method: 'GET',
       ),

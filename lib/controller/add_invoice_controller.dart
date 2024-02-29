@@ -14,8 +14,8 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
-import '../presentation/view/addInvoice/add_invoice_screen.dart';
-import '../presentation/view/invoice_screen.dart';
+import '../presentation/view/invoice/add_invoice_screen.dart';
+import '../presentation/view/invoice/list_invoice_screen.dart';
 import '../repository/api_call.dart';
 
 class AddInvoiceController extends GetxController {
@@ -70,7 +70,7 @@ class AddInvoiceController extends GetxController {
   ///
 
   String? selectedVendor;
- // String? selectedUser;
+  // String? selectedUser;
   String? selectedPo;
 
   RxString selectedUser = "".obs;

@@ -23,7 +23,7 @@ class AppColors {
   static const Color lineColor1 = Color(0xFFE4E1E1);
   static const Color darkGrey300 = Color(0xFF797676);
   static const Color darkGery100 = Color(0xFF646464);
-  static const Color blueColor = Color(0xFF1B8BDC);
+  static const Color blueColor = Color(0xFF0264d6);
   static const Color chooseColor = Color(0xFF2C2A2A);
   static const Color daysColor = Color(0xFF847D7D);
   static const Color pinkColor = Color(0xFFFFA500);

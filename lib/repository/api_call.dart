@@ -7,17 +7,19 @@ import 'package:get/get.dart' as gt;
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
-import 'package:swastik/presentation/view/addInvoice/add_invoice_screen.dart';
 
 import '../config/Helper.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../model/responses/user_info_model.dart';
 import '../model/responses/vendor_model.dart';
-import '../presentation/view/invoice_screen.dart';
+import '../presentation/view/invoice/add_invoice_screen.dart';
+import '../presentation/view/invoice/list_invoice_screen.dart';
 
 class ApiRepo {
+  // static baseUrl = 'https://swastik.online/Mobile/';
   static Future<ProjectModel> getProjectList() async {
     ProjectModel data = ProjectModel();
     var dio = Dio();
@@ -374,5 +376,32 @@ class ApiRepo {
 
     return baseModel;
     // return baseModel;
+  }
+
+  static Future<UserModel> onLogin(
+      String option, String mobileNo, String username, String password) async {
+    UserModel model = UserModel();
+    var dio = Dio();
+    var data = FormData.fromMap({
+      'login_option': option,
+      'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
+      'user_name': username,
+      'password': password
+    });
+
+    var url = 'https://swastik.online/Mobile/login';
+    var response = await dio.post(
+      url,
+      data: data,
+    );
+
+    print("LoginResponse -> ${response.data}");
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      model = UserModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return model;
   }
 }

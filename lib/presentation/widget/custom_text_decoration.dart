@@ -45,4 +45,17 @@ class CustomTextDecoration {
       ),
     );
   }
+
+  static InputDecoration loginDecoration({String? labelText}) {
+    return InputDecoration(
+        enabledBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        border: InputBorder.none,
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(width: 1, color: AppColors.black300),
+        ),
+        hintText: labelText);
+  }
 }

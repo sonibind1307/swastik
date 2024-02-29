@@ -51,29 +51,6 @@ class PdfPreviewPage extends StatelessWidget {
         ),
       );
     }
-    // for (MemoryImage memoryImage in imageLogo) {
-    //   pdf.addPage(
-    //     pw.MultiPage(
-    //       pageFormat: PdfPageFormat.a4,
-    //       build: (pw.Context context) => [
-    //         // Image
-    //         pw.Container(
-    //           width: 450,
-    //           height: 600,
-    //           child: pw.Center(child: buildPdfImage(memoryImage)),
-    //         ),
-    //
-    //         // Footer
-    //         pw.Container(
-    //           alignment: pw.Alignment.centerRight,
-    //           child: pw.Text('Username: soni.b, Date: ${DateTime.now()}',
-    //               style: const pw.TextStyle(fontSize: 20)),
-    //         ),
-    //       ],
-    //     ),
-    //   );
-    // }
-
     return pdf.save();
   }
 }

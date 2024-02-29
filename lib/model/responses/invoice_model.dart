@@ -60,42 +60,45 @@ class InvoiceData {
   int? daysDiff;
   String? currentUserId;
   String? user2;
+  String? shareUrl;
   int? step2Rights;
 
-  InvoiceData(
-      {this.invoiceId,
-      this.invstatus,
-      this.invDate,
-      this.invcomments,
-      this.projectname,
-      this.totalamount,
-      this.cmpId,
-      this.prjId,
-      this.buildId,
-      this.invoiceNo,
-      this.invref,
-      this.vendorCmpny,
-      this.invcat,
-      this.invStatus,
-      this.status,
-      this.invoiceStatus,
-      this.udpatedDate,
-      this.updatedFor,
-      this.reVefify,
-      this.step1,
-      this.step2,
-      this.step3,
-      this.reassign,
-      this.addedBy,
-      this.ledgername,
-      this.poId,
-      this.approvedDate,
-      this.ledgerid,
-      this.user1,
-      this.daysDiff,
-      this.currentUserId,
-      this.user2,
-      this.step2Rights});
+  InvoiceData({
+    this.invoiceId,
+    this.invstatus,
+    this.invDate,
+    this.invcomments,
+    this.projectname,
+    this.totalamount,
+    this.cmpId,
+    this.prjId,
+    this.buildId,
+    this.invoiceNo,
+    this.invref,
+    this.vendorCmpny,
+    this.invcat,
+    this.invStatus,
+    this.status,
+    this.invoiceStatus,
+    this.udpatedDate,
+    this.updatedFor,
+    this.reVefify,
+    this.step1,
+    this.step2,
+    this.step3,
+    this.reassign,
+    this.addedBy,
+    this.ledgername,
+    this.poId,
+    this.approvedDate,
+    this.ledgerid,
+    this.user1,
+    this.daysDiff,
+    this.currentUserId,
+    this.user2,
+    this.step2Rights,
+    this.shareUrl,
+  });
 
   InvoiceData.fromJson(Map<String, dynamic> json) {
     invoiceId = json['invoice_id'];
@@ -131,6 +134,7 @@ class InvoiceData {
     currentUserId = json['current_user_id'];
     user2 = json['user2'];
     step2Rights = json['step2_rights'];
+    shareUrl = json['share_url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -168,6 +172,7 @@ class InvoiceData {
     data['current_user_id'] = this.currentUserId;
     data['user2'] = this.user2;
     data['step2_rights'] = this.step2Rights;
+    data['share_url'] = this.shareUrl;
     return data;
   }
 }

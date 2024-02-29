@@ -21,10 +21,9 @@ import '../../widget/custom_date_picker.dart';
 import '../../widget/custom_text_decoration.dart';
 import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
-import '../multipleImageScreen.dart';
-import '../pdfGenertae/logic.dart';
+import '../pdfexport/multipleImageScreen.dart';
+import '../pdfexport/pdf_preview.dart';
 import '../pdfexport/pdf_url_viewer.dart';
-import '../pdfexport/pdfpreview.dart';
 
 class AddInvoiceScreen extends StatefulWidget {
   final String scheduleId;
@@ -48,7 +47,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   final _addInvoiceFormKey = GlobalKey<FormState>();
   final _quantityKey = GlobalKey<FormState>();
   final _amountKey = GlobalKey<FormState>();
-  final data = Get.find<Logic>();
+  // final data = Get.find<Logic>();
 
   @override
   void initState() {
@@ -136,161 +135,156 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   const SizedBox(
                     width: 16,
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (addInvoiceController.isPdf.value == false) {
+                        Helper.getToastMsg("Attach pdf");
+                      } else {
+                        if (addInvoiceController.selectedVendor != null) {
+                          if (_activeCurrentStep == 2) {
+                            if (addInvoiceController
+                                .allInvoiceItemList.isNotEmpty) {
+                              // Get.dialog(
+                              //     AlertDialog(
+                              //       title: const Text(
+                              //         'Assign user',
+                              //         style: TextStyle(
+                              //             color: Colors.redAccent,
+                              //             fontSize: 18,
+                              //             fontWeight: FontWeight.w600,
+                              //             letterSpacing: 0.2),
+                              //       ),
+                              //       content: dropDownUserList(context, () {}),
+                              //       actions: <Widget>[
+                              //         TextButton(
+                              //           onPressed: () =>
+                              //               Navigator.of(context).pop(false),
+                              //           child: const Text('No',
+                              //               style: TextStyle(
+                              //                   color: Colors.redAccent,
+                              //                   fontSize: 18,
+                              //                   fontWeight: FontWeight.w600,
+                              //                   letterSpacing: 0.2)),
+                              //         ),
+                              //         TextButton(
+                              //           onPressed: () {
+                              //             addInvoiceController
+                              //                 .addInvoiceAPi(context);
+                              //             Navigator.of(context).pop(false);
+                              //           },
+                              //           child: const Text('Yes',
+                              //               style: TextStyle(
+                              //                   color: AppColors.blueColor,
+                              //                   fontSize: 18,
+                              //                   fontWeight: FontWeight.w600,
+                              //                   letterSpacing: 0.2)),
+                              //         ),
+                              //       ],
+                              //     )
+                              // );
 
-                ElevatedButton(
-                      onPressed: () {
-                        if (addInvoiceController.isPdf.value == false) {
-                          Helper.getToastMsg("Attach pdf");
-                        } else {
-                          if (addInvoiceController.selectedVendor != null) {
-                            if (_activeCurrentStep == 2) {
-                              if (addInvoiceController
-                                  .allInvoiceItemList.isNotEmpty) {
-                                // Get.dialog(
-                                //     AlertDialog(
-                                //       title: const Text(
-                                //         'Assign user',
-                                //         style: TextStyle(
-                                //             color: Colors.redAccent,
-                                //             fontSize: 18,
-                                //             fontWeight: FontWeight.w600,
-                                //             letterSpacing: 0.2),
-                                //       ),
-                                //       content: dropDownUserList(context, () {}),
-                                //       actions: <Widget>[
-                                //         TextButton(
-                                //           onPressed: () =>
-                                //               Navigator.of(context).pop(false),
-                                //           child: const Text('No',
-                                //               style: TextStyle(
-                                //                   color: Colors.redAccent,
-                                //                   fontSize: 18,
-                                //                   fontWeight: FontWeight.w600,
-                                //                   letterSpacing: 0.2)),
-                                //         ),
-                                //         TextButton(
-                                //           onPressed: () {
-                                //             addInvoiceController
-                                //                 .addInvoiceAPi(context);
-                                //             Navigator.of(context).pop(false);
-                                //           },
-                                //           child: const Text('Yes',
-                                //               style: TextStyle(
-                                //                   color: AppColors.blueColor,
-                                //                   fontSize: 18,
-                                //                   fontWeight: FontWeight.w600,
-                                //                   letterSpacing: 0.2)),
-                                //         ),
-                                //       ],
-                                //     )
-                                // );
-
-
-
-
-                                showDialog(
-                                  barrierDismissible: false,
-                                  barrierColor: Colors.transparent,
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text(
-                                      'Assign user',
-                                      style: TextStyle(
-                                          color: Colors.redAccent,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.2),
-                                    ),
-                                    content: dropDownUserList(context, () {}),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text('No',
-                                            style: TextStyle(
-                                                color: Colors.redAccent,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.2)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          addInvoiceController
-                                              .addInvoiceAPi(context);
-                                          Navigator.of(context).pop(false);
-                                        },
-                                        child: const Text('Yes',
-                                            style: TextStyle(
-                                                color: AppColors.blueColor,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.2)),
-                                      ),
-                                    ],
+                              showDialog(
+                                barrierDismissible: false,
+                                barrierColor: Colors.transparent,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    'Assign user',
+                                    style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2),
                                   ),
-                                );
-                              } else {
-                                Helper.getToastMsg("add at least one item");
-                              }
+                                  content: dropDownUserList(context, () {}),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text('No',
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.2)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // Navigator.pop(context);
+                                        addInvoiceController
+                                            .addInvoiceAPi(context);
+                                      },
+                                      child: const Text('Yes',
+                                          style: TextStyle(
+                                              color: AppColors.blueColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.2)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              Helper.getToastMsg("add at least one item");
                             }
-                            if (_activeCurrentStep < (3 - 1)) {
-                              setState(() {
-                                if (_activeCurrentStep == 1) {
-                                  if (addInvoiceController.validateStep2() ==
-                                      true) {
-                                    _activeCurrentStep += 1;
-                                  }
-                                }
-                                if (_activeCurrentStep == 0) {
-                                  if (widget.scheduleId == "") {
-                                    generatePdf(widget.imageList);
-                                  } else {
-                                    if (addInvoiceController.isPdfChange.value ==
-                                        "1") {
-                                      generatePdf(widget.imageList);
-                                    }
-                                  }
+                          }
+                          if (_activeCurrentStep < (3 - 1)) {
+                            setState(() {
+                              if (_activeCurrentStep == 1) {
+                                if (addInvoiceController.validateStep2() ==
+                                    true) {
                                   _activeCurrentStep += 1;
                                 }
-                              });
-                            }
-                          } else {
-                            Helper.getToastMsg("Select vendor");
+                              }
+                              if (_activeCurrentStep == 0) {
+                                if (widget.scheduleId == "") {
+                                  generatePdf(widget.imageList);
+                                } else {
+                                  if (addInvoiceController.isPdfChange.value ==
+                                      "1") {
+                                    generatePdf(widget.imageList);
+                                  }
+                                }
+                                _activeCurrentStep += 1;
+                              }
+                            });
                           }
+                        } else {
+                          Helper.getToastMsg("Select vendor");
                         }
-                        setState(() {
-                        });
-                      },
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.hovered)) {
-                              return AppColors.hoverColor; //<-- SEE HERE
-                            }
-                            return null; // Defer to the widget's default.
-                          },
-                        ),
-                        padding: MaterialStateProperty.all(
-                          const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all(AppColors.primaryColor),
+                      }
+                      setState(() {});
+                    },
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return AppColors.hoverColor; //<-- SEE HERE
+                          }
+                          return null; // Defer to the widget's default.
+                        },
                       ),
-                      child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: addInvoiceController.loading.isTrue
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: Center(
-                                      child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )))
-                              : Text(
-                                  _activeCurrentStep == 2 ? "Save" : "Next",
-                                  style: AppTextStyles.btn1TextStyle,
-                                )),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      ),
+                      backgroundColor:
+                          MaterialStateProperty.all(AppColors.primaryColor),
                     ),
+                    child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: addInvoiceController.loading.isTrue
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                )))
+                            : Text(
+                                _activeCurrentStep == 2 ? "Save" : "Next",
+                                style: AppTextStyles.btn1TextStyle,
+                              )),
+                  ),
                 ],
               ),
             );
@@ -629,8 +623,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                               const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 15),
                             ),
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                            backgroundColor: MaterialStateProperty.all(
+                                AppColors.primaryColor),
                           ),
                           child: Padding(
                               padding: const EdgeInsets.all(7.0),
@@ -1092,12 +1086,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       ),
                     ))
                 .toList(),
-            value: addInvoiceController.selectedUser.value == "" ? null :
-            addInvoiceController.selectedUser.value ,
+            value: addInvoiceController.selectedUser.value == ""
+                ? null
+                : addInvoiceController.selectedUser.value,
             onChanged: (value) {
               addInvoiceController.selectedUser.value = value!;
-              setState(() {
-              });
+              setState(() {});
             },
             buttonStyleData: Helper.buttonStyleData(context),
             iconStyleData: const IconStyleData(
@@ -1631,7 +1625,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                           width:
                                               MediaQuery.of(context).size.width,
                                           decoration: const BoxDecoration(
-                                              color: Colors.blue,
+                                              color: AppColors.primaryColor,
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(4))),
                                           child: CustomTextStyle.bold(
@@ -1907,7 +1901,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 width: MediaQuery.of(context).size.width,
                 decoration: const BoxDecoration(
-                    color: Colors.blue,
+                    color: AppColors.primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: CustomTextStyle.bold(
                     text: "${addInvoiceController.selectedVendor}",
@@ -2112,7 +2106,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 8),
                       decoration: const BoxDecoration(
-                          color: Colors.blue,
+                          color: AppColors.primaryColor,
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                       child: CustomTextStyle.bold(
                           text: "${addInvoiceController.selectedVendor}",
@@ -2602,29 +2596,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     ///pdf creation
     final pdf = pw.Document();
     try {
-      // for (File memoryImage in imageList) {
-      //
-      //   pdf.addPage(
-      //     pw.MultiPage(
-      //       pageFormat: PdfPageFormat.a4,
-      //       build: (pw.Context context) => [
-      //         // Image
-      //         // pw.Container(
-      //         //   width: 450,
-      //         //   height: 500,
-      //         //   child: pw.Center(child: buildPdfImage(memoryImage)),
-      //         // ),
-      //
-      //         pw.Center(child: buildPdfImage(memoryImage))
-      //         // Footer
-      //         // pw.Container(
-      //         //   alignment: pw.Alignment.centerRight,
-      //         //   child: pw.Text('Username: soni.b, Date: ${DateTime.now()}'),
-      //         // ),
-      //       ],
-      //     ),
-      //   );
-      // }
       for (var image in imageList) {
         var pdfImage = pw.MemoryImage(
           image!.readAsBytesSync(),
@@ -2667,15 +2638,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       print('error:${e.toString()}');
       // Helper.getToastMsg(e.toString());
     }
-
     return pdf.save();
   }
-
-  // Future<void> generatePdf(List<File> imageList) async {
-  //   DocumentFileSavePlus documentFileSavePlus = DocumentFileSavePlus();
-  //   await documentFileSavePlus.saveFile(
-  //       data.pdf.value!.readAsBytesSync(), "invoice.pdf", "appliation/pdf");
-  // }
 
   pw.Widget buildPdfImage(MemoryImage memoryImage) {
     final Uint8List imageData = memoryImage.bytes;
