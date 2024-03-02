@@ -13,6 +13,7 @@ import '../../bloc/state/invoice_state.dart';
 import '../../widget/custom_text_style.dart';
 import '../pdfexport/multipleImageScreen.dart';
 import 'add_invoice_screen.dart';
+import 'invoice_details_screen.dart';
 
 class InvoiceScreen extends StatefulWidget {
   @override
@@ -46,133 +47,133 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return BlocProvider(
       create: (BuildContext context) => InvoiceBloc(),
       child: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(color: Colors.blue),
-                  accountName: Text(
-                    "Soni bind",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  accountEmail: Text("abhishekm977@gmail.com"),
-                  currentAccountPictureSize: Size.square(50),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Color.fromARGB(255, 165, 255, 137),
-                    child: Text(
-                      "A",
-                      style: TextStyle(fontSize: 30.0, color: Colors.blue),
-                    ), //Text
-                  ), //circleAvatar
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.dashboard_customize_outlined),
-                title: Text('Dashboard'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.add),
-                title: Text('Dashboard'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.ballot_outlined),
-                title: Text('Invoice'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.people_alt_rounded),
-                title: Text('Vendors'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.fire_truck),
-                title: Text('RMS'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.line_style_outlined),
-                title: Text('Steel'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.content_paste_sharp),
-                title: Text('PO/WO'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.business),
-                title: Text('Site Report'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.fingerprint),
-                title: Text('Attendance'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Setting'),
-                trailing: Icon(Icons.arrow_forward_ios_outlined),
-              ),
-              Container(
-                margin: EdgeInsets.all(4),
-                child: ElevatedButton(
-                    onPressed: () {},
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.logout),
-                        Text("Logout"),
-                      ],
-                    )),
-              )
-            ],
-          ),
-        ),
+        // drawer: Drawer(
+        //   child: ListView(
+        //     padding: EdgeInsets.zero,
+        //     children: [
+        //       DrawerHeader(
+        //         decoration: BoxDecoration(
+        //           color: Colors.blue,
+        //         ),
+        //         child: UserAccountsDrawerHeader(
+        //           decoration: BoxDecoration(color: Colors.blue),
+        //           accountName: Text(
+        //             "Soni bind",
+        //             style: TextStyle(fontSize: 18),
+        //           ),
+        //           accountEmail: Text("abhishekm977@gmail.com"),
+        //           currentAccountPictureSize: Size.square(50),
+        //           currentAccountPicture: CircleAvatar(
+        //             backgroundColor: Color.fromARGB(255, 165, 255, 137),
+        //             child: Text(
+        //               "A",
+        //               style: TextStyle(fontSize: 30.0, color: Colors.blue),
+        //             ), //Text
+        //           ), //circleAvatar
+        //         ),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.dashboard_customize_outlined),
+        //         title: Text('Dashboard'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.add),
+        //         title: Text('Dashboard'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.ballot_outlined),
+        //         title: Text('Invoice'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.people_alt_rounded),
+        //         title: Text('Vendors'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.fire_truck),
+        //         title: Text('RMS'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.line_style_outlined),
+        //         title: Text('Steel'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.content_paste_sharp),
+        //         title: Text('PO/WO'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.business),
+        //         title: Text('Site Report'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.fingerprint),
+        //         title: Text('Attendance'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.settings),
+        //         title: Text('Setting'),
+        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
+        //       ),
+        //       Container(
+        //         margin: EdgeInsets.all(4),
+        //         child: ElevatedButton(
+        //             onPressed: () {},
+        //             child: Row(
+        //               mainAxisAlignment: MainAxisAlignment.center,
+        //               children: [
+        //                 Icon(Icons.logout),
+        //                 Text("Logout"),
+        //               ],
+        //             )),
+        //       )
+        //     ],
+        //   ),
+        // ),
         key: key,
-        appBar: AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
-          IconButton(
-            icon: actionIcon,
-            onPressed: () {
-              setState(() {
-                if (actionIcon.icon == Icons.search) {
-                  actionIcon = const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  );
-                  appBarTitle = BlocBuilder<InvoiceBloc, InvoiceState>(
-                      builder: (BuildContext context, state) {
-                    return TextField(
-                      onChanged: (value) {
-                        context
-                            .read<InvoiceBloc>()
-                            .onSearchInvoice(value.trim().toString());
-                      },
-                      controller: _searchQuery,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                      decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.search, color: Colors.white),
-                          hintText: "Search invoice",
-                          hintStyle: TextStyle(color: Colors.white)),
-                    );
-                  });
-                  _handleSearchStart();
-                } else {
-                  _handleSearchEnd();
-                }
-              });
-            },
-          ),
-        ]),
+        // appBar: AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
+        //   IconButton(
+        //     icon: actionIcon,
+        //     onPressed: () {
+        //       setState(() {
+        //         if (actionIcon.icon == Icons.search) {
+        //           actionIcon = const Icon(
+        //             Icons.close,
+        //             color: Colors.white,
+        //           );
+        //           appBarTitle = BlocBuilder<InvoiceBloc, InvoiceState>(
+        //               builder: (BuildContext context, state) {
+        //             return TextField(
+        //               onChanged: (value) {
+        //                 context
+        //                     .read<InvoiceBloc>()
+        //                     .onSearchInvoice(value.trim().toString());
+        //               },
+        //               controller: _searchQuery,
+        //               style: const TextStyle(
+        //                 color: Colors.white,
+        //               ),
+        //               decoration: const InputDecoration(
+        //                   prefixIcon: Icon(Icons.search, color: Colors.white),
+        //                   hintText: "Search invoice",
+        //                   hintStyle: TextStyle(color: Colors.white)),
+        //             );
+        //           });
+        //           _handleSearchStart();
+        //         } else {
+        //           _handleSearchEnd();
+        //         }
+        //       });
+        //     },
+        //   ),
+        // ]),
         body: BlocConsumer<InvoiceBloc, InvoiceState>(
           builder: (context, state) {
             if (state is LoadingState) {
@@ -478,6 +479,17 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       });
                     } else if (key == "share") {
                       Share.share(invoiceList.data![index].shareUrl!);
+                    } else if (key == "approve") {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InvoiceDetailsScreen(
+                            invoiceId:
+                                invoiceList.data![index].invoiceId!.toString(),
+                          ),
+                        ),
+                      );
                     }
                   });
                 },
@@ -724,7 +736,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8), topRight: Radius.circular(8))),
-          height: MediaQuery.of(context).size.height * 0.3,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -797,6 +809,25 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(20))),
                         child: const Icon(Icons.delete)),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  onClick("approve");
+                },
+                child: ListTile(
+                  title: const Text("Approve"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.check_circle_outline)),
                   ),
                 ),
               ),

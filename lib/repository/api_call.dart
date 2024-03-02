@@ -384,7 +384,8 @@ class ApiRepo {
     var dio = Dio();
     var data = FormData.fromMap({
       'login_option': option,
-      'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
+      // 'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
+      'mobile_no': "9359309108", // 0 - no changes // 1 - new changes
       'user_name': username,
       'password': password
     });
@@ -403,5 +404,53 @@ class ApiRepo {
       print(response.statusMessage);
     }
     return model;
+  }
+
+  static Future<BaseModel> onVendorSubmit(
+      {required companyName,
+      required conName,
+      required mobile,
+      required email,
+      required vendorType,
+      required pan,
+      required gst,
+      required address,
+      required pincode,
+      required city,
+      required vendorId,
+      required context}) async {
+    BaseModel responseModel = BaseModel();
+    var dio = Dio();
+    var data = FormData.fromMap({
+      'vendor_id': vendorId,
+      'vc_name': companyName,
+      'v_name': conName,
+      'mobile': mobile,
+      'vendor_type': vendorType,
+      'email': email,
+      'v_gst': gst,
+      'pan': pan,
+      'address': address,
+      'pincode': pincode,
+      'vendor_city': city,
+    });
+
+    print(" RequestData => ${data.fields}");
+
+    var url = 'https://swastik.online/Mobile/add_vendor';
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+
+    return responseModel;
   }
 }

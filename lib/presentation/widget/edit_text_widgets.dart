@@ -103,7 +103,8 @@ class CustomEditTestWidgets {
   static Widget textEditPhoneLogin(
       {TextEditingController? controller,
       BuildContext? context,
-      required String hint}) {
+      required String hint,
+      required Function() onTap}) {
     return Container(
       height: 48,
       margin: EdgeInsets.only(left: 4),
@@ -113,11 +114,48 @@ class CustomEditTestWidgets {
       child: TextFormField(
         keyboardType: TextInputType.phone,
         controller: controller,
+        readOnly: true,
+        onTap: onTap,
         textInputAction: TextInputAction.done,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         maxLines: 1,
         decoration: CustomTextDecoration.loginDecoration(labelText: hint),
       ),
+    );
+  }
+
+  static Widget commonEditText(TextEditingController controller,
+      {String? lable, int? maxLine}) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.done,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      maxLines: maxLine ?? 1,
+      decoration: CustomTextDecoration.textFieldDecoration(labelText: lable),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return Constant.enterTextError;
+        }
+        return null;
+      },
+    );
+  }
+
+  static Widget commonMobileNumber(TextEditingController controller,
+      {String? lable, int? maxLine}) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.done,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      maxLines: maxLine ?? 1,
+      keyboardType: TextInputType.phone,
+      decoration: CustomTextDecoration.textFieldDecoration(labelText: lable),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return Constant.enterTextError;
+        }
+        return null;
+      },
     );
   }
 }

@@ -8,8 +8,9 @@ class AppColors {
   static const Color blackColor = Color(0xFF000000);
   static const Color bgColor = Color(0xFFA12047);
   static const Color bgColor1 = Color(0xFFffd966);
-  static const Color redColor = Color(0xFFBB0000);
-  static const Color greenColor = Color(0xFF129f3a);
+  static const Color redColor = Color(0xFFB90e0a);
+  static const Color greenColor = Color(0xFF1bb42b);
+
   static const Color blackColor200 = Color(0xFF121212);
   static const Color byContinueColor = Color(0xFFA9A9A9);
   static const Color unSelectedColor = Color(0xFF4D4B4B);
@@ -36,4 +37,7 @@ class AppColors {
   static const Color disabledColor = Color(0xFFBABDBC);
   static const Color cherryRedColor = Color(0xFF990F02);
   static const Color chilliRed = Color(0xFFC21A09);
+  static const Color ap1 = Color(0xFF85c1e9);
+  static const Color ap2 = Color(0xFFf4d03f);
+  static const Color ap3 = Color(0xFF9ccc65);
 }

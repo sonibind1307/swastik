@@ -6,9 +6,8 @@ import 'package:swastik/presentation/view/splash/splashScreenCubit.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../../config/colorConstant.dart';
+import '../ashboard_screen.dart';
 import '../authentication/login_screen.dart';
-import '../invoice/invoice_details_screen.dart';
-import '../invoice/list_invoice_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -21,12 +20,12 @@ class SplashScreen extends StatelessWidget {
         body: Center(
           child: BlocConsumer<SplashScreenCubit, SplashScreenState>(
             listener: (context, state) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => InviceDetailsScreen(),
-                ),
-              );
-              return;
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (context) => VendorListScreen(),
+              //   ),
+              // );
+              // return;
               if (state == SplashScreenState.Login) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -34,7 +33,7 @@ class SplashScreen extends StatelessWidget {
                   ),
                 );
               } else if (state == SplashScreenState.Dashboard) {
-                Get.offAll(InvoiceScreen());
+                Get.offAll(DashBoardScreen());
               }
             },
             builder: (context, state) {
@@ -50,7 +49,7 @@ class SplashScreen extends StatelessWidget {
                       color: Colors.white,
                       size: 120,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Row(
@@ -63,7 +62,7 @@ class SplashScreen extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
                     // SizedBox(

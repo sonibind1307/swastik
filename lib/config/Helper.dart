@@ -385,22 +385,22 @@ class Helper {
           },
         );
       },
-      // transitionBuilder: (_, anim, __, child) {
-      //   Tween<Offset> tween;
-      //   if (anim.status == AnimationStatus.reverse) {
-      //     tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
-      //   } else {
-      //     tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
-      //   }
-      //
-      //   return SlideTransition(
-      //     position: tween.animate(anim),
-      //     child: FadeTransition(
-      //       opacity: anim,
-      //       child: child,
-      //     ),
-      //   );
-      // },
+      transitionBuilder: (_, anim, __, child) {
+        Tween<Offset> tween;
+        if (anim.status == AnimationStatus.reverse) {
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
+        } else {
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+        }
+
+        return SlideTransition(
+          position: tween.animate(anim),
+          child: FadeTransition(
+            opacity: anim,
+            child: child,
+          ),
+        );
+      },
     );
   }
 
@@ -600,5 +600,72 @@ class Helper {
           ),
         )) ??
         false;
+  }
+
+  static Color getCardColor(String status) {
+    switch (status) {
+      case "a":
+        return Color(0xFFCC0033);
+      case "b":
+        return Color(0xFFFF0033);
+      case "c":
+        return Color(0xFFFF3366);
+      case "d":
+        return Color(0xFFCC3300);
+      case "e":
+        return Color(0xFFFF3333);
+      case "f":
+        return Color(0xFFCC6633);
+      case "g":
+        return Color(0xFF993300);
+      case "h":
+        return Color(0xFF663300);
+      case "i":
+        return Color(0xFFCC6600);
+      case "j":
+        return Color(0xFFFF9933);
+      case "k":
+        return Color(0xFFCC9933);
+      case "l":
+        return Color(0xFF996600);
+      case "m":
+        return Color(0xFF996633);
+      case "n":
+        return Color(0xFFcc9900);
+      case "o":
+        return Color(0xFF99ccff);
+      case "p":
+        return Color(0xFF3399ff);
+      case "q":
+        return Color(0xFF006699);
+      case "r":
+        return Color(0xFF6699ff);
+      case "s":
+        return Color(0xFF0033cc);
+      case "t":
+        return Color(0xFFff9900);
+      case "u":
+        return Color(0xFF996633);
+      case "v":
+        return Color(0xFF999933);
+      case "w":
+        return Color(0xFF99cc66);
+      case "x":
+        return Color(0xFF00ff99);
+      case "y":
+        return Color(0xFFcc99ff);
+      case "z":
+        return Color(0xFF660066);
+      default:
+        return Colors.grey;
+    }
+  }
+}
+
+extension EmailValidator on String {
+  bool isValidEmail() {
+    return RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(this);
   }
 }
