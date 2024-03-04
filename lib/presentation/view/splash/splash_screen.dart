@@ -22,18 +22,26 @@ class SplashScreen extends StatelessWidget {
             listener: (context, state) {
               // Navigator.of(context).push(
               //   MaterialPageRoute(
-              //     builder: (context) => VendorListScreen(),
+              //     builder: (context) => InvoiceScreen(),
               //   ),
               // );
               // return;
               if (state == SplashScreenState.Login) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => const LoginPage(),
                   ),
                 );
               } else if (state == SplashScreenState.Dashboard) {
-                Get.offAll(DashBoardScreen());
+                Get.offAll(DashBoardScreen(
+                  index: 1,
+                ));
+
+                // Navigator.of(context).pushAndRemoveUntil(
+                //   MaterialPageRoute(
+                //     builder: (context) => const LoginPage(),
+                //   ),
+                // );
               }
             },
             builder: (context, state) {

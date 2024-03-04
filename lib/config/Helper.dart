@@ -22,7 +22,7 @@ class Helper {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 3,
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.darkGery100,
         textColor: AppColors.white200,
         fontSize: 16.0);
   }
@@ -455,6 +455,7 @@ class Helper {
                       color: Colors.grey.shade300,
                       thickness: 1,
                     ),
+                    Spacer(),
                     Material(
                       child: InkWell(
                         onTap: () async {
@@ -462,7 +463,7 @@ class Helper {
                         },
                         child: const Padding(
                           padding: EdgeInsets.only(
-                              left: 12.0, right: 12.0, top: 12.0, bottom: 2),
+                              left: 12.0, right: 12.0, top: 0.0, bottom: 2),
                           child: DefaultTextStyle(
                             style: TextStyle(
                                 color: Colors.blue,
@@ -477,6 +478,7 @@ class Helper {
                         ),
                       ),
                     ),
+                    Spacer(),
                   ],
                 ),
               ),
@@ -506,7 +508,8 @@ class Helper {
   static Future<bool> closeAppDialog(BuildContext context) async {
     return (await showDialog(
           barrierDismissible: false,
-          barrierColor: Colors.transparent,
+          // barrierColor: Colors.transparent,
+          barrierColor: Colors.black.withOpacity(0.5),
           context: context,
           builder: (context) => AlertDialog(
             title: const Text(
@@ -536,7 +539,7 @@ class Helper {
               TextButton(
                 onPressed: () {
                   // StorageUtil.instance.removeAll();
-                  // exit(0);
+                  exit(0);
                 },
                 child: const Text('Yes',
                     style: TextStyle(
@@ -555,7 +558,8 @@ class Helper {
       BuildContext context, String title, VoidCallback callback) async {
     return (await showDialog(
           barrierDismissible: false,
-          barrierColor: Colors.transparent,
+          // barrierColor: Colors.transparent,
+          barrierColor: Colors.black.withOpacity(0.5),
           context: context,
           builder: (context) => AlertDialog(
             title: const Text(
@@ -659,6 +663,15 @@ class Helper {
       default:
         return Colors.grey;
     }
+  }
+
+  static bool isGSTValidator(String value) {
+    return RegExp(r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$')
+        .hasMatch(value);
+  }
+
+  static bool isPanValidator(String value) {
+    return RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$').hasMatch(value);
   }
 }
 

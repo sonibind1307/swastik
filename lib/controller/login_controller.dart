@@ -4,7 +4,7 @@ import 'package:swastik/config/Helper.dart';
 
 import '../config/sharedPreferences.dart';
 import '../model/responses/user_info_model.dart';
-import '../presentation/view/invoice/list_invoice_screen.dart';
+import '../presentation/view/ashboard_screen.dart';
 import '../repository/api_call.dart';
 
 class LoginController extends GetxController {
@@ -26,9 +26,13 @@ class LoginController extends GetxController {
             userNameController.text, passwordController.text);
         if (userModel.status == "true") {
           Auth.setUserID(userModel.data!.userId!);
+          Auth.setUserName(userModel.data!.userName!);
+          Auth.setMobileNo(userModel.data!.userMobile!);
           isLoading.value = false;
           Helper.getToastMsg(userModel.message!);
-          Get.offAll(InvoiceScreen());
+          Get.offAll(DashBoardScreen(
+            index: 1,
+          ));
         } else {
           isLoading.value = false;
           Helper.getToastMsg(userModel.message!);

@@ -47,6 +47,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   final _addInvoiceFormKey = GlobalKey<FormState>();
   final _quantityKey = GlobalKey<FormState>();
   final _amountKey = GlobalKey<FormState>();
+
   // final data = Get.find<Logic>();
 
   @override
@@ -185,7 +186,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
 
                               showDialog(
                                 barrierDismissible: false,
-                                barrierColor: Colors.transparent,
+                                // barrierColor: Colors.transparent,
+                                barrierColor: Colors.black.withOpacity(0.5),
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: const Text(
@@ -211,8 +213,16 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                     TextButton(
                                       onPressed: () {
                                         // Navigator.pop(context);
-                                        addInvoiceController
-                                            .addInvoiceAPi(context);
+
+                                        if (addInvoiceController
+                                                .selectedUser.value ==
+                                            "") {
+                                          Helper.getToastMsg("Assign user");
+                                        } else {
+                                          // Navigator.pop(context);
+                                          addInvoiceController
+                                              .addInvoiceAPi(context);
+                                        }
                                       },
                                       child: const Text('Yes',
                                           style: TextStyle(
@@ -746,7 +756,13 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   onChanged: addInvoiceController.cgstFlag.value == false
                       ? null
                       : (value) {
+                          if (value == "CGST") {
+                            addInvoiceController.sgstValue1.value = "SGST";
+                          } else {
+                            addInvoiceController.sgstValue1.value = value!;
+                          }
                           addInvoiceController.cgstValue1.value = value!;
+
                           if (value == addInvoiceController.cgstList[0] &&
                               addInvoiceController.sgstValue1.value ==
                                   addInvoiceController.sgstList[0]) {
@@ -833,6 +849,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                   onChanged: addInvoiceController.cgstFlag.value == false
                       ? null
                       : (value) {
+                          if (value == "SGST") {
+                            addInvoiceController.cgstValue1.value = "CGST";
+                          } else {
+                            addInvoiceController.cgstValue1.value = value!;
+                          }
                           addInvoiceController.sgstValue1.value = value!;
                           voidCallback(addInvoiceController.sgstValue1.value);
                           if (value == addInvoiceController.sgstList[0] &&
@@ -844,7 +865,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                             addInvoiceController.cgstFlag.value = true;
                             addInvoiceController.igstFlag.value = false;
                           }
-
                           addInvoiceController.onGstCalculation();
                         },
                   buttonStyleData: Helper.buttonStyleData(context),
@@ -2095,106 +2115,276 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       content: Obx(
         () => SizedBox(
           height: MediaQuery.of(context).size.height * 0.7,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 8),
-                      decoration: const BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.all(Radius.circular(4))),
-                      child: CustomTextStyle.bold(
-                          text: "${addInvoiceController.selectedVendor}",
-                          color: Colors.white,
-                          fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomTextStyle.regular(
-                      text:
-                          "Count ${addInvoiceController.allInvoiceItemList.length}  "),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: OutlinedButton.icon(
-                      // <-- OutlinedButton
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        addInvoiceController.clearAddFormData();
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return addInvoiceDialog(context, "add", () {});
-                            });
-                      },
-                      icon: const Icon(
-                        Icons.add,
-                        size: 24.0,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 8),
+                        decoration: const BoxDecoration(
+                            color: AppColors.primaryColor,
+                            borderRadius: BorderRadius.all(Radius.circular(4))),
+                        child: CustomTextStyle.bold(
+                            text: "${addInvoiceController.selectedVendor}",
+                            color: Colors.white,
+                            fontSize: 16),
                       ),
-                      label: const Text('Add Item'),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
-                child: addInvoiceController.allInvoiceItemList.isEmpty
-                    ? Center(
-                        child: CustomTextStyle.regular(text: "No Item Added"),
-                      )
-                    : ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const SizedBox(
-                          height: 4,
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomTextStyle.regular(
+                        text:
+                            "Count ${addInvoiceController.allInvoiceItemList.length}  "),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: OutlinedButton.icon(
+                        // <-- OutlinedButton
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          addInvoiceController.clearAddFormData();
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return addInvoiceDialog(context, "add", () {});
+                              });
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          size: 24.0,
                         ),
-                        itemBuilder: (BuildContext context, int index) {
-                          InvoiceItems data =
-                              addInvoiceController.allInvoiceItemList[index];
-                          return Card(
-                            elevation: 4,
-                            child: Padding(
+                        label: const Text('Add Item'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+
+                ///list item code
+                SizedBox(
+                  child: addInvoiceController.allInvoiceItemList.isEmpty
+                      ? Container(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          child: Center(
+                            child:
+                                CustomTextStyle.regular(text: "No Item Added"),
+                          ),
+                        )
+                      : Container(
+                          // color: AppColors.greenColor,
+                          // height: double.infinity * 0.5,
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            primary: false,
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const SizedBox(
+                              height: 4,
+                            ),
+                            itemBuilder: (BuildContext context, int index) {
+                              InvoiceItems data = addInvoiceController
+                                  .allInvoiceItemList[index];
+                              return Card(
+                                elevation: 4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                        Expanded(
+                                          // flex: 2,
+                                          child: Container(
+                                              // color: Colors.red,
+                                              child: CustomTextStyle.bold(
+                                                  text: data.itemDescription ??
+                                                      "NA",
+                                                  fontSize: 16)),
+                                        ),
+                                        Expanded(
+                                            child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: CustomTextStyle.bold(
+                                              text: data.itemTotal ?? "0.0",
+                                              fontSize: 16),
+                                        )),
+                                      ]),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              FocusScope.of(context).unfocus();
+                                              addInvoiceController.onEditItem(
+                                                  itemData: data);
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return addInvoiceDialog(
+                                                        context, "edit", () {
+                                                      addInvoiceController
+                                                          .allInvoiceItemList
+                                                          .remove(data);
+
+                                                      addInvoiceController
+                                                          .addItems(
+                                                              itemId: data
+                                                                  .invoiceItemId!);
+                                                    });
+                                                  });
+                                            },
+                                            child: Container(
+                                                width: 22,
+                                                height: 22,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey.shade300,
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                10))),
+                                                child: const Icon(
+                                                  Icons.edit,
+                                                  color: Colors.grey,
+                                                  size: 20,
+                                                )),
+                                          ),
+                                          const SizedBox(
+                                            width: 16,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              FocusScope.of(context).unfocus();
+                                              Helper.deleteDialog(context,
+                                                  "Do you want to delete an item",
+                                                  () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                addInvoiceController
+                                                    .allInvoiceItemList
+                                                    .remove(data);
+                                                addInvoiceController
+                                                    .updateSummaryItem();
+                                              });
+                                            },
+                                            child: Container(
+                                                width: 22,
+                                                height: 22,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey.shade300,
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                14))),
+                                                child: const Icon(
+                                                  Icons.delete_forever,
+                                                  color: Colors.grey,
+                                                  size: 20,
+                                                )),
+                                          )
+                                        ],
+                                      ),
+/*                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(),
+                                        ),
+                                        Expanded(
+                                            flex: 1,
+                                            child: CustomTextStyle.regular(
+                                                text: 'Rate: ${data.itemAmount}',
+                                                fontSize: 12)),
+                                        Expanded(
+                                            child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              CustomTextStyle.regular(
+                                                  text: 'GST', fontSize: 12),
+                                              const SizedBox(
+                                                width: 4.0,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder:
+                                                          (BuildContext context) {
+                                                        return gstDialog(
+                                                            context,
+                                                            data.itemCgst,
+                                                            data.itemSgst,
+                                                            data.itemIgst);
+                                                      });
+                                                },
+                                                child: const Icon(
+                                                  Icons.info_rounded,
+                                                  color: Colors.grey,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ],
+                                    ),*/
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount:
+                                addInvoiceController.allInvoiceItemList.length,
+                          ),
+                        )
+                  /*ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          physics: const ScrollPhysics(),
+                          itemCount:
+                              addInvoiceController.allInvoiceItemList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            InvoiceItems data =
+                                addInvoiceController.allInvoiceItemList[index];
+                            return Card(
+                                child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Row(children: [
-                                    Expanded(
-                                      // flex: 2,
-                                      child: Container(
-                                          // color: Colors.red,
-                                          child: CustomTextStyle.bold(
-                                              text:
-                                                  data.itemDescription ?? "NA",
-                                              fontSize: 16)),
-                                    ),
-                                    Expanded(
-                                        child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: CustomTextStyle.bold(
-                                          text: data.itemTotal ?? "0.0",
-                                          fontSize: 16),
-                                    )),
-                                  ]),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      Expanded(
+                                        // flex: 2,
+                                        child: Container(
+                                            // color: Colors.red,
+                                            child: CustomTextStyle.bold(
+                                                text:
+                                                    data.itemDescription ?? "NA",
+                                                fontSize: 16)),
+                                      ),
                                       InkWell(
                                         onTap: () {
                                           FocusScope.of(context).unfocus();
@@ -2208,7 +2398,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                   addInvoiceController
                                                       .allInvoiceItemList
                                                       .remove(data);
-
                                                   addInvoiceController.addItems(
                                                       itemId:
                                                           data.invoiceItemId!);
@@ -2216,18 +2405,14 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                               });
                                         },
                                         child: Container(
-                                            width: 22,
-                                            height: 22,
+                                            width: 32,
+                                            height: 32,
                                             decoration: BoxDecoration(
                                                 color: Colors.grey.shade300,
                                                 borderRadius:
                                                     const BorderRadius.all(
-                                                        Radius.circular(10))),
-                                            child: const Icon(
-                                              Icons.edit,
-                                              color: Colors.grey,
-                                              size: 20,
-                                            )),
+                                                        Radius.circular(16))),
+                                            child: const Icon(Icons.edit)),
                                       ),
                                       const SizedBox(
                                         width: 16,
@@ -2242,28 +2427,45 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                             addInvoiceController
                                                 .allInvoiceItemList
                                                 .remove(data);
-                                            addInvoiceController
-                                                .updateSummaryItem();
                                           });
                                         },
                                         child: Container(
-                                            width: 22,
-                                            height: 22,
+                                            width: 32,
+                                            height: 32,
                                             decoration: BoxDecoration(
                                                 color: Colors.grey.shade300,
                                                 borderRadius:
                                                     const BorderRadius.all(
-                                                        Radius.circular(14))),
-                                            child: const Icon(
-                                              Icons.delete_forever,
-                                              color: Colors.grey,
-                                              size: 20,
-                                            )),
-                                      )
+                                                        Radius.circular(16))),
+                                            child:
+                                                const Icon(Icons.delete_forever)),
+                                      ),
                                     ],
                                   ),
-/*                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          flex: 2,
+                                          child: CustomTextStyle.regular(
+                                              text: data.hsnCode ?? "0.0")),
+                                      Expanded(
+                                          flex: 1,
+                                          child: CustomTextStyle.regular(
+                                              text: 'Qty: ${data.qty ?? "NA"}',
+                                              fontSize: 12)),
+                                      Expanded(
+                                          child: CustomTextStyle.bold(
+                                              text: data.itemAmount ?? "0.0",
+                                              fontSize: 16)),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
                                     children: [
                                       Expanded(
                                         flex: 2,
@@ -2275,234 +2477,72 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                               text: 'Rate: ${data.itemAmount}',
                                               fontSize: 12)),
                                       Expanded(
-                                          child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            CustomTextStyle.regular(
-                                                text: 'GST', fontSize: 12),
-                                            const SizedBox(
-                                              width: 4.0,
+                                          child: Row(
+                                        children: [
+                                          CustomTextStyle.regular(
+                                              text: 'GST', fontSize: 12),
+                                          const SizedBox(
+                                            width: 4.0,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return gstDialog(
+                                                        context,
+                                                        data.itemCgst,
+                                                        data.itemSgst,
+                                                        data.itemIgst);
+                                                  });
+                                            },
+                                            child: const Icon(
+                                              Icons.info_rounded,
+                                              color: Colors.grey,
                                             ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return gstDialog(
-                                                          context,
-                                                          data.itemCgst,
-                                                          data.itemSgst,
-                                                          data.itemIgst);
-                                                    });
-                                              },
-                                              child: const Icon(
-                                                Icons.info_rounded,
-                                                color: Colors.grey,
-                                              ),
-                                            )
-                                          ],
-                                        ),
+                                          )
+                                        ],
                                       )),
                                     ],
-                                  ),*/
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount:
-                            addInvoiceController.allInvoiceItemList.length,
-                      )
-                /*ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        physics: const ScrollPhysics(),
-                        itemCount:
-                            addInvoiceController.allInvoiceItemList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          InvoiceItems data =
-                              addInvoiceController.allInvoiceItemList[index];
-                          return Card(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      // flex: 2,
-                                      child: Container(
-                                          // color: Colors.red,
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                      Expanded(
                                           child: CustomTextStyle.bold(
                                               text:
-                                                  data.itemDescription ?? "NA",
+                                                  'RS. ${data.itemTotal ?? "0.0"}',
                                               fontSize: 16)),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        FocusScope.of(context).unfocus();
-                                        addInvoiceController.onEditItem(
-                                            itemData: data);
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return addInvoiceDialog(
-                                                  context, "edit", () {
-                                                addInvoiceController
-                                                    .allInvoiceItemList
-                                                    .remove(data);
-                                                addInvoiceController.addItems(
-                                                    itemId:
-                                                        data.invoiceItemId!);
-                                              });
-                                            });
-                                      },
-                                      child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.shade300,
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(16))),
-                                          child: const Icon(Icons.edit)),
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        FocusScope.of(context).unfocus();
-                                        Helper.deleteDialog(context,
-                                            "Do you want to delete an item",
-                                            () {
-                                          FocusScope.of(context).unfocus();
-                                          addInvoiceController
-                                              .allInvoiceItemList
-                                              .remove(data);
-                                        });
-                                      },
-                                      child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.shade300,
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(16))),
-                                          child:
-                                              const Icon(Icons.delete_forever)),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        flex: 2,
-                                        child: CustomTextStyle.regular(
-                                            text: data.hsnCode ?? "0.0")),
-                                    Expanded(
-                                        flex: 1,
-                                        child: CustomTextStyle.regular(
-                                            text: 'Qty: ${data.qty ?? "NA"}',
-                                            fontSize: 12)),
-                                    Expanded(
-                                        child: CustomTextStyle.bold(
-                                            text: data.itemAmount ?? "0.0",
-                                            fontSize: 16)),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Container(),
-                                    ),
-                                    Expanded(
-                                        flex: 1,
-                                        child: CustomTextStyle.regular(
-                                            text: 'Rate: ${data.itemAmount}',
-                                            fontSize: 12)),
-                                    Expanded(
-                                        child: Row(
-                                      children: [
-                                        CustomTextStyle.regular(
-                                            text: 'GST', fontSize: 12),
-                                        const SizedBox(
-                                          width: 4.0,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return gstDialog(
-                                                      context,
-                                                      data.itemCgst,
-                                                      data.itemSgst,
-                                                      data.itemIgst);
-                                                });
-                                          },
-                                          child: const Icon(
-                                            Icons.info_rounded,
-                                            color: Colors.grey,
-                                          ),
-                                        )
-                                      ],
-                                    )),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(),
-                                    ),
-                                    Expanded(
-                                      child: Container(),
-                                    ),
-                                    Expanded(
-                                        child: CustomTextStyle.bold(
-                                            text:
-                                                'RS. ${data.itemTotal ?? "0.0"}',
-                                            fontSize: 16)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ));
-                        },
-                      )*/
-                ,
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Obx(
-                () => Expanded(
-                  child: Container(
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ));
+                          },
+                        )*/
+                  ,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Obx(
+                  () => Container(
+                    // color: Colors.red,
                     // margin: EdgeInsets.all(4),
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(
-                          color: Colors.grey,
+                          color: Colors.yellow,
                           width: 1,
                         ),
                         borderRadius:
@@ -2512,17 +2552,18 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                             color: Colors.grey.shade400,
                             blurRadius: 4.0, // soften the shadow
                             // spreadRadius: 4.0, //extend the shadow
-                            offset: Offset(
+                            offset: const Offset(
                               0.0, // Move to right 5  horizontally
                               0.0, // Move to bottom 5 Vertically
                             ),
                           )
                         ]),
 
-                    height: MediaQuery.of(context).size.height * 0.2,
-                    child: ListView(
+                    // height: MediaQuery.of(context).size.height * 0.1,
+                    child: Column(
                       children: [
                         Container(
+                          width: MediaQuery.of(context).size.width,
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.orange,
@@ -2579,11 +2620,11 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-            ],
+                const SizedBox(
+                  height: 8,
+                ),
+              ],
+            ),
           ),
         ),
       ),

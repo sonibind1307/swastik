@@ -14,6 +14,7 @@ import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../presentation/view/ashboard_screen.dart';
 import '../presentation/view/invoice/add_invoice_screen.dart';
 import '../presentation/view/invoice/list_invoice_screen.dart';
 import '../repository/api_call.dart';
@@ -70,6 +71,7 @@ class AddInvoiceController extends GetxController {
   ///
 
   String? selectedVendor;
+
   // String? selectedUser;
   String? selectedPo;
 
@@ -150,7 +152,8 @@ class AddInvoiceController extends GetxController {
     if (amount.text.trim().isNotEmpty && quanity.text.trim().isNotEmpty) {
       _amount = double.parse(amount.text);
       _quanity = double.parse(quanity.text);
-      _finalAmount = _amount * _quanity;
+      // _finalAmount = _amount * _quanity;
+      _finalAmount = _amount;
 
       if (cgstValue1.value != cgstList[0]) {
         cgstPer = double.parse(cgstValue1.value
@@ -293,51 +296,67 @@ class AddInvoiceController extends GetxController {
   }
 
   Future<BaseModel?> addInvoiceAPi(BuildContext context) async {
+    EasyLoading.show(status: 'loading...');
+
     BaseModel baseModel = BaseModel();
-    if (allInvoiceItemList.isNotEmpty) {
-      baseModel = (await ApiRepo.addInvoiceData(
-        invDate: selectedDate,
-        invRef: invRefController.text.trim(),
-        invComments: noteController.text.trim(),
-        invProject: projectId,
-        invBuilding: selectedBuild,
-        invCategory: selectedCategory,
-        ldgrTdsPcnt: "0",
+    if (loading.value == false) {
+      if (allInvoiceItemList.isNotEmpty) {
+        loading.value = true;
+        EasyLoading.show(status: 'loading...');
+        baseModel = (await ApiRepo.addInvoiceData(
+          invDate: selectedDate,
+          invRef: invRefController.text.trim(),
+          invComments: noteController.text.trim(),
+          invProject: projectId,
+          invBuilding: selectedBuild,
+          invCategory: selectedCategory,
+          ldgrTdsPcnt: "0",
 
-        ///invoice details
-        invPo: selectedPo,
-        vendorId: vendorId,
-        createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
-        vendorLinkedLdgr: ledgerId,
+          ///invoice details
+          invPo: selectedPo,
+          vendorId: vendorId,
+          createdDate: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+          vendorLinkedLdgr: ledgerId,
 
-        /// on project change
-        itemList: allInvoiceItemList,
-        context: context,
-        invoice_id: inVoiceId == "" ? "0" : inVoiceId,
-        upload_file: isPdfChange.value,
-        file: pdfUrl, step2_userid: selectedUser,
-      ))!;
+          /// on project change
+          itemList: allInvoiceItemList,
+          context: context,
+          invoice_id: inVoiceId == "" ? "0" : inVoiceId,
+          upload_file: isPdfChange.value,
+          file: pdfUrl,
+          step2_userid: selectedUser.value,
+        ))!;
+        if (baseModel.status == "true") {
+          EasyLoading.dismiss();
+          loading.value = false;
+          Helper.getToastMsg(baseModel.message!);
+          Helper().showServerSuccessDialog(context, baseModel.message!,
+              () async {
+            FocusScope.of(context).unfocus();
+            Navigator.pop(context);
+            // Get.offAll(DashBoardScreen());
+            Get.offAll(() => DashBoardScreen(
+                  index: 1,
+                ));
 
-      /* if (baseModel.status == "true") {
-        EasyLoading.dismiss();
-        loading.value = false;
-        Helper.getToastMsg(baseModel.message!);
-        Helper().showServerSuccessDialog(context, baseModel.message!, () async {
+            // Navigator.of(context).pushAndRemoveUntil(
+            //     MaterialPageRoute(
+            //       builder: (context) => DashBoardScreen(),
+            //     ),
+            //     (Route<dynamic> route) => false);
+          });
+        } else {
+          EasyLoading.dismiss();
+          loading.value = false;
           FocusScope.of(context).unfocus();
-          Get.offAll(InvoiceScreen());
-        });
+          Helper().showServerErrorDialog(context, "Server error", () async {
+            FocusScope.of(context).unfocus();
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        }
+      } else {
+        Helper.getToastMsg("add at least one item");
       }
-      else {
-        EasyLoading.dismiss();
-        loading.value = false;
-        FocusScope.of(context).unfocus();
-        Helper().showServerErrorDialog(context, "Server error", () async {
-          FocusScope.of(context).unfocus();
-          Navigator.of(context, rootNavigator: true).pop();
-        });
-      }*/
-    } else {
-      Helper.getToastMsg("add at least one item");
     }
     return baseModel;
   }
@@ -427,6 +446,7 @@ class AddInvoiceController extends GetxController {
     // amountTax.text = itemData.itemTax.toString();
     // amountFinal.text = itemData.itemTotal.toString();
     cgstValue1.value =
+        // itemData.itemCgst == "0" ? "0.0%" : "${itemData.itemCgst}%";
         itemData.itemCgst == "0" ? "0.0%" : "${itemData.itemCgst}%";
     sgstValue1.value =
         itemData.itemSgst == "0" ? "0.0%" : "${itemData.itemSgst}%";
@@ -476,6 +496,7 @@ class AddInvoiceController extends GetxController {
     selectedCategory = null;
     selectedProject = null;
     selectedBuild = null;
+    selectedUser.value = "";
     pdfUrl = null;
 
     selectedVendor = null;
@@ -524,9 +545,12 @@ class AddInvoiceController extends GetxController {
     taxTotal.value = 0.0;
     if (allInvoiceItemList.isNotEmpty) {
       for (var element in allInvoiceItemList) {
-        subtotal.value = subtotal.value +
-            (double.parse(element.itemAmount.toString()) *
-                double.parse(element.qty.toString()));
+        // subtotal.value = subtotal.value +
+        //     (double.parse(element.itemAmount.toString()) *
+        //         double.parse(element.qty.toString()));
+
+        subtotal.value =
+            subtotal.value + double.parse(element.itemAmount.toString());
         taxTotal.value =
             taxTotal.value + double.parse(element.itemTax.toString());
 

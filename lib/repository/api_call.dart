@@ -9,6 +9,7 @@ import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
 
 import '../config/Helper.dart';
+import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/po_model.dart';
@@ -237,7 +238,29 @@ class ApiRepo {
             : [await MultipartFile.fromFile(path, filename: 'example.pdf')],
         'item_list': json.encode(itemList)
       });
-      print(" RequestData => ${data.fields}");
+
+      print(" add_invoice_request => ${data.fields}");
+
+      ///
+
+      var dio = Dio();
+
+      try {
+        var response = await dio.post(
+          url,
+          data: data,
+        );
+
+        if (response.statusCode == 200) {
+          var res = jsonDecode(response.data);
+          baseModel = BaseModel.fromJson(res);
+        }
+      } catch (e) {
+        Helper.getToastMsg("Server error");
+      }
+      return baseModel;
+
+      ///
 
       Helper().showServerErrorDialog(context,
           "File_path:${path == "" ? file : path} \n Request : ->${data.fields}",
@@ -421,6 +444,7 @@ class ApiRepo {
       required context}) async {
     BaseModel responseModel = BaseModel();
     var dio = Dio();
+    String userName = await Auth.getUserName() ?? "";
     var data = FormData.fromMap({
       'vendor_id': vendorId,
       'vc_name': companyName,
@@ -433,10 +457,8 @@ class ApiRepo {
       'address': address,
       'pincode': pincode,
       'vendor_city': city,
+      'user_name': userName,
     });
-
-    print(" RequestData => ${data.fields}");
-
     var url = 'https://swastik.online/Mobile/add_vendor';
     try {
       var response = await dio.post(
@@ -450,7 +472,52 @@ class ApiRepo {
     } catch (e) {
       Helper.getToastMsg(e.toString());
     }
+    return responseModel;
+  }
 
+  static Future<BaseModel> approveInvoiceStatus(
+      {required companyName,
+      required conName,
+      required mobile,
+      required email,
+      required vendorType,
+      required pan,
+      required gst,
+      required address,
+      required pincode,
+      required city,
+      required vendorId,
+      required context}) async {
+    BaseModel responseModel = BaseModel();
+    var dio = Dio();
+    String userName = await Auth.getUserName() ?? "";
+    var data = FormData.fromMap({
+      'vendor_id': vendorId,
+      'vc_name': companyName,
+      'v_name': conName,
+      'mobile': mobile,
+      'vendor_type': vendorType,
+      'email': email,
+      'v_gst': gst,
+      'pan': pan,
+      'address': address,
+      'pincode': pincode,
+      'vendor_city': city,
+      'user_name': userName,
+    });
+    var url = 'https://swastik.online/Mobile/add_vendor';
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
     return responseModel;
   }
 }

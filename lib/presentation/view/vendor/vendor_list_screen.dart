@@ -62,7 +62,7 @@ class VendorListScreen extends StatelessWidget {
               ],
             ),
             Obx(
-              () => true
+              () => controller.isLoading.value == false
                   ? Expanded(
                       child: RefreshIndicator(
                         onRefresh: () async {
@@ -97,8 +97,26 @@ class VendorListScreen extends StatelessWidget {
                                       child: ListTile(
                                         title: CustomTextStyle.bold(
                                             text:
-                                                "${data.companyName!.toUpperCase()}"),
-                                        subtitle: Text("${data.email}"),
+                                                "${data.companyName!.toUpperCase()}",
+                                            fontSize: 14),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text: "${data.email}",
+                                                fontSize: 12),
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text: "${data.contactNo}",
+                                                fontSize: 12),
+                                          ],
+                                        ),
                                         leading: Padding(
                                           padding:
                                               const EdgeInsets.only(right: 8),
@@ -140,7 +158,8 @@ class VendorListScreen extends StatelessWidget {
                               ),
                       ),
                     )
-                  : CircularProgressIndicator(),
+                  : const Expanded(
+                      child: Center(child: CircularProgressIndicator())),
             ),
           ],
         ),

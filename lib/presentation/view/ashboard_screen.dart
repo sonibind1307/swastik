@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/colorConstant.dart';
+import 'package:swastik/presentation/view/authentication/login_screen.dart';
 import 'package:swastik/presentation/view/vendor/vendor_list_screen.dart';
 
+import '../../config/Helper.dart';
+import '../../config/sharedPreferences.dart';
 import '../../controller/dashboard_controller.dart';
 import '../../model/DraverItem.dart';
 import 'invoice/list_invoice_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
-  DashBoardScreen({super.key});
+  final int index;
+
+  DashBoardScreen({super.key, required this.index});
 
   final drawerItems = [
     DrawerItem("Dashboard", Icons.home),
@@ -31,31 +36,21 @@ class DashBoardScreen extends StatefulWidget {
 
 class HomePageState extends State<DashBoardScreen> {
   int _selectedDrawerIndex = 0;
+  final controller = Get.put(DashboardController());
 
-  String currentProfilePic =
-      "https://avatars3.githubusercontent.com/u/16825392?s=460&v=4";
-
-  Icon actionIcon = const Icon(
-    Icons.search,
-    color: Colors.white,
-  );
-  bool _IsSearching = false;
-
-  final avController = Get.put(DashboardController());
-
-  final TextEditingController _searchQuery = TextEditingController();
-  Widget appBarTitle = const Text(
-    "Invoice",
-    style: TextStyle(color: Colors.white),
-  );
+  @override
+  void initState() {
+    _selectedDrawerIndex = widget.index;
+    // Helper.getToastMsg(_selectedDrawerIndex.toString());
+    controller.getUserInfoData();
+    super.initState();
+  }
 
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return Container(
-          child: Center(
-            child: Text("Dashboard"),
-          ),
+        return const Center(
+          child: Text("Dashboard"),
         );
       case 1:
         return InvoiceScreen();
@@ -85,15 +80,11 @@ class HomePageState extends State<DashBoardScreen> {
         _selectedDrawerIndex = 0;
         // Navigator.pushNamed(context, route194ND);
       } else if (index == 9) {
-        // CustomPopups.getInstance().showOkCancelDialog(
-        //     context, Constant.logout, Constant.logoutMsg, onYesTab: () {
-        //   Auth.clearUserData();
-        //   Navigator.of(context).pop();
-        //   Navigator.pushNamed(context, routeLogin);
-        // }, onNoTap: () {
-        //   Navigator.of(context).pop();
-        // });
-        // _selectedDrawerIndex = 0;
+        Helper.deleteDialog(context, "Do you want to logout from App", () {
+          Navigator.pop(context);
+          Auth.clearUserData();
+          Get.offAll(LoginPage());
+        });
       }
     });
   }
@@ -114,106 +105,69 @@ class HomePageState extends State<DashBoardScreen> {
 
     return WillPopScope(
       onWillPop: () async {
-        if (_selectedDrawerIndex != 0) {
-          setState(() {
-            _selectedDrawerIndex = 0;
-          });
-          _getDrawerItemWidget(_selectedDrawerIndex);
-        } else {
-          Navigator.pop(context, true);
-        }
-
+        // if (_selectedDrawerIndex != 0) {
+        //   setState(() {
+        //     _selectedDrawerIndex = 0;
+        //   });
+        //   _getDrawerItemWidget(_selectedDrawerIndex);
+        // } else {
+        //   Navigator.pop(context, true);
+        // }
         // exit(0);
+        Helper.closeAppDialog(context);
+
         return true;
       },
       child: Scaffold(
-        appBar: true
-            ? AppBar(
-                title: Text(_selectedDrawerIndex == 3 ||
-                        _selectedDrawerIndex == 4 ||
-                        _selectedDrawerIndex == 9
-                    ? widget.drawerItems[0].title
-                    : widget.drawerItems[_selectedDrawerIndex].title),
-              )
-            : AppBar(
-                centerTitle: true,
-                title: Text(widget.drawerItems[0].title),
-                actions: <Widget>[
-                    IconButton(
-                      icon: actionIcon,
-                      onPressed: () {
-                        setState(() {
-                          if (actionIcon.icon == Icons.search) {
-                            actionIcon = const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                            );
-                            appBarTitle = TextField(
-                              onChanged: (value) {
-                                // context
-                                //     .read<InvoiceBloc>()
-                                //     .onSearchInvoice(value.trim().toString());
-                              },
-                              controller: _searchQuery,
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                              decoration: const InputDecoration(
-                                  prefixIcon:
-                                      Icon(Icons.search, color: Colors.white),
-                                  hintText: "Search invoice",
-                                  hintStyle: TextStyle(color: Colors.white)),
-                            );
-                            _handleSearchStart();
-                          } else {
-                            _handleSearchEnd();
-                          }
-                        });
-                      },
-                    ),
-                  ]),
+        appBar: AppBar(
+          title: Text(_selectedDrawerIndex == 3 ||
+                  _selectedDrawerIndex == 4 ||
+                  _selectedDrawerIndex == 9
+              ? widget.drawerItems[0].title
+              : widget.drawerItems[_selectedDrawerIndex].title),
+        ),
         drawer: Drawer(
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                UserAccountsDrawerHeader(
-                  accountEmail: const Text("bindsoni1998@gmail.com"),
-                  accountName: const Text("SONI BIND"),
-                  currentAccountPicture: GestureDetector(
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(currentProfilePic),
-                    ),
-                    onTap: () => print("This is your current account."),
-                  ),
+                Obx(
+                  () => controller.isLoading.value == true
+                      ? Container(
+                          color: AppColors.primaryColor,
+                          height: 200,
+                          child: const Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.white,
+                          )))
+                      : UserAccountsDrawerHeader(
+                          accountEmail: Text(controller.userMobile.value),
+                          accountName:
+                              Text(controller.userName.value.toUpperCase()),
+                          currentAccountPicture: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Text(
+                              controller.userName.value
+                                  .toUpperCase()
+                                  .substring(0, 1),
+                              style: const TextStyle(
+                                  fontSize: 30.0, color: Colors.black),
+                            ), //Text
+                          ),
+                        ),
                 ),
                 Column(children: drawerOptions)
               ],
             ),
           ),
         ),
+        // body: Obx(() => controller.isLoading.value == true
+        //     ? const Center(
+        //         child: CircularProgressIndicator(),
+        //       )
+        //     : _getDrawerItemWidget(_selectedDrawerIndex)),
+
         body: _getDrawerItemWidget(_selectedDrawerIndex),
       ),
     );
-  }
-
-  void _handleSearchStart() {
-    setState(() {
-      _IsSearching = true;
-    });
-  }
-
-  void _handleSearchEnd() {
-    setState(() {
-      this.actionIcon = new Icon(
-        Icons.search,
-        color: Colors.white,
-      );
-      this.appBarTitle = Text(
-        "Search Sample",
-        style: new TextStyle(color: Colors.white),
-      );
-      _IsSearching = false;
-      _searchQuery.clear();
-    });
   }
 }

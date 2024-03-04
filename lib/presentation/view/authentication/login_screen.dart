@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage>
                                     ),
                                     CustomTextStyle.regular(
                                         text:
-                                            "Please enter your phone number. We will send you 4-digit code to verify your account",
+                                            "Please enter your phone number to verify your account",
                                         fontSize: 12),
                                     GestureDetector(
                                       onTap: () {

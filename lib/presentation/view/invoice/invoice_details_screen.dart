@@ -31,7 +31,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
       appBar: AppBar(
         title: const Text("Invoice Details"),
       ),
-      body: controller.isLoading.value != true
+      body: Obx(() => controller.isLoading.value != true
           ? SingleChildScrollView(
               child: (Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -575,6 +575,18 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                         onPressed: () {},
                         child: Row(
                           children: [
+                            Icon(Icons.verified),
+                            CustomTextStyle.regular(
+                                text: "Verify", color: Colors.white),
+                          ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.ap1),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Row(
+                          children: [
                             Icon(Icons.thumb_up_rounded),
                             CustomTextStyle.regular(
                                 text: "Approve", color: Colors.white),
@@ -600,7 +612,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                 ],
               )),
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const Center(child: CircularProgressIndicator())),
     );
   }
 }

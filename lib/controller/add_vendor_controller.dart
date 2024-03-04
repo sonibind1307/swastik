@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../config/Helper.dart';
 import '../model/responses/base_model.dart';
 import '../model/responses/vendor_model.dart';
+import '../presentation/view/ashboard_screen.dart';
 import '../repository/api_call.dart';
 
 class AddVendorController extends GetxController {
@@ -20,12 +21,14 @@ class AddVendorController extends GetxController {
 
   String selectedVendor = "NA";
   RxList<String> vendorList = <String>["NA", "Registered", "URD"].obs;
+  RxBool isUILoading = false.obs;
   bool isLoading = false;
   final addVendorFormKey = GlobalKey<FormState>();
   final phoneNumberKey = GlobalKey<FormState>();
   String vendorId = "0";
 
   void updateFormData(VendorData? vendorData) {
+    isUILoading.value = true;
     if (vendorData != null) {
       vendorId = vendorData.id!;
       cNameController.text = vendorData.companyName!;
@@ -39,6 +42,7 @@ class AddVendorController extends GetxController {
       cityController.text = vendorData.city!;
       selectedVendor = vendorData.vendorType!.toUpperCase();
     }
+    isUILoading.value = false;
   }
 
   void clearFormData() {
@@ -59,48 +63,53 @@ class AddVendorController extends GetxController {
     if (isLoading == false) {
       isLoading = true;
       EasyLoading.show(status: 'loading...');
-      try {
-        BaseModel response = await ApiRepo.onVendorSubmit(
-            companyName: cNameController.text.trim(),
-            conName: cPersonNameController.text.trim(),
-            mobile: mobileController.text.trim(),
-            vendorType: selectedVendor,
-            pan: panNumberController.text.trim(),
-            gst: gstController.text.trim(),
-            address: addressController.text.trim(),
-            pincode: pinCodeController.text.trim(),
-            city: cityController.text.trim(),
-            vendorId: vendorId,
-            email: emailController.text.trim(),
-            context: context);
-        if (response.status == "true") {
-          isLoading = false;
-          Helper.getToastMsg(response.message!);
-          EasyLoading.dismiss();
-          Helper().showServerSuccessDialog(context, response.message!,
-              () async {
-            FocusScope.of(context).unfocus();
-            Navigator.pop(context);
-          });
-        } else {
-          isLoading = false;
-          Helper.getToastMsg(response.message!);
-          EasyLoading.dismiss();
-          Helper().showServerErrorDialog(context, response.message!, () async {
-            FocusScope.of(context).unfocus();
-            Navigator.pop(context);
-          });
-        }
-      } catch (e) {
+      // try {
+      BaseModel response = await ApiRepo.onVendorSubmit(
+          companyName: cNameController.text.trim(),
+          conName: cPersonNameController.text.trim(),
+          mobile: mobileController.text.trim(),
+          vendorType: selectedVendor,
+          pan: panNumberController.text.trim(),
+          gst: gstController.text.trim(),
+          address: addressController.text.trim(),
+          pincode: pinCodeController.text.trim(),
+          city: cityController.text.trim(),
+          vendorId: vendorId,
+          email: emailController.text.trim(),
+          context: context);
+      if (response.status == "true") {
         isLoading = false;
-        Helper.getToastMsg(e.toString());
+        Helper.getToastMsg(response.message!);
         EasyLoading.dismiss();
-        Helper().showServerErrorDialog(context, e.toString().substring(0, 10),
+        Helper().showServerSuccessDialog(context, response.message!, () async {
+          FocusScope.of(context).unfocus();
+          Navigator.pop(context);
+          // Navigator.pop(context);
+          Get.offAll(DashBoardScreen(
+            index: 2,
+          ));
+        });
+      } else {
+        isLoading = false;
+        Helper.getToastMsg("Something went wrong");
+        EasyLoading.dismiss();
+        Helper().showServerErrorDialog(context, "Something went wrong",
             () async {
           FocusScope.of(context).unfocus();
           Navigator.pop(context);
         });
       }
     }
+    // catch (e) {
+    //     isLoading = false;
+    //     Helper.getToastMsg(e.toString());
+    //     EasyLoading.dismiss();
+    //     Helper().showServerErrorDialog(context, e.toString().substring(0, 10),
+    //         () async {
+    //       FocusScope.of(context).unfocus();
+    //       Navigator.pop(context);
+    //     });
+    //   }
+    // }
   }
 }

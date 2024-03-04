@@ -24,6 +24,8 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
   final avController = Get.put(AddVendorController());
   final _emailKey = GlobalKey<FormState>();
   final _mobileKey = GlobalKey<FormState>();
+  final _gstKey = GlobalKey<FormState>();
+  final _panKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -34,182 +36,179 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Add Vendor"),
-      ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: avController.addVendorFormKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.cNameController,
-                          lable: Constant.cName),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.cPersonNameController,
-                          lable: Constant.cPersonName),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextFormField(
-                        key: _mobileKey,
-                        controller: avController.mobileController,
-                        textInputAction: TextInputAction.done,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        maxLines: 1,
-                        keyboardType: TextInputType.phone,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: Constant.mobileNumber),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          } else if (value.length != 10) {
-                            return "Enter a valid mobile number";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          if (_mobileKey.currentState != null) {
-                            if (_mobileKey.currentState!.validate()) {}
-                          }
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextFormField(
-                        key: _emailKey,
-                        controller: avController.emailController,
-                        textInputAction: TextInputAction.done,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: CustomTextDecoration.textFieldDecoration(
-                            labelText: Constant.email),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return Constant.enterTextError;
-                          } else if (!value.isValidEmail()) {
-                            return "Enter a valid email address";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          if (_emailKey.currentState != null) {
-                            if (_emailKey.currentState!.validate()) {}
-                          }
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CustomTextStyle.regular(text: "Type"),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      dropDownList(context, () {}),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.panNumberController,
-                          lable: Constant.panNumber),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.gstController,
-                          lable: Constant.gst),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.addressController,
-                          lable: Constant.address,
-                          maxLine: 3),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonMobileNumber(
-                          avController.pinCodeController,
-                          lable: Constant.pinCode),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      CustomEditTestWidgets.commonEditText(
-                          avController.cityController,
-                          lable: Constant.city),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Container(
-                        height: 48,
-                        margin: const EdgeInsets.all(0),
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (avController.addVendorFormKey.currentState!
-                                .validate()) {
-                              avController.addVendorApi(context);
+        appBar: AppBar(
+          title: const Text("Add Vendor"),
+        ),
+        body: Obx(() => avController.isUILoading.value == true
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: avController.addVendorFormKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        CustomEditTestWidgets.commonEditText(
+                            avController.cNameController,
+                            lable: Constant.cName),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        CustomEditTestWidgets.commonEditText(
+                            avController.cPersonNameController,
+                            lable: Constant.cPersonName),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          key: _mobileKey,
+                          controller: avController.mobileController,
+                          textInputAction: TextInputAction.done,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          maxLines: 1,
+                          keyboardType: TextInputType.phone,
+                          decoration: CustomTextDecoration.textFieldDecoration(
+                              labelText: Constant.mobileNumber),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return Constant.enterTextError;
+                            } else if (value.length != 10) {
+                              return "Enter a valid mobile number";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            if (_mobileKey.currentState != null) {
+                              if (_mobileKey.currentState!.validate()) {}
                             }
                           },
-                          child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.vendorData == null ? "Save" : "Update",
-                                style: AppTextStyles.btn1TextStyle,
-                              )),
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          key: _emailKey,
+                          controller: avController.emailController,
+                          textInputAction: TextInputAction.done,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          decoration: CustomTextDecoration.textFieldDecoration(
+                              labelText: Constant.email),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return Constant.enterTextError;
+                            } else if (!value.isValidEmail()) {
+                              return "Enter a valid email address";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            if (_emailKey.currentState != null) {
+                              if (_emailKey.currentState!.validate()) {}
+                            }
+                          },
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CustomTextStyle.regular(text: "Type"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        dropDownList(context, () {}),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          key: _panKey,
+                          controller: avController.panNumberController,
+                          textInputAction: TextInputAction.done,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          maxLines: 1,
+                          decoration: CustomTextDecoration.textFieldDecoration(
+                              labelText: Constant.panNumber),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return Constant.enterTextError;
+                            } else if (!Helper.isPanValidator(value)) {
+                              return "Enter a valid PAN number";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          key: _gstKey,
+                          controller: avController.gstController,
+                          textInputAction: TextInputAction.done,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          maxLines: 1,
+                          decoration: CustomTextDecoration.textFieldDecoration(
+                              labelText: Constant.gst),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return Constant.enterTextError;
+                            } else if (!Helper.isGSTValidator(value)) {
+                              return "Enter a valid GST number";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        CustomEditTestWidgets.commonEditText(
+                            avController.addressController,
+                            lable: Constant.address,
+                            maxLine: 3),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        CustomEditTestWidgets.commonMobileNumber(
+                            avController.pinCodeController,
+                            lable: Constant.pinCode),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        CustomEditTestWidgets.commonEditText(
+                            avController.cityController,
+                            lable: Constant.city),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Container(
+                          height: 48,
+                          margin: const EdgeInsets.all(0),
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (avController.addVendorFormKey.currentState!
+                                  .validate()) {
+                                avController.addVendorApi(context);
+                              }
+                            },
+                            child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.vendorData == null ? "Save" : "Update",
+                                  style: AppTextStyles.btn1TextStyle,
+                                )),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-            // Positioned(
-            //   bottom: 0,
-            //   right: 8,
-            //   left: 8,
-            //   child: Container(
-            //     height: 48,
-            //     margin: const EdgeInsets.all(8),
-            //     width: MediaQuery.of(context).size.width,
-            //     child: ElevatedButton(
-            //       onPressed: () {
-            //         if (avController.addVendorFormKey.currentState!
-            //             .validate()) {}
-            //       },
-            //       child: Padding(
-            //           padding: const EdgeInsets.all(8.0),
-            //           child: Text(
-            //             "Save",
-            //             style: AppTextStyles.btn1TextStyle,
-            //           )),
-            //     ),
-            //   ),
-            // )
-          ],
-        ),
-      ),
-    );
+              )));
   }
 
   Widget dropDownList(BuildContext context, VoidCallback onSelection) {
