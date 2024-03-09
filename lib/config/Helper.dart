@@ -162,6 +162,26 @@ class Helper {
     );
   }
 
+  static DropdownStyleData dropdownStyleDataPop(BuildContext context) {
+    return DropdownStyleData(
+      maxHeight: 250,
+      width: MediaQuery.of(context).size.width - 32,
+      padding: const EdgeInsets.only(left: 14, right: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        // color: Colors.redAccent,
+      ),
+      // offset: const Offset(-20, 0),
+      scrollbarTheme: ScrollbarThemeData(
+          radius: const Radius.circular(40),
+          thickness: MaterialStateProperty.all<double>(10.0),
+          thumbVisibility: MaterialStateProperty.all<bool>(true),
+          trackVisibility: MaterialStateProperty.all(true),
+          interactive: true,
+          trackColor: MaterialStateProperty.all(Colors.grey)),
+    );
+  }
+
   static ButtonStyleData buttonStyleData(BuildContext context) {
     return ButtonStyleData(
       height: 45,
@@ -672,6 +692,13 @@ class Helper {
 
   static bool isPanValidator(String value) {
     return RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$').hasMatch(value);
+  }
+
+  static String addDecimalIfNeeded(String input) {
+    if (!input.contains('.')) {
+      input += '.0';
+    }
+    return input;
   }
 }
 

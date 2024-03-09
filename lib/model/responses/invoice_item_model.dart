@@ -64,51 +64,54 @@ class Data {
   String? size;
   String? uploaduser;
   String? uploaddate;
+  String? current_userid;
   List<InvoiceItems>? invoiceItems;
 
-  Data(
-      {this.invoiceId,
-      this.companyId,
-      this.companyname,
-      this.project,
-      this.projectname,
-      this.building,
-      this.nameofbuilding,
-      this.ledgerid,
-      this.invref,
-      this.poId,
-      this.vendorId,
-      this.vendorName,
-      this.address,
-      this.city,
-      this.pincode,
-      this.email,
-      this.gst,
-      this.pan,
-      this.invDate,
-      this.invcat,
-      this.invcomments,
-      this.cgstPercent,
-      this.cgstAmount,
-      this.sgstPercent,
-      this.sgstAmount,
-      this.igstPercent,
-      this.igstAmount,
-      this.invamount,
-      this.subtotal,
-      this.taxamount,
-      this.totalamount,
-      this.createdDate,
-      this.createdBy,
-      this.updatedBy,
-      this.updatedDate,
-      this.status,
-      this.filename,
-      this.filetype,
-      this.size,
-      this.uploaduser,
-      this.uploaddate,
-      this.invoiceItems});
+  Data({
+    this.invoiceId,
+    this.companyId,
+    this.companyname,
+    this.project,
+    this.projectname,
+    this.building,
+    this.nameofbuilding,
+    this.ledgerid,
+    this.invref,
+    this.poId,
+    this.vendorId,
+    this.vendorName,
+    this.address,
+    this.city,
+    this.pincode,
+    this.email,
+    this.gst,
+    this.pan,
+    this.invDate,
+    this.invcat,
+    this.invcomments,
+    this.cgstPercent,
+    this.cgstAmount,
+    this.sgstPercent,
+    this.sgstAmount,
+    this.igstPercent,
+    this.igstAmount,
+    this.invamount,
+    this.subtotal,
+    this.taxamount,
+    this.totalamount,
+    this.createdDate,
+    this.createdBy,
+    this.updatedBy,
+    this.updatedDate,
+    this.status,
+    this.filename,
+    this.filetype,
+    this.size,
+    this.uploaduser,
+    this.uploaddate,
+    this.invoiceItems,
+    this.current_userid,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     invoiceId = json['invoice_id'];
@@ -152,6 +155,7 @@ class Data {
     size = json['size'];
     uploaduser = json['uploaduser'];
     uploaddate = json['uploaddate'];
+    current_userid = json['current_userid'];
     if (json['invoice_items'] != null) {
       invoiceItems = <InvoiceItems>[];
       json['invoice_items'].forEach((v) {
@@ -203,6 +207,7 @@ class Data {
     data['size'] = this.size;
     data['uploaduser'] = this.uploaduser;
     data['uploaddate'] = this.uploaddate;
+    data['current_userid'] = this.current_userid;
     if (this.invoiceItems != null) {
       data['invoice_items'] =
           this.invoiceItems!.map((v) => v.toJson()).toList();

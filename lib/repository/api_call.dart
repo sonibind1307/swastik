@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart' as gt;
+import 'package:swastik/config/constant.dart';
 import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/build_model.dart';
 import 'package:swastik/model/responses/invoice_item_model.dart';
@@ -12,6 +13,7 @@ import '../config/Helper.dart';
 import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
+import '../model/responses/invoice_summary_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
 import '../model/responses/user_info_model.dart';
@@ -141,6 +143,25 @@ class ApiRepo {
     return invoiceItemModel;
   }
 
+  static Future<InvoiceSummaryModel> getInvoiceSummaryDetails(
+      String invoiceId) async {
+    InvoiceSummaryModel invoiceItemModel = InvoiceSummaryModel();
+    var dio = Dio();
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_invoice_summary/$invoiceId',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      invoiceItemModel = InvoiceSummaryModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return invoiceItemModel;
+  }
+
   static Future<CategoryModel> getInvoiceCategory() async {
     CategoryModel categoryModel = CategoryModel();
     var dio = Dio();
@@ -210,9 +231,7 @@ class ApiRepo {
     if (await newDirectory.exists()) {
       path = '${newDirectory.path}/invoice.pdf';
     }
-
     print("pdf_pathe - ${path}");
-
     // Save the PDF to the path
     // final File file = File(path);
     try {
@@ -242,9 +261,7 @@ class ApiRepo {
       print(" add_invoice_request => ${data.fields}");
 
       ///
-
       var dio = Dio();
-
       try {
         var response = await dio.post(
           url,
@@ -476,36 +493,24 @@ class ApiRepo {
   }
 
   static Future<BaseModel> approveInvoiceStatus(
-      {required companyName,
-      required conName,
-      required mobile,
-      required email,
-      required vendorType,
-      required pan,
-      required gst,
-      required address,
-      required pincode,
-      required city,
-      required vendorId,
-      required context}) async {
+      {required status_button,
+      required dropDownUser,
+      required invoiceID,
+      required reAssign}) async {
     BaseModel responseModel = BaseModel();
     var dio = Dio();
-    String userName = await Auth.getUserName() ?? "";
+    String userID = await Auth.getUserID() ?? "";
     var data = FormData.fromMap({
-      'vendor_id': vendorId,
-      'vc_name': companyName,
-      'v_name': conName,
-      'mobile': mobile,
-      'vendor_type': vendorType,
-      'email': email,
-      'v_gst': gst,
-      'pan': pan,
-      'address': address,
-      'pincode': pincode,
-      'vendor_city': city,
-      'user_name': userName,
+      'user_id': dropDownUser,
+      'invoice_id': invoiceID,
+      'status_button': status_button,
+      're_assign': reAssign,
+      'updated_by': userID,
     });
-    var url = 'https://swastik.online/Mobile/add_vendor';
+
+    print("request ->${data.fields}");
+
+    var url = Constant.urlInvoiceAction;
     try {
       var response = await dio.post(
         url,

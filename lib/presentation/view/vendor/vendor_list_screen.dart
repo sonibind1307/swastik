@@ -90,14 +90,13 @@ class VendorListScreen extends StatelessWidget {
                                                         vendorData: data,
                                                       )),
                                             );
-                                          } else if (key == "delete") {
-                                          } else if (key == "share") {}
+                                          }
                                         });
                                       },
                                       child: ListTile(
                                         title: CustomTextStyle.bold(
                                             text:
-                                                "${data.companyName!.toUpperCase()}",
+                                                data.companyName!.toUpperCase(),
                                             fontSize: 14),
                                         subtitle: Column(
                                           crossAxisAlignment:
@@ -107,13 +106,15 @@ class VendorListScreen extends StatelessWidget {
                                               height: 8,
                                             ),
                                             CustomTextStyle.regular(
-                                                text: "${data.email}",
+                                                text:
+                                                    "${data.email == "" ? "NA" : data.email}",
                                                 fontSize: 12),
                                             const SizedBox(
                                               height: 4,
                                             ),
                                             CustomTextStyle.regular(
-                                                text: "${data.contactNo}",
+                                                text:
+                                                    "${data.contactNo == "" ? "NA" : data.contactNo}",
                                                 fontSize: 12),
                                           ],
                                         ),
@@ -144,7 +145,7 @@ class VendorListScreen extends StatelessWidget {
                                 },
                                 separatorBuilder:
                                     (BuildContext context, int index) {
-                                  return SizedBox(
+                                  return const SizedBox(
                                     height: 4,
                                   );
                                 },

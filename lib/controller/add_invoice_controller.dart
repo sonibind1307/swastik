@@ -234,11 +234,13 @@ class AddInvoiceController extends GetxController {
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
       selectedBuild = invoiceIDetailModel.data!.building;
+      selectedUser.value = invoiceIDetailModel.data!.current_userid!;
 
       selectedDate = invoiceIDetailModel.data!.invDate!;
       invRefController.text = invoiceIDetailModel.data!.invref.toString();
       pdfUrl = invoiceIDetailModel.data!.filename.toString();
       noteController.text = invoiceIDetailModel.data!.invcomments!;
+
       // await onGetVendorPO(projectId!);
       if (invoiceIDetailModel.data!.invoiceItems!.isNotEmpty) {
         allInvoiceItemList.value = invoiceIDetailModel.data!.invoiceItems!;
@@ -445,13 +447,19 @@ class AddInvoiceController extends GetxController {
     amount.text = intamt.toString();
     // amountTax.text = itemData.itemTax.toString();
     // amountFinal.text = itemData.itemTotal.toString();
-    cgstValue1.value =
-        // itemData.itemCgst == "0" ? "0.0%" : "${itemData.itemCgst}%";
+    /*  cgstValue1.value =
         itemData.itemCgst == "0" ? "0.0%" : "${itemData.itemCgst}%";
     sgstValue1.value =
         itemData.itemSgst == "0" ? "0.0%" : "${itemData.itemSgst}%";
     igstValue1.value =
-        itemData.itemIgst == "0" ? "0.0%" : "${itemData.itemIgst}%";
+        itemData.itemIgst == "0" ? "0.0%" : "${itemData.itemIgst}%";*/
+
+    cgstValue1.value =
+        "${Helper.addDecimalIfNeeded(itemData.itemCgst.toString())}%";
+    sgstValue1.value =
+        "${Helper.addDecimalIfNeeded(itemData.itemSgst.toString())}%";
+    igstValue1.value =
+        "${Helper.addDecimalIfNeeded(itemData.itemIgst.toString())}%";
 
     onGstCalculation();
     update();

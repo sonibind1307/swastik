@@ -13,4 +13,7 @@ class Constant {
   static const panNumber = "PAN No.";
   static const pinCode = "Pincode";
   static const city = "City";
+
+  static const urlInvoiceAction =
+      'https://swastik.online/Mobile/invoice_action';
 }

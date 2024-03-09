@@ -62,6 +62,7 @@ class InvoiceData {
   String? user2;
   String? shareUrl;
   int? step2Rights;
+  int? commentCount;
 
   InvoiceData({
     this.invoiceId,
@@ -98,6 +99,7 @@ class InvoiceData {
     this.user2,
     this.step2Rights,
     this.shareUrl,
+    this.commentCount,
   });
 
   InvoiceData.fromJson(Map<String, dynamic> json) {
@@ -135,6 +137,7 @@ class InvoiceData {
     user2 = json['user2'];
     step2Rights = json['step2_rights'];
     shareUrl = json['share_url'];
+    commentCount = json['comment_count'];
   }
 
   Map<String, dynamic> toJson() {
@@ -173,6 +176,7 @@ class InvoiceData {
     data['user2'] = this.user2;
     data['step2_rights'] = this.step2Rights;
     data['share_url'] = this.shareUrl;
+    data['comment_count'] = this.commentCount;
     return data;
   }
 }

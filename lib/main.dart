@@ -12,7 +12,10 @@ import 'controller/dashboard_controller.dart';
 import 'controller/invoice_details_controller.dart';
 import 'controller/vendor_list_controller.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+
   Get.put(AddInvoiceController());
   Get.put(VendorListController());
   Get.put(AddVendorController());
@@ -20,6 +23,7 @@ void main() {
   Get.put(InvoiceDetailsController());
 
   SystemChannels.textInput.invokeMethod('TextInput.hide');
+
   runApp(const MyApp());
 }
 

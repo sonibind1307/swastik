@@ -1,8 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:swastik/presentation/widget/edit_text_widgets.dart';
 
+import '../../../config/Helper.dart';
 import '../../../config/colorConstant.dart';
 import '../../../controller/invoice_details_controller.dart';
 import '../../widget/custom_text_style.dart';
@@ -23,13 +26,14 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
   @override
   void initState() {
     controller.onGetInvoiceDetails(widget.invoiceId);
+    controller.getAssignUserList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Invoice Details"),
+        title: const Text("Invoice Status"),
       ),
       body: Obx(() => controller.isLoading.value != true
           ? SingleChildScrollView(
@@ -44,7 +48,9 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 8),
                       child: CustomTextStyle.bold(
-                          text: "Invoice status", fontSize: 16)),
+                          text:
+                              "Invoice status -> ${controller.invoiceIDetailModel.data!.status}",
+                          fontSize: 16)),
                   const SizedBox(
                     height: 4,
                   ),
@@ -118,7 +124,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                       Container(
                         width: 16.0,
                         height: 16.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Colors.grey,
                             shape: BoxShape.circle,
                             boxShadow: [
@@ -184,7 +190,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                       Container(
                         width: 16.0,
                         height: 16.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.grey,
                           shape: BoxShape.circle,
                         ),
@@ -274,15 +280,31 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                 CustomTextStyle.regular(
                                     text: "Uploaded By", color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text:
-                                        "${controller.invoiceIDetailModel.data!.updatedBy!.trim() == "" ? "NA" : controller.invoiceIDetailModel.data!.updatedBy!.trim()}",
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step1Username ==
+                                            null
+                                        ? "NA"
+                                        : controller.invoiceIDetailModel.data!
+                                                    .step1Username!
+                                                    .trim() ==
+                                                ""
+                                            ? "NA"
+                                            : controller.invoiceIDetailModel
+                                                .data!.step1Username!
+                                                .trim(),
                                     color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text:
-                                        "${controller.invoiceIDetailModel.data!.updatedDate!.trim() == "" ? "NA" : controller.invoiceIDetailModel.data!.updatedDate!.trim()}",
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step1Timestamp!
+                                                .trim() ==
+                                            ""
+                                        ? "NA"
+                                        : controller.invoiceIDetailModel.data!
+                                            .step1Timestamp!
+                                            .trim(),
                                     color: Colors.black),
-                                CustomTextStyle.regular(
-                                    text: "NA", color: Colors.black),
+                                // CustomTextStyle.regular(
+                                //     text: "NA", color: Colors.black),
                               ],
                             ),
                           )),
@@ -305,12 +327,19 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                     text: "For Verification:",
                                     color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text: "Soni Bind", color: Colors.black),
-                                CustomTextStyle.regular(
-                                    text: DateTime.now().toString(),
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step2Username ==
+                                            null
+                                        ? "NA"
+                                        : "${controller.invoiceIDetailModel.data!.step2Username!.trim() == "" ? "NA" : controller.invoiceIDetailModel.data!.step2Username!.trim()}",
                                     color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text: "NA", color: Colors.black),
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step2Timestamp ==
+                                            null
+                                        ? "NA"
+                                        : "${controller.invoiceIDetailModel.data!.step2Timestamp!.trim() == "" ? "NA" : controller.invoiceIDetailModel.data!.step2Timestamp!.trim()}",
+                                    color: Colors.black),
                               ],
                             ),
                           )),
@@ -332,23 +361,40 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                 CustomTextStyle.regular(
                                     text: "For Approval:", color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text: "Soni Bind", color: Colors.black),
-                                CustomTextStyle.regular(
-                                    text: DateTime.now().toString(),
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step3Username ==
+                                            null
+                                        ? "NA"
+                                        : controller.invoiceIDetailModel.data!
+                                                    .step3Username!
+                                                    .trim() ==
+                                                ""
+                                            ? "NA"
+                                            : controller.invoiceIDetailModel
+                                                .data!.step3Username!
+                                                .trim(),
                                     color: Colors.black),
                                 CustomTextStyle.regular(
-                                    text: "NA", color: Colors.black),
+                                    text: controller.invoiceIDetailModel.data!
+                                                .step3Timestamp!
+                                                .trim() ==
+                                            ""
+                                        ? "NA"
+                                        : controller.invoiceIDetailModel.data!
+                                            .step3Timestamp!
+                                            .trim(),
+                                    color: Colors.black),
                               ],
                             ),
                           )),
-                      Spacer(),
+                      const Spacer(),
                     ],
                   ),
                   const SizedBox(
                     height: 16,
                   ),
                   Container(
-                    margin: EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
                     child: Table(
                       // defaultColumnWidth: MediaQuery,
                       border: TableBorder.all(
@@ -384,34 +430,150 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                 ]),
                           ),
                         ]),
-                        TableRow(children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            height: 48,
-                            color: Colors.grey.shade300,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomTextStyle.regular(text: "GSTN")
-                                ]),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            height: 48,
-                            color: Colors.grey.shade300,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomTextStyle.bold(
-                                      text:
-                                          "${controller.invoiceIDetailModel.data!.gst}")
-                                ]),
-                          ),
-                        ]),
+                        if (controller.invoiceIDetailModel.data!.gst != "") ...[
+                          TableRow(children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade300,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.regular(text: "GSTN")
+                                  ]),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade300,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: controller
+                                            .invoiceIDetailModel.data!.gst!)
+                                  ]),
+                            ),
+                          ]),
+                        ],
+                        if (controller.invoiceIDetailModel.data!.pan != "") ...[
+                          TableRow(children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade300,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.regular(text: "PAN")
+                                  ]),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade300,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.bold(
+                                        text: controller
+                                            .invoiceIDetailModel.data!.pan!)
+                                  ]),
+                            ),
+                          ]),
+                          TableRow(children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade200,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.regular(
+                                        text: "Invoice Category")
+                                  ]),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade200,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(4))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: CustomTextStyle.regular(
+                                            text: controller.invoiceIDetailModel
+                                                .data!.invcat,
+                                            color: Colors.white),
+                                      ),
+                                    )
+                                  ]),
+                            ),
+                          ]),
+                          TableRow(children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              height: 48,
+                              color: Colors.grey.shade200,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.regular(
+                                        text: "Add Comments")
+                                  ]),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                buildShowAddComment(context, () {
+                                  controller.addComment();
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 8),
+                                height: 48,
+                                color: Colors.grey.shade200,
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                            color: Colors.grey,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(4))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: CustomTextStyle.regular(
+                                              text: "Add", color: Colors.white),
+                                        ),
+                                      )
+                                    ]),
+                              ),
+                            ),
+                          ]),
+                        ],
                         TableRow(children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -436,7 +598,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                 children: [
                                   CustomTextStyle.bold(
                                       text:
-                                          "${controller.invoiceIDetailModel.data!.invcomments}")
+                                          "${controller.invoiceIDetailModel.data!.invref}")
                                 ]),
                           ),
                         ]),
@@ -478,51 +640,13 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                           color: AppColors.primaryColor,
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(4))),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(4.0),
                                         child: Icon(
                                           Icons.upload,
                                           color: Colors.white,
                                         ),
                                       ),
-                                    ),
-                                  )
-                                ]),
-                          ),
-                        ]),
-                        TableRow(children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            height: 48,
-                            color: Colors.grey.shade200,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomTextStyle.regular(
-                                      text: "Invoice Category")
-                                ]),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            height: 48,
-                            color: Colors.grey.shade200,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(4))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: CustomTextStyle.regular(
-                                          text: "Rmc Material",
-                                          color: Colors.white),
                                     ),
                                   )
                                 ]),
@@ -571,48 +695,278 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Row(
-                          children: [
-                            Icon(Icons.verified),
-                            CustomTextStyle.regular(
-                                text: "Verify", color: Colors.white),
-                          ],
+                      if (controller.invoiceIDetailModel.data!.status ==
+                          "2") ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            controller.approveInvoice(
+                                status_button: '3', reAssign: '0');
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.thumb_up_rounded),
+                              CustomTextStyle.regular(
+                                  text: "Approve", color: Colors.white),
+                            ],
+                          ),
+                        )
+                      ],
+                      if (controller.invoiceIDetailModel.data!.status ==
+                          "1") ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            buildShowDialog(context, () {
+                              controller.approveInvoice(
+                                  status_button: '2', reAssign: '0');
+                            }, label: 'Assign user for verification.');
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.verified),
+                              CustomTextStyle.regular(
+                                  text: "Verify", color: Colors.white),
+                            ],
+                          ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.ap1),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Row(
-                          children: [
-                            Icon(Icons.thumb_up_rounded),
-                            CustomTextStyle.regular(
-                                text: "Approve", color: Colors.white),
-                          ],
+                      ],
+                      if (controller.invoiceIDetailModel.data!.status == "1" ||
+                          controller.invoiceIDetailModel.data!.status ==
+                              "2") ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            buildShowDialog(context, () {
+                              controller.approveInvoice(
+                                  status_button: '0', reAssign: '1');
+                            }, label: 'Re-Assign user for verification');
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.ap2),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.verified),
+                              CustomTextStyle.regular(
+                                  text: "Re-Assign ", color: Colors.white),
+                            ],
+                          ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green),
-                      ),
+                      ],
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          controller.approveInvoice(
+                              status_button: '4', reAssign: '0');
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.redColor),
                         child: Row(
                           children: [
-                            Icon(Icons.thumb_down_alt_rounded),
+                            const Icon(Icons.thumb_down_alt_rounded),
                             CustomTextStyle.regular(
                                 text: " Reject ", color: Colors.white),
                           ],
                         ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.redColor),
                       ),
                     ],
+                  ),
+                  const SizedBox(
+                    height: 50,
                   )
                 ],
               )),
             )
           : const Center(child: CircularProgressIndicator())),
+    );
+  }
+
+  Future<dynamic> buildShowDialog(BuildContext context, VoidCallback callback,
+      {required String label}) {
+    return showDialog(
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          label,
+          style: const TextStyle(
+              color: Colors.redAccent,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2),
+        ),
+        content: dropDownUserList(context, () {}),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No',
+                style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.selectedUser.value == "") {
+                Helper.getToastMsg(label);
+              } else {
+                Navigator.pop(context);
+                callback();
+              }
+            },
+            child: const Text('Yes',
+                style: TextStyle(
+                    color: AppColors.blueColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<dynamic> buildShowAddComment(
+      BuildContext context, VoidCallback callback) {
+    return showDialog(
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Add comment',
+          style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2),
+        ),
+        content: CustomEditTestWidgets.commonEditText(controller.noteController,
+            lable: "Add note"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No',
+                style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.noteController.text == "") {
+                Helper.getToastMsg("Enter note");
+              } else {
+                Navigator.pop(context);
+                callback();
+              }
+            },
+            child: const Text('Yes',
+                style: TextStyle(
+                    color: AppColors.blueColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget dropDownUserList(BuildContext context, VoidCallback onSelection) {
+    TextEditingController searchBar = TextEditingController();
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.only(),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton2<String>(
+            isExpanded: true,
+            hint: Text(
+              'Select user',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            items: controller.userList
+                .map((item) => DropdownMenuItem(
+                      value: item.userId,
+                      child: Text(
+                        item.firstName!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                .toList(),
+            value: controller.selectedUser.value == ""
+                ? null
+                : controller.selectedUser.value,
+            onChanged: (value) {
+              controller.selectedUser.value = value!;
+              setState(() {});
+            },
+            buttonStyleData: Helper.buttonStyleData(context),
+            iconStyleData: const IconStyleData(
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+              ),
+              // iconSize: 14,
+              iconEnabledColor: Colors.black,
+              iconDisabledColor: Colors.grey,
+            ),
+            dropdownStyleData: Helper.dropdownStyleDataPop(context),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+              padding: EdgeInsets.only(left: 14, right: 14),
+            ),
+            dropdownSearchData: DropdownSearchData(
+              searchController: searchBar,
+              searchInnerWidgetHeight: 50,
+              searchInnerWidget: Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 4,
+                  right: 8,
+                  left: 8,
+                ),
+                child: TextFormField(
+                  expands: true,
+                  maxLines: null,
+                  controller: searchBar,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    hintText: 'Search...',
+                    hintStyle: const TextStyle(fontSize: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              searchMatchFn: (item, searchValue) {
+                return item.value!
+                    .toLowerCase()
+                    .contains(searchValue.toLowerCase());
+              },
+            ),
+            onMenuStateChange: (isOpen) {
+              if (!isOpen) {
+                searchBar.clear();
+                // addInvoiceController.searchTextBar.clear();
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 }
@@ -625,9 +979,9 @@ class ArcPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
-    final rect = Rect.fromLTWH(50, 50, 100, 200);
-    final startAngle = -math.pi / 45;
-    final sweepAngle = math.pi / 1;
+    const rect = Rect.fromLTWH(50, 50, 100, 200);
+    const startAngle = -math.pi / 45;
+    const sweepAngle = math.pi / 1;
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
   }
@@ -639,11 +993,13 @@ class ArcPainter extends CustomPainter {
 }
 
 class ArcWidget extends StatelessWidget {
+  const ArcWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: ArcPainter(),
-      size: Size(300, 300),
+      size: const Size(300, 300),
     );
   }
 }

@@ -206,7 +206,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             labelPadding:
                                 const EdgeInsets.only(left: 8, right: 8),
                             padding: const EdgeInsets.only(left: 8, right: 8),
-                            selectedColor: AppColors.primaryColor,
+                            selectedColor: AppColors.worningColor,
                             label: Text(_getChipStatusText(status)),
                             selected: _selectedStatus == status,
                             onSelected: (isSelected) {
@@ -322,7 +322,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         child: DropdownButton2<String>(
           isExpanded: true,
           hint: Text(
-            'Select Item',
+            'Select project',
             style: TextStyle(
               fontSize: 14,
               color: Theme.of(context).hintColor,
@@ -437,8 +437,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     if (invoiceList.data == null) {
       return const Expanded(child: Center(child: CircularProgressIndicator()));
     } else {
-      print("object");
-      if (invoiceList.data!.length == 0) {
+      if (invoiceList.data!.isEmpty) {
         return Expanded(
           child: Center(
             child: Container(
@@ -535,7 +534,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                       alignment: Alignment.centerLeft,
                                       child: Container(
                                         decoration: const BoxDecoration(
-                                            color: AppColors.chilliRed,
+                                            color: AppColors.worningColor,
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(4))),
                                         child: Padding(
@@ -544,7 +543,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                               text: invoiceList.data![index]
                                                       .projectname ??
                                                   "NA",
-                                              color: Colors.white),
+                                              color: Colors.black),
                                         ),
                                       ),
                                     ),
@@ -575,14 +574,52 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                             .toString())
                                         .toInt()
                                         .inRupeesFormat()),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 CustomTextStyle.regular(
                                     text: invoiceList.data![index].invDate),
-                                const SizedBox(height: 24),
+                                const SizedBox(height: 8),
                                 CustomTextStyle.regular(
                                     text: _getStatusText(invoiceList
                                         .data![index].invoiceStatus
                                         .toString())),
+                                Container(
+                                  height: 40,
+                                  width: 40,
+                                  // color: Colors.green,
+                                  child: Stack(
+                                    children: [
+                                      const Positioned(
+                                        top: 20,
+                                        left: 4,
+                                        child: Icon(
+                                          Icons.messenger,
+                                          size: 20,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 6,
+                                        right: 4,
+                                        child: Container(
+                                          height: 24,
+                                          width: 24,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12))),
+                                          child: Center(
+                                            child: CustomTextStyle.extraBold(
+                                                text:
+                                                    "${invoiceList.data![index].commentCount.toString().length >= 99 ? invoiceList.data![index].commentCount.toString().length : invoiceList.data![index].commentCount.toString().length}",
+                                                color: Colors.white,
+                                                fontSize: 8),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // const SizedBox(height: 8),
                               ],
                             ),
                           ),
@@ -672,7 +709,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           color: Colors.green,
         );
       case "VERIFIED":
-        return Icon(
+        return const Icon(
           Icons.check_circle,
           color: Colors.blueAccent,
         );
