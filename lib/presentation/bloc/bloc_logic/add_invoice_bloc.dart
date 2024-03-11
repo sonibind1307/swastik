@@ -7,6 +7,8 @@ import 'package:swastik/model/responses/vendor_model.dart';
 import 'package:swastik/presentation/bloc/state/add_invoice_state.dart';
 import 'package:swastik/repository/api_call.dart';
 
+import '../../../config/sharedPreferences.dart';
+
 class AddInvoiceBloc extends Cubit<AddInvoiceState> {
   AddInvoiceBloc() : super(InitialState()) {
     getAllVendor();
@@ -41,7 +43,8 @@ class AddInvoiceBloc extends Cubit<AddInvoiceState> {
   }
 
   onNextSelection() async {
-    ProjectModel projectModel = await ApiRepo.getProjectList();
+    String userId = await Auth.getUserID() ?? "0";
+    ProjectModel projectModel = await ApiRepo.getProjectList(userId: userId);
     emit(SecondVendorState(projectModel));
   }
 }

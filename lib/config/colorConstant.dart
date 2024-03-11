@@ -41,4 +41,6 @@ class AppColors {
   static const Color ap2 = Color(0xFFf4d03f);
   static const Color ap3 = Color(0xFF9ccc65);
   static const Color worningColor = Color(0xFFfbb450);
+  static const Color conGrey = Color(0xFFEEEEEE);
+  static const t1_view_color = Color(0XFFDADADA);
 }

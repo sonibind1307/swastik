@@ -14,6 +14,7 @@ import 'package:swastik/controller/add_invoice_controller.dart';
 import 'package:swastik/repository/api_call.dart';
 
 import '../../../config/constant.dart';
+import '../../../config/sharedPreferences.dart';
 import '../../../config/text-style.dart';
 import '../../../model/responses/invoice_item_model.dart';
 import '../../../model/responses/project_model.dart';
@@ -378,7 +379,8 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
   }
 
   Future<void> getProjectList() async {
-    ProjectModel projectModel = await ApiRepo.getProjectList();
+    String userId = await Auth.getUserID() ?? "0";
+    ProjectModel projectModel = await ApiRepo.getProjectList(userId: userId);
     addInvoiceController.projectData = projectModel.data!;
   }
 

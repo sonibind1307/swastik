@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "45703289012",
-    "project_id": "fcmnotification-90cf4",
-    "storage_bucket": "fcmnotification-90cf4.appspot.com"
+    "project_number": "849137355051",
+    "project_id": "realerp-ba53f",
+    "storage_bucket": "realerp-ba53f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:45703289012:android:b72f4af0a69d636b279fe1",
+        "mobilesdk_app_id": "1:849137355051:android:8eb1947f1a1ffb2e249d6e",
         "android_client_info": {
           "package_name": "com.swastik.swastik"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA0pa9AjjDxuqjmGVp0HzxUx6A36CKB0NY"
+          "current_key": "AIzaSyBTnyL32n3aNoRMS4takqdVNg4CXqfW_ho"
         }
       ],
       "services": {

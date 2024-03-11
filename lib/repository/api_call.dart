@@ -23,24 +23,29 @@ import '../presentation/view/invoice/list_invoice_screen.dart';
 
 class ApiRepo {
   // static baseUrl = 'https://swastik.online/Mobile/';
-  static Future<ProjectModel> getProjectList() async {
-    ProjectModel data = ProjectModel();
+  static Future<ProjectModel> getProjectList({required String userId}) async {
+    ProjectModel responseData = ProjectModel();
+
     var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/get_projects',
-      options: Options(
-        method: 'GET',
-      ),
+    var data = FormData.fromMap({
+      'session_user_id': userId,
+    });
+
+    print("datais->${data.fields}");
+
+    var url = 'https://swastik.online/Mobile/get_projects';
+    var response = await dio.post(
+      url,
+      data: data,
     );
 
-    print("get_projects: ${response.data}");
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
-      data = ProjectModel.fromJson(res);
+      responseData = ProjectModel.fromJson(res);
     } else {
       print(response.statusMessage);
     }
-    return data;
+    return responseData;
   }
 
   static Future<BaseModel> deleteInvoice(String invoiceId) async {

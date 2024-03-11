@@ -28,12 +28,16 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     listProject.add(projectData);
 
     emit(LoadingState());
+    String? user_id = await Auth.getUserID();
     var dio = Dio();
-    var response = await dio.request(
-      'https://swastik.online/Mobile/get_projects',
-      options: Options(
-        method: 'GET',
-      ),
+    var data = FormData.fromMap({
+      'session_user_id': user_id,
+    });
+
+    var url = 'https://swastik.online/Mobile/get_projects';
+    var response = await dio.post(
+      url,
+      data: data,
     );
 
     if (response.statusCode == 200) {

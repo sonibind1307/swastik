@@ -9,12 +9,13 @@ import 'package:swastik/model/responses/base_model.dart';
 import 'package:swastik/model/responses/category_model.dart';
 import 'package:swastik/model/responses/vendor_model.dart';
 
+import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/build_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
-import '../presentation/view/ashboard_screen.dart';
+import '../presentation/view/dashboard_screen.dart';
 import '../presentation/view/invoice/add_invoice_screen.dart';
 import '../presentation/view/invoice/list_invoice_screen.dart';
 import '../repository/api_call.dart';
@@ -193,7 +194,8 @@ class AddInvoiceController extends GetxController {
   }
 
   Future<void> onGetProject() async {
-    ProjectModel projectModel = await ApiRepo.getProjectList();
+    String userId = await Auth.getUserID() ?? "0";
+    ProjectModel projectModel = await ApiRepo.getProjectList(userId: userId);
     projectList.value = projectModel.data!;
     update();
   }

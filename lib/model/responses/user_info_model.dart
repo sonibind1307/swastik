@@ -32,17 +32,20 @@ class Data {
   String? userLevel;
   String? userDepartment;
   String? cpId;
+  String? email;
 
-  Data(
-      {this.fullName,
-      this.userName,
-      this.userId,
-      this.firstName,
-      this.lastName,
-      this.userMobile,
-      this.userLevel,
-      this.userDepartment,
-      this.cpId});
+  Data({
+    this.fullName,
+    this.userName,
+    this.userId,
+    this.firstName,
+    this.lastName,
+    this.userMobile,
+    this.userLevel,
+    this.userDepartment,
+    this.cpId,
+    this.email,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     fullName = json['full_name'];
@@ -54,6 +57,7 @@ class Data {
     userLevel = json['user_level'];
     userDepartment = json['user_department'];
     cpId = json['cp_id'];
+    email = json['email'];
   }
 
   Map<String, dynamic> toJson() {
@@ -67,6 +71,7 @@ class Data {
     data['user_level'] = this.userLevel;
     data['user_department'] = this.userDepartment;
     data['cp_id'] = this.cpId;
+    data['email'] = this.email;
     return data;
   }
 }

@@ -6,8 +6,8 @@ import 'package:swastik/presentation/view/splash/splashScreenCubit.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../../config/colorConstant.dart';
-import '../ashboard_screen.dart';
 import '../authentication/login_screen.dart';
+import '../dashboard_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -34,7 +34,7 @@ class SplashScreen extends StatelessWidget {
                 );
               } else if (state == SplashScreenState.Dashboard) {
                 Get.offAll(DashBoardScreen(
-                  index: 1,
+                  index: 0,
                 ));
 
                 // Navigator.of(context).pushAndRemoveUntil(

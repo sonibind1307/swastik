@@ -14,6 +14,9 @@ class Auth {
   static final String user_id = "USERID";
   static final String user_name = "USERNAME";
   static final String mobile_number = "MOBILE";
+  static final String full_name = "FULLNAME";
+  static final String email = "EMAIL";
+  static final String designation = "DESIGNATION";
 
   static Future<void> setUserID(String userName) async {
     final prefs = await _instance;
@@ -23,6 +26,36 @@ class Auth {
   static Future<String?> getUserID() async {
     final prefs = await _instance;
     return prefs.getString(user_id) ?? "";
+  }
+
+  static Future<void> setDesignation(String userName) async {
+    final prefs = await _instance;
+    prefs.setString(designation, userName);
+  }
+
+  static Future<String?> getDesignation() async {
+    final prefs = await _instance;
+    return prefs.getString(designation) ?? "";
+  }
+
+  static Future<void> setName(String value) async {
+    final prefs = await _instance;
+    prefs.setString(full_name, value);
+  }
+
+  static Future<String?> getName() async {
+    final prefs = await _instance;
+    return prefs.getString(full_name) ?? "";
+  }
+
+  static Future<void> setEmail(String value) async {
+    final prefs = await _instance;
+    prefs.setString(email, value);
+  }
+
+  static Future<String?> getEmail() async {
+    final prefs = await _instance;
+    return prefs.getString(email) ?? "";
   }
 
   static Future<void> setUserName(String userName) async {

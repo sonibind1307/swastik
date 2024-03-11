@@ -7,7 +7,7 @@
 
 
     <application
-        android:label="swastik"
+        android:label="RealERP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"

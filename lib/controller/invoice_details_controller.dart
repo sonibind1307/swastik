@@ -7,7 +7,7 @@ import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/base_model.dart';
 import '../model/responses/invoice_summary_model.dart';
-import '../presentation/view/ashboard_screen.dart';
+import '../presentation/view/dashboard_screen.dart';
 import '../repository/api_call.dart';
 
 class InvoiceDetailsController extends GetxController {

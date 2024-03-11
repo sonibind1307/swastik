@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../config/Helper.dart';
 import '../model/responses/base_model.dart';
 import '../model/responses/vendor_model.dart';
-import '../presentation/view/ashboard_screen.dart';
+import '../presentation/view/dashboard_screen.dart';
 import '../repository/api_call.dart';
 
 class AddVendorController extends GetxController {

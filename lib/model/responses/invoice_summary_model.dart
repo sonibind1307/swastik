@@ -28,7 +28,7 @@ class Data {
   String? projectname;
   String? nameofbuilding;
   String? invref;
-  String? poId;
+  int? poId;
   String? vendorName;
   String? invDate;
   String? invcat;

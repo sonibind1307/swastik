@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/authentication/login_screen.dart';
+import 'package:swastik/presentation/view/profile/profile_screen.dart';
 import 'package:swastik/presentation/view/vendor/vendor_list_screen.dart';
 
 import '../../config/Helper.dart';
 import '../../config/sharedPreferences.dart';
 import '../../controller/dashboard_controller.dart';
 import '../../model/DraverItem.dart';
+import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
@@ -49,15 +51,14 @@ class HomePageState extends State<DashBoardScreen> {
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return const Center(
-          child: Text("Dashboard"),
-        );
+        return const HomeScreen();
       case 1:
         return InvoiceScreen();
+
       case 2:
         return VendorListScreen();
-      // case 5:
-      //   return InformativeMediaScreen();
+      case 3:
+      // return ProfileScreen();
       // case 6:
       //   return const ContactUsScreen();
       // case 7:
@@ -143,15 +144,27 @@ class HomePageState extends State<DashBoardScreen> {
                           accountEmail: Text(controller.userMobile.value),
                           accountName:
                               Text(controller.userName.value.toUpperCase()),
-                          currentAccountPicture: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            child: Text(
-                              controller.userName.value
-                                  .toUpperCase()
-                                  .substring(0, 1),
-                              style: const TextStyle(
-                                  fontSize: 30.0, color: Colors.black),
-                            ), //Text
+                          currentAccountPicture: InkWell(
+                            onTap: () {
+                              setState(() {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfileScreen()),
+                                );
+                              });
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Text(
+                                controller.userName.value
+                                    .toUpperCase()
+                                    .substring(0, 1),
+                                style: const TextStyle(
+                                    fontSize: 30.0, color: Colors.black),
+                              ), //Text
+                            ),
                           ),
                         ),
                 ),
