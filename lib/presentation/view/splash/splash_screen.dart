@@ -6,11 +6,14 @@ import 'package:swastik/presentation/view/splash/splashScreenCubit.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../../config/colorConstant.dart';
+import '../../../controller/login_controller.dart';
 import '../authentication/login_screen.dart';
 import '../dashboard_screen.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+   SplashScreen({Key? key}) : super(key: key);
+
+  final controller = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +30,15 @@ class SplashScreen extends StatelessWidget {
               // );
               // return;
               if (state == SplashScreenState.Login) {
+                controller.onUpdateToken();
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const LoginPage(),
                   ),
                 );
               } else if (state == SplashScreenState.Dashboard) {
-                Get.offAll(DashBoardScreen(
+                controller.onUpdateToken();
+                Get.offAll(()=>DashBoardScreen(
                   index: 0,
                 ));
 

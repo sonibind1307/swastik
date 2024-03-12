@@ -17,6 +17,7 @@ class Auth {
   static final String full_name = "FULLNAME";
   static final String email = "EMAIL";
   static final String designation = "DESIGNATION";
+  static final String fcm_token = "FCMTOKEN";
 
   static Future<void> setUserID(String userName) async {
     final prefs = await _instance;
@@ -76,6 +77,16 @@ class Auth {
   static Future<String?> getMobileNo() async {
     final prefs = await _instance;
     return prefs.getString(mobile_number) ?? "";
+  }
+
+  static Future<void> setFcmToken(String token) async {
+    final prefs = await _instance;
+    prefs.setString(fcm_token, token);
+  }
+
+  static Future<String?> getFcmToken() async {
+    final prefs = await _instance;
+    return prefs.getString(fcm_token) ?? "";
   }
 
   ///TO CLEAR DATA

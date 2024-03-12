@@ -451,6 +451,29 @@ class ApiRepo {
     return model;
   }
 
+  static Future<void> onUpdateToken(
+      String sID, String fcmToken,) async {
+    var dio = Dio();
+    var data = FormData.fromMap({
+      'session_user_id':sID,
+      'fcm_token': fcmToken
+    });
+    print("update_token0 -> $sID");
+    print("update_token1 -> $fcmToken");
+
+    var url = 'https://swastik.online/Mobile/update_token';
+    var response = await dio.post(
+      url,
+      data: data,
+    );
+    print("update_token -> ${response.data}");
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+    } else {
+      print(response.statusMessage);
+    }
+  }
+
   static Future<BaseModel> onVendorSubmit(
       {required companyName,
       required conName,

@@ -15,7 +15,7 @@ class LoginController extends GetxController {
   RxString errorMsg = "".obs;
   RxString errorUser = "".obs;
 
-  Future<void> onLoginClick(String option) async {
+  Future<void> onLoginClick(String option) async{
     if (checkValidation(option) == true) {
       errorMsg.value = "";
       errorUser.value = "";
@@ -47,6 +47,14 @@ class LoginController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> onUpdateToken() async {
+    String userId = await Auth.getUserID() ?? "0";
+    String fcmToken = await Auth.getFcmToken() ?? "0";
+   final responseData = await ApiRepo.onUpdateToken(userId, fcmToken);
+
+  }
+
 
   bool checkValidation(String option) {
     if (option == "1") {

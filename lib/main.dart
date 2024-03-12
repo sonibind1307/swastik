@@ -10,6 +10,7 @@ import 'package:swastik/presentation/view/notification/local_notification.dart';
 import 'package:swastik/presentation/view/profile/profile_controller.dart';
 import 'package:swastik/presentation/view/splash/splash_screen.dart';
 
+import 'config/sharedPreferences.dart';
 import 'controller/add_invoice_controller.dart';
 import 'controller/add_vendor_controller.dart';
 import 'controller/dashboard_controller.dart';
@@ -58,6 +59,7 @@ class _MyAppState extends State<MyApp> {
 
   getToken() async {
     token = await FirebaseMessaging.instance.getToken();
+    Auth.setFcmToken(token!);
     debugPrint("Fcm Token :- $token");
   }
 
@@ -89,7 +91,7 @@ class _MyAppState extends State<MyApp> {
         // fontFamily: 'Poppins',
       ),
       title: 'Flutter Demo',
-      home: const SplashScreen(),
+      home: SplashScreen(),
       builder: EasyLoading.init(),
     );
   }
