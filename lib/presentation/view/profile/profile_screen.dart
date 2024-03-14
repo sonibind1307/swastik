@@ -169,6 +169,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             showShadow: true),
                         child: expansionTile(context),
                       ),
+                      Obx(
+                        () => controller.isOpen.value
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      controller.onUpdateProfile(context);
+                                    },
+                                    child: const Text("Update"),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                      ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -182,12 +198,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ExpansionTile(
         collapsedBackgroundColor: Colors.white,
         onExpansionChanged: (bool expanding) {
-          controller.getAllProject();
+          controller.onExpansionChanged();
         },
         title: const Text("My Projects"),
         children: [
           SizedBox(
-            height: 500,
+            height: 200,
             child: Obx(
               () => ListView.builder(
                 scrollDirection: Axis.vertical,
@@ -195,47 +211,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 physics: const ScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: controller.allProjectList.length + 1,
+                itemCount: controller.allProjectList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == controller.allProjectList.length) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Update"),
-                        ),
+                  // if (index == controller.allProjectList.length) {
+                  //   return Padding(
+                  //     padding: const EdgeInsets.all(8.0),
+                  //     child: Align(
+                  //       alignment: Alignment.centerRight,
+                  //       child: ElevatedButton(
+                  //         onPressed: () {
+                  //           controller.onUpdateProfile();
+                  //         },
+                  //         child: const Text("Update"),
+                  //       ),
+                  //     ),
+                  //   );
+                  // } else {
+                  ProjectData data = controller.allProjectList[index];
+                  return ListTile(
+                    leading: Obx(
+                      () => Checkbox(
+                        value: controller.myProjectList.any((element) =>
+                            element.projectcode ==
+                            controller.allProjectList[index].projectcode),
+                        onChanged: (isChecked) {
+                          if (isChecked!) {
+                            controller.myProjectList.add(data);
+                          } else {
+                            controller.myProjectList.removeWhere(
+                                (obj) => obj.projectcode == data.projectcode);
+                          }
+                        },
                       ),
-                    );
-                  } else {
-                    ProjectData data = controller.allProjectList[index];
-                    return ListTile(
-                      leading: Obx(
-                        () => Checkbox(
-                          value: controller.myProjectList.any((element) =>
-                              element.projectcode ==
-                              controller.allProjectList[index].projectcode),
-                          onChanged: (isChecked) {
-                            if (isChecked!) {
-                              controller.selectedCheckBoxList
-                                  .add(index.toString());
-                              debugPrint("Selected value: $index");
-                            } else {
-                              controller.selectedCheckBoxList
-                                  .remove(index.toString());
-                              debugPrint("Deselected value: $index");
-                            }
-                          },
-                        ),
-                      ),
-                      title: Text(data.projectname!),
-                      // trailing: ElevatedButton(
-                      //   onPressed: () {},
-                      //   child: Text("Update"),
-                      // ),
-                    );
-                  }
+                    ),
+                    title: Text(data.projectname!),
+                  );
+                  //}
                 },
               ),
             ),

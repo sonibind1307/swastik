@@ -14,6 +14,9 @@ class Constant {
   static const pinCode = "Pincode";
   static const city = "City";
 
+  static const baseUrl = "https://swastik.online/Mobile/";
   static const urlInvoiceAction =
       'https://swastik.online/Mobile/invoice_action';
+  static const urlUpdateProject = "${baseUrl}update_mobile_projects";
+  static const urlAddComments = "${baseUrl}add_comments";
 }

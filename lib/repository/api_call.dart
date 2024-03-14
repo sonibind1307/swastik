@@ -429,8 +429,8 @@ class ApiRepo {
     var dio = Dio();
     var data = FormData.fromMap({
       'login_option': option,
-      // 'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
-      'mobile_no': "9359309108", // 0 - no changes // 1 - new changes
+      'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
+      // 'mobile_no': "9359309108", // 0 - no changes // 1 - new changes
       'user_name': username,
       'password': password
     });
@@ -451,17 +451,16 @@ class ApiRepo {
     return model;
   }
 
-  static Future<void> onUpdateToken(
-      String sID, String fcmToken,) async {
+  static Future<BaseModel> onUpdateToken(
+    String sID,
+    String fcmToken,
+  ) async {
+    BaseModel model = BaseModel();
     var dio = Dio();
-    var data = FormData.fromMap({
-      'session_user_id':sID,
-      'fcm_token': fcmToken
-    });
-    print("update_token0 -> $sID");
-    print("update_token1 -> $fcmToken");
-
+    var data =
+        FormData.fromMap({'session_user_id': sID, 'fcm_token': fcmToken});
     var url = 'https://swastik.online/Mobile/update_token';
+    print("request -> ${data.fields}");
     var response = await dio.post(
       url,
       data: data,
@@ -469,9 +468,13 @@ class ApiRepo {
     print("update_token -> ${response.data}");
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
+      Auth.setFcmToken(fcmToken);
+      model = BaseModel.fromJson(res);
     } else {
       print(response.statusMessage);
     }
+
+    return model;
   }
 
   static Future<BaseModel> onVendorSubmit(
@@ -539,6 +542,68 @@ class ApiRepo {
     print("request ->${data.fields}");
 
     var url = Constant.urlInvoiceAction;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<BaseModel> updateProject({required assignProject}) async {
+    BaseModel responseModel = BaseModel();
+
+    var dio = Dio();
+    String userID = await Auth.getUserID() ?? "";
+    var data = FormData.fromMap(
+        {'user_id': userID, 'assigned_projects': assignProject});
+
+    print("request ->${data.fields}");
+
+    var url = Constant.urlUpdateProject;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<BaseModel> addComment({
+    required invoiceId,
+    required comment,
+    required companyId,
+  }) async {
+    BaseModel responseModel = BaseModel();
+
+    var dio = Dio();
+    String userName = await Auth.getUserName() ?? "";
+    var data = FormData.fromMap({
+      'entity': invoiceId,
+      'module': "Invoice Payment",
+      'sub_module': "Mobile",
+      'comment': comment,
+      'session_username': userName,
+      'company_id': companyId,
+    });
+
+    print("request ->${data.fields}");
+
+    var url = Constant.urlAddComments;
     try {
       var response = await dio.post(
         url,

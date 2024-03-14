@@ -297,23 +297,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case "0":
-        return Colors.grey;
-      case "1":
-        return Colors.orange;
-      case "2":
-        return Colors.green;
-      case "3":
-        return Colors.blueAccent;
-      case "4":
-        return Colors.redAccent;
-      default:
-        return Colors.grey;
-    }
-  }
-
   Widget dropDownList(BuildContext context, List<ProjectData>? listProject) {
     TextEditingController searchBar = TextEditingController();
     return Padding(
@@ -563,65 +546,63 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         ),
                         Expanded(
                           flex: 2,
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                CustomTextStyle.extraBold(
-                                    text: double.parse(invoiceList
-                                            .data![index].totalamount
-                                            .toString())
-                                        .toInt()
-                                        .inRupeesFormat()),
-                                const SizedBox(height: 4),
-                                CustomTextStyle.regular(
-                                    text: invoiceList.data![index].invDate),
-                                const SizedBox(height: 8),
-                                CustomTextStyle.regular(
-                                    text: _getStatusText(invoiceList
-                                        .data![index].invoiceStatus
-                                        .toString())),
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  // color: Colors.green,
-                                  child: Stack(
-                                    children: [
-                                      const Positioned(
-                                        top: 20,
-                                        left: 4,
-                                        child: Icon(
-                                          Icons.messenger,
-                                          size: 20,
-                                          color: Colors.grey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CustomTextStyle.extraBold(
+                                  text: double.parse(invoiceList
+                                          .data![index].totalamount
+                                          .toString())
+                                      .toInt()
+                                      .inRupeesFormat()),
+                              const SizedBox(height: 4),
+                              CustomTextStyle.regular(
+                                  text: invoiceList.data![index].invDate),
+                              const SizedBox(height: 8),
+                              CustomTextStyle.regular(
+                                  text: _getStatusText(invoiceList
+                                      .data![index].invoiceStatus
+                                      .toString())),
+                              SizedBox(
+                                height: 40,
+                                width: 40,
+                                // color: Colors.green,
+                                child: Stack(
+                                  children: [
+                                    const Positioned(
+                                      top: 20,
+                                      left: 4,
+                                      child: Icon(
+                                        Icons.messenger,
+                                        size: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 6,
+                                      right: 4,
+                                      child: Container(
+                                        height: 24,
+                                        width: 24,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(12))),
+                                        child: Center(
+                                          child: CustomTextStyle.extraBold(
+                                              text:
+                                                  "${invoiceList.data![index].commentCount.toString().length >= 99 ? invoiceList.data![index].commentCount.toString().length : invoiceList.data![index].commentCount.toString().length}",
+                                              color: Colors.white,
+                                              fontSize: 8),
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 6,
-                                        right: 4,
-                                        child: Container(
-                                          height: 24,
-                                          width: 24,
-                                          decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(12))),
-                                          child: Center(
-                                            child: CustomTextStyle.extraBold(
-                                                text:
-                                                    "${invoiceList.data![index].commentCount.toString().length >= 99 ? invoiceList.data![index].commentCount.toString().length : invoiceList.data![index].commentCount.toString().length}",
-                                                color: Colors.white,
-                                                fontSize: 8),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                // const SizedBox(height: 8),
-                              ],
-                            ),
+                              ),
+                              // const SizedBox(height: 8),
+                            ],
                           ),
                         )
                       ],
@@ -639,7 +620,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     decoration: BoxDecoration(
                       border: Border(
                         left: BorderSide(
-                            color: _getStatusColor(
+                            color: Helper.getStatusColor(
                                 invoiceList.data![index].status.toString()),
                             width: 5),
                       ),

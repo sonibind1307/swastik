@@ -11,7 +11,13 @@ BoxDecoration boxDecoration(
     color: bgColor ?? Colors.white,
     boxShadow: showShadow
         ? [BoxShadow(color: Colors.black)]
-        : [BoxShadow(color: Colors.transparent)],
+        : [
+            BoxShadow(
+              blurRadius: 4,
+              color: Color(0x34000000),
+              offset: Offset(-2, 5),
+            )
+          ],
     border: Border.all(color: color),
     borderRadius: BorderRadius.all(Radius.circular(radius)),
   );

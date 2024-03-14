@@ -16,6 +16,7 @@ import 'package:swastik/repository/api_call.dart';
 import '../../../config/constant.dart';
 import '../../../config/sharedPreferences.dart';
 import '../../../config/text-style.dart';
+import '../../../model/responses/assign_user_model.dart';
 import '../../../model/responses/invoice_item_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_date_picker.dart';
@@ -1088,7 +1089,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
       () => Padding(
         padding: const EdgeInsets.only(),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton2<String>(
+          child: DropdownButton2<UserData>(
             isExpanded: true,
             hint: Text(
               'Select user',
@@ -1099,16 +1100,16 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             ),
             items: addInvoiceController.userList
                 .map((item) => DropdownMenuItem(
-                      value: item.userId,
+                      value: item,
                       child: Text(
-                        item.userName!,
+                        item.firstName!,
                         style: const TextStyle(
                           fontSize: 14,
                         ),
                       ),
                     ))
                 .toList(),
-            value: addInvoiceController.selectedUser.value == ""
+            value: addInvoiceController.selectedUser.value.userId == null
                 ? null
                 : addInvoiceController.selectedUser.value,
             onChanged: (value) {
@@ -1124,7 +1125,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               iconEnabledColor: Colors.black,
               iconDisabledColor: Colors.grey,
             ),
-            dropdownStyleData: Helper.dropdownStyleData(context),
+            dropdownStyleData: Helper.dropdownStyleDataPop(context),
             menuItemStyleData: const MenuItemStyleData(
               height: 40,
               padding: EdgeInsets.only(left: 14, right: 14),
@@ -1159,7 +1160,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 ),
               ),
               searchMatchFn: (item, searchValue) {
-                return item.value!
+                return item.value!.firstName!
                     .toLowerCase()
                     .contains(searchValue.toLowerCase());
               },

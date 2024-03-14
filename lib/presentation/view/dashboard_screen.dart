@@ -9,6 +9,7 @@ import '../../config/Helper.dart';
 import '../../config/sharedPreferences.dart';
 import '../../controller/dashboard_controller.dart';
 import '../../model/DraverItem.dart';
+import '../bloc/bloc_logic/invoice_bloc.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
 
@@ -39,6 +40,7 @@ class DashBoardScreen extends StatefulWidget {
 class HomePageState extends State<DashBoardScreen> {
   int _selectedDrawerIndex = 0;
   final controller = Get.put(DashboardController());
+  bool _IsSearching = false;
 
   @override
   void initState() {
@@ -54,7 +56,6 @@ class HomePageState extends State<DashBoardScreen> {
         return const HomeScreen();
       case 1:
         return InvoiceScreen();
-
       case 2:
         return VendorListScreen();
       case 3:
@@ -68,6 +69,12 @@ class HomePageState extends State<DashBoardScreen> {
       default:
         return Container();
     }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _IsSearching = true;
+    });
   }
 
   _onSelectItem(int index) {
@@ -89,6 +96,33 @@ class HomePageState extends State<DashBoardScreen> {
       }
     });
   }
+
+  Icon actionIcon = const Icon(
+    Icons.search,
+    color: Colors.white,
+  );
+
+  Widget appBarTitle = const Text(
+    "Invoice",
+    style: TextStyle(color: Colors.white),
+  );
+
+  void _handleSearchEnd() {
+    setState(() {
+      actionIcon = const Icon(
+        Icons.search,
+        color: Colors.white,
+      );
+      appBarTitle = const Text(
+        "Search Invoice",
+        style: TextStyle(color: Colors.white),
+      );
+      _IsSearching = false;
+      _searchQuery.clear();
+    });
+  }
+
+  final TextEditingController _searchQuery = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -120,13 +154,48 @@ class HomePageState extends State<DashBoardScreen> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(_selectedDrawerIndex == 3 ||
-                  _selectedDrawerIndex == 4 ||
-                  _selectedDrawerIndex == 9
-              ? widget.drawerItems[0].title
-              : widget.drawerItems[_selectedDrawerIndex].title),
-        ),
+        appBar: _selectedDrawerIndex == 1
+            ? AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
+                IconButton(
+                  icon: actionIcon,
+                  onPressed: () {
+                    setState(() {
+                      if (actionIcon.icon == Icons.search) {
+                        actionIcon = const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        );
+                        appBarTitle = TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              bloc.onSearchInvoice(value);
+                            });
+                          },
+                          controller: _searchQuery,
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                          decoration: const InputDecoration(
+                              prefixIcon:
+                                  Icon(Icons.search, color: Colors.white),
+                              hintText: "Search invoice",
+                              hintStyle: TextStyle(color: Colors.white)),
+                        );
+                        _handleSearchStart();
+                      } else {
+                        _handleSearchEnd();
+                      }
+                    });
+                  },
+                ),
+              ])
+            : AppBar(
+                title: Text(_selectedDrawerIndex == 3 ||
+                        _selectedDrawerIndex == 4 ||
+                        _selectedDrawerIndex == 9
+                    ? widget.drawerItems[0].title
+                    : widget.drawerItems[_selectedDrawerIndex].title),
+              ),
         drawer: Drawer(
           child: SingleChildScrollView(
             child: Column(

@@ -10,7 +10,6 @@ import 'package:swastik/presentation/view/notification/local_notification.dart';
 import 'package:swastik/presentation/view/profile/profile_controller.dart';
 import 'package:swastik/presentation/view/splash/splash_screen.dart';
 
-import 'config/sharedPreferences.dart';
 import 'controller/add_invoice_controller.dart';
 import 'controller/add_vendor_controller.dart';
 import 'controller/dashboard_controller.dart';
@@ -55,18 +54,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  String? token = "";
-
-  getToken() async {
-    token = await FirebaseMessaging.instance.getToken();
-    Auth.setFcmToken(token!);
-    debugPrint("Fcm Token :- $token");
-  }
-
   @override
   void initState() {
     FirebaseMessaging.instance.requestPermission();
-    getToken();
     LocalNotificationService.initialize(context);
 
     // app terminated

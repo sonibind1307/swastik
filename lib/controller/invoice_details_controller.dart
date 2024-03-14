@@ -16,7 +16,7 @@ class InvoiceDetailsController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isApiLoading = false.obs;
   var userList = <UserData>[].obs;
-  RxString selectedUser = "".obs;
+  var selectedUser = UserData().obs;
   RxString note = "".obs;
 
   Future<void> onGetInvoiceDetails(String invoiceId) async {
@@ -33,7 +33,9 @@ class InvoiceDetailsController extends GetxController {
   }
 
   Future<void> approveInvoice(
-      {required String status_button, required String reAssign}) async {
+      {required String status_button,
+      required String reAssign,
+      required BuildContext context}) async {
     print("status->$status_button");
     print("reAssign->$reAssign");
 
@@ -45,7 +47,7 @@ class InvoiceDetailsController extends GetxController {
 
       String? currentUserID = await Auth.getUserID();
       if (status_button == "0" || status_button == "2") {
-        dropDownUSerID = selectedUser.value;
+        dropDownUSerID = selectedUser.value.userId;
       }
       BaseModel data = await ApiRepo.approveInvoiceStatus(
           status_button: status_button,
@@ -57,30 +59,56 @@ class InvoiceDetailsController extends GetxController {
         isApiLoading.value = false;
         EasyLoading.dismiss();
         Helper.getToastMsg(data.message ?? "Invoice Updated");
-        if (currentUserID == dropDownUSerID) {
-          onGetInvoiceDetails(invoiceIDetailModel.data!.invoiceId!);
-        } else {
-          Get.offAll(DashBoardScreen(
-            index: 1,
-          ));
-        }
+        Helper().showServerSuccessDialog(context, data.message!, () async {
+          if (currentUserID == dropDownUSerID) {
+            onGetInvoiceDetails(invoiceIDetailModel.data!.invoiceId!);
+          } else {
+            Get.offAll(DashBoardScreen(
+              index: 1,
+            ));
+          }
+        });
       } else {
         EasyLoading.dismiss();
         isApiLoading.value = false;
         Helper.getToastMsg(data.message ?? "Try Again");
+        Helper().showServerErrorDialog(context, data.message ?? "Try Again",
+            () async {
+          FocusScope.of(context).unfocus();
+          Navigator.pop(context);
+        });
       }
     }
   }
 
-  Future<void> addComment() async {
-    Helper.getToastMsg("call note api");
+  Future<void> addComment(BuildContext context) async {
+    EasyLoading.show(status: 'loading...');
+
+    BaseModel response = await ApiRepo.addComment(
+        invoiceId: invoiceIDetailModel.data!.invoiceId,
+        comment: noteController.text.trim(),
+        companyId: invoiceIDetailModel.data!.company_id!);
+    if (response.status == "true") {
+      Helper.getToastMsg(response.message!);
+      EasyLoading.dismiss();
+      Helper().showServerSuccessDialog(context, response.message!, () async {
+        Navigator.pop(context);
+      });
+    } else {
+      Helper.getToastMsg("Something went wrong");
+      EasyLoading.dismiss();
+      Helper().showServerErrorDialog(context, "Something went wrong", () async {
+        FocusScope.of(context).unfocus();
+        Navigator.pop(context);
+      });
+    }
   }
 
   void clearData() {
     noteController.text = "";
     isLoading.value = false;
     isApiLoading.value = false;
-    selectedUser.value = "";
+    selectedUser.value = UserData();
     note.value = "";
   }
 }

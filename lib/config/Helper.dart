@@ -145,7 +145,7 @@ class Helper {
   static DropdownStyleData dropdownStyleData(BuildContext context) {
     return DropdownStyleData(
       maxHeight: 250,
-      width: MediaQuery.of(context).size.width - 32,
+      width: MediaQuery.of(context).size.width - 64,
       padding: const EdgeInsets.only(left: 14, right: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
@@ -165,7 +165,7 @@ class Helper {
   static DropdownStyleData dropdownStyleDataPop(BuildContext context) {
     return DropdownStyleData(
       maxHeight: 250,
-      width: MediaQuery.of(context).size.width - 32,
+      width: double.infinity - 128,
       padding: const EdgeInsets.only(left: 14, right: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
@@ -699,6 +699,23 @@ class Helper {
       input += '.0';
     }
     return input;
+  }
+
+  static Color getStatusColor(String status) {
+    switch (status) {
+      case "0":
+        return Colors.grey;
+      case "1":
+        return Colors.orange;
+      case "2":
+        return Colors.green;
+      case "3":
+        return Colors.blueAccent;
+      case "4":
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
@@ -15,7 +16,7 @@ class LoginController extends GetxController {
   RxString errorMsg = "".obs;
   RxString errorUser = "".obs;
 
-  Future<void> onLoginClick(String option) async{
+  Future<void> onLoginClick(String option) async {
     if (checkValidation(option) == true) {
       errorMsg.value = "";
       errorUser.value = "";
@@ -32,6 +33,8 @@ class LoginController extends GetxController {
           Auth.setDesignation(userModel.data!.userDepartment!);
           Auth.setMobileNo(userModel.data!.userMobile!);
           isLoading.value = false;
+          String? token = await FirebaseMessaging.instance.getToken();
+          onUpdateToken(token: token!);
           Helper.getToastMsg(userModel.message!);
           Get.offAll(DashBoardScreen(
             index: 1,
@@ -48,13 +51,13 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> onUpdateToken() async {
+  Future<void> onUpdateToken({required String token}) async {
     String userId = await Auth.getUserID() ?? "0";
-    String fcmToken = await Auth.getFcmToken() ?? "0";
-   final responseData = await ApiRepo.onUpdateToken(userId, fcmToken);
-
+    final responseData = await ApiRepo.onUpdateToken(userId, token);
+    if (responseData.status == "true") {
+      Helper.getToastMsg(responseData.message!);
+    }
   }
-
 
   bool checkValidation(String option) {
     if (option == "1") {

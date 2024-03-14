@@ -11,7 +11,7 @@ import '../authentication/login_screen.dart';
 import '../dashboard_screen.dart';
 
 class SplashScreen extends StatelessWidget {
-   SplashScreen({Key? key}) : super(key: key);
+  SplashScreen({Key? key}) : super(key: key);
 
   final controller = Get.put(LoginController());
 
@@ -30,17 +30,15 @@ class SplashScreen extends StatelessWidget {
               // );
               // return;
               if (state == SplashScreenState.Login) {
-                controller.onUpdateToken();
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const LoginPage(),
                   ),
                 );
               } else if (state == SplashScreenState.Dashboard) {
-                controller.onUpdateToken();
-                Get.offAll(()=>DashBoardScreen(
-                  index: 0,
-                ));
+                Get.offAll(() => DashBoardScreen(
+                      index: 0,
+                    ));
 
                 // Navigator.of(context).pushAndRemoveUntil(
                 //   MaterialPageRoute(

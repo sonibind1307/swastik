@@ -76,7 +76,7 @@ class AddInvoiceController extends GetxController {
   // String? selectedUser;
   String? selectedPo;
 
-  RxString selectedUser = "".obs;
+  var selectedUser = UserData().obs;
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -236,7 +236,7 @@ class AddInvoiceController extends GetxController {
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
       selectedBuild = invoiceIDetailModel.data!.building;
-      selectedUser.value = invoiceIDetailModel.data!.current_userid!;
+      selectedUser.value.userId = invoiceIDetailModel.data!.current_userid!;
 
       selectedDate = invoiceIDetailModel.data!.invDate!;
       invRefController.text = invoiceIDetailModel.data!.invref.toString();
@@ -506,7 +506,7 @@ class AddInvoiceController extends GetxController {
     selectedCategory = null;
     selectedProject = null;
     selectedBuild = null;
-    selectedUser.value = "";
+    selectedUser.value = UserData();
     pdfUrl = null;
 
     selectedVendor = null;
@@ -558,14 +558,10 @@ class AddInvoiceController extends GetxController {
         // subtotal.value = subtotal.value +
         //     (double.parse(element.itemAmount.toString()) *
         //         double.parse(element.qty.toString()));
-
         subtotal.value =
             subtotal.value + double.parse(element.itemAmount.toString());
         taxTotal.value =
             taxTotal.value + double.parse(element.itemTax.toString());
-
-        debugPrint("subtotal ->$subtotal");
-        debugPrint("taxTotal ->$taxTotal");
       }
     }
     update();

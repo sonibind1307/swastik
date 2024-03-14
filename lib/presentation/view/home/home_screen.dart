@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swastik/config/Helper.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../widget/app_widget.dart';
@@ -9,7 +10,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
+      color: Colors.white,
+      padding: const EdgeInsets.all(16),
       child: ListView(
         children: [
           Container(
@@ -50,28 +52,38 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    decoration: boxDecoration(showShadow: true),
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    decoration: boxDecoration(showShadow: true),
-                  ),
-                )
-              ],
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: buildStatusContainer(context, "Pending",
+                    Helper.getStatusColor("1"), "14", Icons.watch_later),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Expanded(
+                child: buildStatusContainer(context, "Verified",
+                    Helper.getStatusColor("3"), "15", Icons.verified),
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: buildStatusContainer(context, "Approved",
+                    Helper.getStatusColor("2"), "34", Icons.approval),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Expanded(
+                child: buildStatusContainer(context, "Rejected",
+                    Helper.getStatusColor("4"), "30", Icons.cancel),
+              )
+            ],
           ),
           const SizedBox(
             height: 16,
@@ -80,36 +92,37 @@ class HomeScreen extends StatelessWidget {
           Container(
             decoration: boxDecoration(showShadow: true),
             child: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 12),
+              padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 12),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 12, 0, 4),
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 0, 4),
                     child: CustomTextStyle.bold(text: "Tasks", fontSize: 24),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 0, 0),
                     child: CustomTextStyle.regular(
                         text: "A summary of outstanding tasks.",
                         fontSize: 14,
                         color: Colors.grey),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                     child: ListView(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       children: [
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
+                          padding:
+                              const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
                           child: Container(
                             width: 100,
                             height: 110,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
@@ -120,36 +133,37 @@ class HomeScreen extends StatelessWidget {
                               ],
                             ),
                             child: Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 2),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0, 0, 0, 2),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        16, 8, 0, 8),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            16, 8, 0, 8),
                                     child: Container(
                                       width: 4,
                                       height: 100,
                                       decoration: BoxDecoration(
-                                        color: Color(0xFF4B39EF),
+                                        color: const Color(0xFF4B39EF),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                     ),
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          12, 12, 12, 0),
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              12, 12, 12, 0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.max,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    0, 0, 0, 4),
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(0, 0, 0, 4),
                                             child: CustomTextStyle.regular(
                                                 text: "Task Type"),
                                           ),
@@ -158,15 +172,15 @@ class HomeScreen extends StatelessWidget {
                                                   "Task Description here this one is really long",
                                               fontSize: 14),
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    0, 8, 0, 0),
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(0, 8, 0, 0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
                                               children: [
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(0, 0, 4, 0),
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                          .fromSTEB(0, 0, 4, 0),
                                                   child:
                                                       CustomTextStyle.regular(
                                                           text: "Due",
@@ -242,11 +256,12 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
+                          padding:
+                              const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
                           child: Container(
                             width: 100,
                             height: 110,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
@@ -257,27 +272,29 @@ class HomeScreen extends StatelessWidget {
                               ],
                             ),
                             child: Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 2),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0, 0, 0, 2),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        16, 8, 0, 8),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            16, 8, 0, 8),
                                     child: Container(
                                       width: 4,
                                       height: 100,
                                       decoration: BoxDecoration(
-                                        color: Color(0xFF4B39EF),
+                                        color: const Color(0xFF4B39EF),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                     ),
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          12, 12, 12, 0),
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              12, 12, 12, 0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.max,
                                         crossAxisAlignment:
@@ -432,5 +449,90 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Container buildStatusContainer(BuildContext context, String title,
+      Color color, String count, IconData icon) {
+    return Container(
+        height: 80,
+        decoration: boxDecoration(showShadow: false),
+        child: // Generated code for this orderCard Widget...
+            Container(
+          width: MediaQuery.sizeOf(context).width * 0.45,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            // boxShadow: const [
+            //   BoxShadow(
+            //     blurRadius: 12,
+            //     color: Color(0x34000000),
+            //     offset: Offset(-2, 5),
+            //   )
+            // ],
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 12, 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 5,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                          child:
+                              CustomTextStyle.bold(text: count, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon(
+                              icon,
+                              color: color,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
