@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../config/Helper.dart';
 import '../state/multi_image_state.dart';
 
 class MultiImageCubit extends Cubit<MultiImageState> {
@@ -21,15 +22,26 @@ class MultiImageCubit extends Cubit<MultiImageState> {
     emit(LoadedState(imageList));
   }
 
-  Future getCameraImage() async {
+  Future getCameraImage(BuildContext context) async {
     var pickedFile =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 35);
     if (pickedFile != null) {
       pickedImageFile = pickedFile;
       File selectedImg = File(pickedImageFile.path);
-      // imageList.add(selectedImg);
-      // emit(LoadedState(imageList));
-      cropImage(selectedImg);
+
+      Helper().showCropAndOCRDialog(context, "Crop & OCR Iamge", selectedImg,
+          callbackCancel: () {
+        imageList.add(selectedImg);
+        emit(LoadedState(imageList));
+        Navigator.pop(context);
+      }, callbackCrop: () {
+        cropImage(selectedImg);
+        Navigator.pop(context);
+      }, callbackOcr: () {
+        Helper.getToastMsg("Api call pending");
+        // cropImage(selectedImg);
+        Navigator.pop(context);
+      });
     }
   }
 

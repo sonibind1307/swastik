@@ -13,7 +13,8 @@ class MultiImageScreen extends StatefulWidget {
   final Function(List<MemoryImage> imageLogo, List<File> imageList) onSubmit;
   final bool isEdit;
 
-  MultiImageScreen({super.key, required this.isEdit, required this.onSubmit});
+  const MultiImageScreen(
+      {super.key, required this.isEdit, required this.onSubmit});
 
   @override
   State<MultiImageScreen> createState() => _MultiImageScreenState();
@@ -88,7 +89,9 @@ class _MultiImageScreenState extends State<MultiImageScreen> {
                     if (index == 0) {
                       return InkWell(
                         onTap: () {
-                          context.read<MultiImageCubit>().getCameraImage();
+                          context
+                              .read<MultiImageCubit>()
+                              .getCameraImage(context);
                         },
                         child: Container(
                           color: Colors.grey.withOpacity(0.5),

@@ -4,18 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:swastik/config/sharedPreferences.dart';
 
 class PdfPreviewPage extends StatelessWidget {
+  final String title;
   final List<MemoryImage> imageLogo;
   final List<File> imageList;
-  PdfPreviewPage({Key? key, required this.imageLogo, required this.imageList})
+
+  PdfPreviewPage(
+      {Key? key,
+      required this.imageLogo,
+      required this.imageList,
+      required this.title})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PDF Preview'),
+        title: Text(title),
       ),
       body: PdfPreview(
         build: (context) => generatePdf(imageLogo, imageList),
@@ -31,10 +38,11 @@ class PdfPreviewPage extends StatelessWidget {
 
   Future<Uint8List> generatePdf(
       List<MemoryImage> imageLogo, List<File> imageList) async {
+    String? userName = await Auth.getUserName();
     final pdf = pw.Document();
     for (var image in imageList) {
       var pdfImage = pw.MemoryImage(
-        image!.readAsBytesSync(),
+        image.readAsBytesSync(),
       );
       pdf.addPage(
         pw.Page(
@@ -44,8 +52,8 @@ class PdfPreviewPage extends StatelessWidget {
               pw.Positioned(
                   bottom: 0,
                   right: 0,
-                  child: pw.Text('Username: soni.b, Date: ${DateTime.now()}',
-                      style: pw.TextStyle(fontSize: 16)))
+                  child: pw.Text('Username: $userName, Date: ${DateTime.now()}',
+                      style: const pw.TextStyle(fontSize: 16)))
             ]); // Center
           },
         ),

@@ -424,6 +424,105 @@ class Helper {
     );
   }
 
+  void showCropAndOCRDialog(BuildContext context, String error, File file,
+      {required VoidCallback callbackCancel,
+      required VoidCallback callbackCrop,
+      required VoidCallback callbackOcr}) {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: "Barrier",
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (_, __, ___) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Container(
+                height: 230,
+                width: 220,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: DefaultTextStyle(
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontStyle: FontStyle.normal),
+                        child: Text(
+                          error,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 100,
+                      width: 100,
+                      color: Colors.grey.withOpacity(0.5),
+                      child: Stack(
+                        children: [
+                          const Center(child: CircularProgressIndicator()),
+                          Image.file(
+                            File(file.path),
+                            height: 180,
+                            width: 180,
+                            gaplessPlayback: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(onPressed: () {
+                          callbackCancel();
+                        }, child: const Text("Cancel")),
+                        ElevatedButton(onPressed: () {
+                          callbackCrop();
+                        }, child: const Text("Crop")),
+                        ElevatedButton(onPressed: () {
+                          callbackOcr();
+                        }, child: const Text("OCR")),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      transitionBuilder: (_, anim, __, child) {
+        Tween<Offset> tween;
+        if (anim.status == AnimationStatus.reverse) {
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
+        } else {
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+        }
+
+        return SlideTransition(
+          position: tween.animate(anim),
+          child: FadeTransition(
+            opacity: anim,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   void showServerSuccessDialog(
       BuildContext context, String error, VoidCallback callback) {
     showGeneralDialog(
@@ -715,6 +814,41 @@ class Helper {
         return Colors.redAccent;
       default:
         return Colors.grey;
+    }
+  }
+
+  static Widget? getIcon(String status) {
+    switch (status) {
+      case "PENDING":
+        return Icon(
+          Icons.watch_later,
+          color: Colors.orange,
+        );
+      case "APPROVED":
+        return Icon(
+          Icons.check_circle,
+          color: Colors.green,
+        );
+      case "VERIFIED":
+        return const Icon(
+          Icons.verified,
+          color: Colors.blueAccent,
+        );
+      case "REJECTED":
+        return Icon(
+          Icons.cancel,
+          color: Colors.red,
+        );
+      case "4":
+        return Icon(
+          Icons.watch_later,
+          color: Colors.red,
+        );
+      default:
+        return Icon(
+          Icons.watch_later,
+          color: Colors.red,
+        );
     }
   }
 }

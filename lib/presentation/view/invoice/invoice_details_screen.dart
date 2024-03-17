@@ -78,7 +78,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(4))),
                     child: CustomTextStyle.bold(
                         text:
-                            "Company name: ${controller.invoiceIDetailModel.data!.companyname}",
+                            "${controller.invoiceIDetailModel.data!.companyname}",
                         color: Colors.white,
                         fontSize: 16),
                   ),
@@ -420,7 +420,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                   const SizedBox(
                     height: 16,
                   ),
-                  if (false) ...[
+                  if (true) ...[
                     Container(
                       margin: const EdgeInsets.all(8),
                       child: Table(
@@ -802,6 +802,15 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                               builder: (context) => PdfUrlView(
                                                     url:
                                                         "${controller.invoiceIDetailModel.data!.filename}",
+                                                    title:
+                                                        'Invoice - ${controller.invoiceIDetailModel.data!.vendorName}',
+                                                    amount: double.parse(controller
+                                                            .invoiceIDetailModel
+                                                            .data!
+                                                            .totalamount
+                                                            .toString())
+                                                        .toInt()
+                                                        .inRupeesFormat(),
                                                   )),
                                         );
                                       },
@@ -854,6 +863,16 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                                     PdfUrlView(
                                                       url:
                                                           "${controller.invoiceIDetailModel.data!.filename}",
+                                                      title:
+                                                          'Invoice - ${controller.invoiceIDetailModel.data!.vendorName}',
+                                                      amount: double.parse(
+                                                              controller
+                                                                  .invoiceIDetailModel
+                                                                  .data!
+                                                                  .totalamount
+                                                                  .toString())
+                                                          .toInt()
+                                                          .inRupeesFormat(),
                                                     )),
                                           );
                                         },
@@ -896,81 +915,86 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                       ),
                     )
                   ],
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Table(
-                        columnWidths: const {
-                          1: FractionColumnWidth(.7),
-                        },
-                        border: TableBorder.all(
-                          color: Colors
-                              .grey, /*style: BorderStyle.solid, width: 2*/
+                  if (false) ...[
+                    Container(
+                      margin: const EdgeInsets.all(8),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Table(
+                          columnWidths: const {
+                            1: FractionColumnWidth(.7),
+                          },
+                          border: TableBorder.all(
+                            color: Colors
+                                .grey, /*style: BorderStyle.solid, width: 2*/
+                          ),
+                          children: [
+                            for (int i = 1; i <= 10; i++)
+                              TableRow(children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 8),
+                                  height: 48 * (i + 0),
+                                  color: Colors.grey.shade200,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        CustomTextStyle.regular(text: "Vendor")
+                                      ]),
+                                ),
+                                Container(
+                                  height: 48 * (i + 0),
+                                  color: Colors.grey.shade200,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        for (int j = 0; j < i; j++)
+                                          Container(
+                                            width: double.infinity,
+                                            height: 48,
+                                            color: j % 2 == 0
+                                                ? Colors.white
+                                                : Colors.white,
+                                            child: CustomTextStyle.bold(
+                                                text:
+                                                    "${controller.invoiceIDetailModel.data!.vendorName} $j"),
+                                          )
+                                      ]),
+                                ),
+                                Container(
+                                  height: 48 * (i + 0),
+                                  color: Colors.grey.shade200,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        for (int j = 0; j < i; j++)
+                                          Container(
+                                            width: double.infinity,
+                                            height: 48,
+                                            color: j % 2 == 0
+                                                ? Colors.white
+                                                : Colors.white,
+                                            child: CustomTextStyle.bold(
+                                                text:
+                                                    "${controller.invoiceIDetailModel.data!.vendorName} $j"),
+                                          )
+                                      ]),
+                                ),
+                              ]),
+                          ],
                         ),
-                        children: [
-                          for (int i = 1; i <= 10; i++)
-                            TableRow(children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 8),
-                                height: 48 * (i + 0),
-                                color: Colors.grey.shade200,
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CustomTextStyle.regular(text: "Vendor")
-                                    ]),
-                              ),
-                              Container(
-                                height: 48 * (i + 0),
-                                color: Colors.grey.shade200,
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      for (int j = 0; j < i; j++)
-                                        Container(
-                                          width: double.infinity,
-                                          height: 48,
-                                          color: j % 2 == 0
-                                              ? Colors.white
-                                              : Colors.white,
-                                          child: CustomTextStyle.bold(
-                                              text:
-                                                  "${controller.invoiceIDetailModel.data!.vendorName} $j"),
-                                        )
-                                    ]),
-                              ),
-                              Container(
-                                height: 48 * (i + 0),
-                                color: Colors.grey.shade200,
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      for (int j = 0; j < i; j++)
-                                        Container(
-                                          width: double.infinity,
-                                          height: 48,
-                                          color: j % 2 == 0
-                                              ? Colors.white
-                                              : Colors.white,
-                                          child: CustomTextStyle.bold(
-                                              text:
-                                                  "${controller.invoiceIDetailModel.data!.vendorName} $j"),
-                                        )
-                                    ]),
-                              ),
-                            ]),
-                        ],
                       ),
-                    ),
-                  ),
+                    )
+                  ],
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -979,7 +1003,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                         ElevatedButton(
                           onPressed: () {
                             Helper.deleteDialog(
-                                context, "Do you want to approve an invoice",
+                                context, "Do you want to approve this invoice",
                                 () {
                               controller.approveInvoice(
                                   status_button: '3',
@@ -1033,10 +1057,10 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                             }, label: 'Re-Assign user for verification');
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.ap2),
+                              backgroundColor: Colors.orange),
                           child: Row(
                             children: [
-                              const Icon(Icons.verified),
+                              const Icon(Icons.recycling),
                               CustomTextStyle.regular(
                                   text: "Re-Assign ", color: Colors.white),
                             ],
@@ -1048,7 +1072,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                         ElevatedButton(
                           onPressed: () {
                             Helper.deleteDialog(
-                                context, "Do you want to reject an invoice",
+                                context, "Do you want to reject this invoice",
                                 () {
                               controller.approveInvoice(
                                   status_button: '4',

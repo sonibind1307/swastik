@@ -9,6 +9,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:swastik/config/Helper.dart';
+import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/controller/add_invoice_controller.dart';
 import 'package:swastik/repository/api_call.dart';
@@ -1558,6 +1559,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                     PdfPreviewPage(
                                                   imageLogo: widget.imageLogo,
                                                   imageList: widget.imageList,
+                                                  title: "Invoice - ",
                                                 ),
                                               ),
                                             );
@@ -1578,6 +1580,15 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                             url:
                                                                 addInvoiceController
                                                                     .pdfUrl!,
+                                                            title:
+                                                                'Invoice - ${addInvoiceController.invoiceIDetailModel.data!.vendorName}',
+                                                            amount: double.parse(addInvoiceController
+                                                                    .invoiceIDetailModel
+                                                                    .data!
+                                                                    .totalamount
+                                                                    .toString())
+                                                                .toInt()
+                                                                .inRupeesFormat(),
                                                           )),
                                                 );
                                               }
@@ -1591,6 +1602,9 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                       PdfPreviewPage(
                                                     imageLogo: widget.imageLogo,
                                                     imageList: widget.imageList,
+                                                    title: addInvoiceController
+                                                            .selectedVendor ??
+                                                        "NA",
                                                   ),
                                                 ),
                                               );

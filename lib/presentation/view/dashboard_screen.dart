@@ -12,6 +12,7 @@ import '../../model/DraverItem.dart';
 import '../bloc/bloc_logic/invoice_bloc.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
+import 'task/task_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final int index;
@@ -60,12 +61,12 @@ class HomePageState extends State<DashBoardScreen> {
         return VendorListScreen();
       case 3:
       // return ProfileScreen();
-      // case 6:
-      //   return const ContactUsScreen();
+      case 6:
+        return const TaskListScreen();
       // case 7:
       //   return ProfileScreen();
-      // case 8:
-      //   return AboutScreen();
+      case 8:
+        return ProfileScreen();
       default:
         return Container();
     }

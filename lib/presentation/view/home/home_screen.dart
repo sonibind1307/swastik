@@ -74,7 +74,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: buildStatusContainer(context, "Approved",
-                    Helper.getStatusColor("2"), "34", Icons.approval),
+                    Helper.getStatusColor("2"), "34", Icons.check_circle),
               ),
               const SizedBox(
                 width: 16,

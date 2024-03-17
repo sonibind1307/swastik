@@ -492,7 +492,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                       color: Colors.grey.shade300,
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(4))),
-                                  child: getIcon(
+                                  child: Helper.getIcon(
                                       invoiceList.data![index].invoiceStatus!)),
                             ),
                           ),
@@ -674,41 +674,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           ),
         );
       }
-    }
-  }
-
-  Widget? getIcon(String status) {
-    switch (status) {
-      case "PENDING":
-        return Icon(
-          Icons.watch_later,
-          color: Colors.orange,
-        );
-      case "APPROVED":
-        return Icon(
-          Icons.check_circle,
-          color: Colors.green,
-        );
-      case "VERIFIED":
-        return const Icon(
-          Icons.check_circle,
-          color: Colors.blueAccent,
-        );
-      case "REJECTED":
-        return Icon(
-          Icons.cancel,
-          color: Colors.red,
-        );
-      case "4":
-        return Icon(
-          Icons.watch_later,
-          color: Colors.red,
-        );
-      default:
-        return Icon(
-          Icons.watch_later,
-          color: Colors.red,
-        );
     }
   }
 

@@ -328,7 +328,7 @@ class AddInvoiceController extends GetxController {
           invoice_id: inVoiceId == "" ? "0" : inVoiceId,
           upload_file: isPdfChange.value,
           file: pdfUrl,
-          step2_userid: selectedUser.value,
+          step2_userid: selectedUser.value.userId,
         ))!;
         if (baseModel.status == "true") {
           EasyLoading.dismiss();
