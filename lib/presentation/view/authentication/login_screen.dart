@@ -39,6 +39,8 @@ class _LoginPageState extends State<LoginPage>
     debugPrint("Sim Number -> $last10DigitsMobileNumber");
   }
 
+  bool _obscureText = true;
+
   @override
   void initState() {
     super.initState();
@@ -291,13 +293,76 @@ class _LoginPageState extends State<LoginPage>
                                                 child:
                                                     const Icon(Icons.password),
                                               ),
+                                              // Expanded(
+                                              //   child: CustomEditTestWidgets
+                                              //       .textEditTextLogin(
+                                              //           controller: loginController
+                                              //               .passwordController,
+                                              //           context: context,
+                                              //           hint: "Password"),
+                                              //
+                                              //
+                                              // ),
                                               Expanded(
-                                                child: CustomEditTestWidgets
-                                                    .textEditTextLogin(
-                                                        controller: loginController
-                                                            .passwordController,
-                                                        context: context,
-                                                        hint: "Password"),
+                                                child: Container(
+                                                  height: 48,
+                                                  margin: const EdgeInsets.only(
+                                                      left: 4),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 4),
+                                                  // color: Colors.red,
+                                                  color: Colors.grey.shade200,
+                                                  child: TextFormField(
+                                                    obscureText: _obscureText,
+                                                    controller: loginController
+                                                        .passwordController,
+                                                    textInputAction:
+                                                        TextInputAction.done,
+                                                    autovalidateMode:
+                                                        AutovalidateMode
+                                                            .onUserInteraction,
+                                                    maxLines: 1,
+                                                    decoration: InputDecoration(
+                                                        suffixIcon: IconButton(
+                                                          icon: Icon(
+                                                            _obscureText
+                                                                ? Icons
+                                                                    .visibility
+                                                                : Icons
+                                                                    .visibility_off,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              _obscureText =
+                                                                  !_obscureText;
+                                                            });
+                                                          },
+                                                        ),
+                                                        enabledBorder:
+                                                            InputBorder.none,
+                                                        errorBorder:
+                                                            InputBorder.none,
+                                                        disabledBorder:
+                                                            InputBorder.none,
+                                                        border:
+                                                            InputBorder.none,
+                                                        focusedBorder:
+                                                            const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          4)),
+                                                          borderSide: BorderSide(
+                                                              width: 1,
+                                                              color: AppColors
+                                                                  .black300),
+                                                        ),
+                                                        hintText:
+                                                            "Enter Password"),
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),

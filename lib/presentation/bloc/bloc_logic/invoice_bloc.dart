@@ -14,7 +14,8 @@ import '../../../repository/api_call.dart';
 class InvoiceBloc extends Cubit<InvoiceState> {
   InvoiceBloc() : super(InitialState()) {
     getProjectList();
-    getInvoiceList();
+    getInvoiceList("1");
+    getInvoiceAllList();
   }
 
   List<ProjectData> listProject = [];
@@ -46,7 +47,6 @@ class InvoiceBloc extends Cubit<InvoiceState> {
       ProjectModel projectModel = ProjectModel.fromJson(res);
 
       listProject.addAll(projectModel.data!);
-
       emit(LoadedState(listProject, listInvoice));
     } else {
       print(response.statusMessage);
@@ -70,6 +70,8 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   void chipChoiceCardSelected(String choiceChip) {
+    print("choiceChip ${choiceChip}");
+
     InvoiceModel filterInvoice = InvoiceModel();
     emit(LoadedState(listProject, filterInvoice));
     if (choiceChip == "0") {
@@ -118,13 +120,14 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     emit(LoadedState(listProject, filterInvoice));
   }
 
-  Future<void> getInvoiceList() async {
+  Future<void> getInvoiceList(String invoiceStatus) async {
     emit(LoadingState());
 
     String? userId = await Auth.getUserID();
     var dio = Dio();
+
     var response = await dio.request(
-      'https://swastik.online/Mobile/get_invoice_list/$userId',
+      'https://swastik.online/Mobile/get_invoice_list/$userId/$invoiceStatus',
       options: Options(
         method: 'GET',
       ),
@@ -134,6 +137,30 @@ class InvoiceBloc extends Cubit<InvoiceState> {
       var res = jsonDecode(response.data);
       listInvoice = InvoiceModel.fromJson(res);
       emit(LoadedState(listProject, listInvoice));
+      // chipChoiceCardSelected("PENDING");
+    } else {
+      print(response.statusMessage);
+    }
+  }
+
+  Future<void> getInvoiceAllList() async {
+    emit(LoadingState());
+
+    String? userId = await Auth.getUserID();
+    var dio = Dio();
+
+    var response = await dio.request(
+      'https://swastik.online/Mobile/get_invoice_list/$userId/0',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      listInvoice = InvoiceModel.fromJson(res);
+      // emit(LoadedState(listProject, listInvoice));
+      // chipChoiceCardSelected("PENDING");
     } else {
       print(response.statusMessage);
     }
@@ -143,8 +170,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     BaseModel data = await ApiRepo.deleteInvoice(invoiceId);
     if (data.status == "true") {
       Helper.getToastMsg(data.message ?? "Invoice deleted");
-
-      getInvoiceList();
+      getInvoiceList("1");
     } else {
       Helper.getToastMsg(data.message ?? "Try Again");
     }

@@ -18,6 +18,7 @@ class LoginController extends GetxController {
 
   Future<void> onLoginClick(String option) async {
     if (checkValidation(option) == true) {
+      Auth.clearUserData();
       errorMsg.value = "";
       errorUser.value = "";
       isLoading.value = true;

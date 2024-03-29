@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -31,6 +32,7 @@ class _PdfUrlViewState extends State<PdfUrlView> {
         children: [
           SfPdfViewer.network(
             widget.url,
+            canShowScrollHead:false,
             canShowPageLoadingIndicator: false,
             onDocumentLoaded: (PdfDocumentLoadedDetails details) {
               setState(() {
@@ -48,17 +50,19 @@ class _PdfUrlViewState extends State<PdfUrlView> {
             right: 0,
             child: Container(
               padding: EdgeInsets.all(16),
-              color: Colors.white,
+              color: AppColors.primaryColor,
               height: 50,
               width: MediaQuery.of(context).size.width,
               child: Row(
                 children: [
                   const Spacer(),
-                  CustomTextStyle.regular(text: "Total amount :"),
+                  CustomTextStyle.regular(
+                      text: "Total amount :", color: Colors.white),
                   const SizedBox(
                     width: 8,
                   ),
-                  CustomTextStyle.bold(text: widget.amount),
+                  CustomTextStyle.bold(
+                      text: widget.amount, color: Colors.white),
                 ],
               ),
             ),

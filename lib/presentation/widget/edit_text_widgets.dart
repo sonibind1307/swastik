@@ -125,16 +125,19 @@ class CustomEditTestWidgets {
   }
 
   static Widget commonEditText(TextEditingController controller,
-      {String? lable, int? maxLine}) {
+      {String? lable, int? maxLine, bool? isOptional}) {
     return TextFormField(
       controller: controller,
       textInputAction: TextInputAction.done,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       maxLines: maxLine ?? 1,
+      textAlign: TextAlign.start,
       decoration: CustomTextDecoration.textFieldDecoration(labelText: lable),
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return Constant.enterTextError;
+        if (isOptional == null) {
+          if (value == null || value.isEmpty) {
+            return Constant.enterTextError;
+          }
         }
         return null;
       },

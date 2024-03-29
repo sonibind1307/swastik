@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
+import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
+import '../../../config/colorConstant.dart';
 import '../../../controller/vendor_list_controller.dart';
 import '../../../model/responses/vendor_model.dart';
 import 'add_vendor_screen.dart';
@@ -91,7 +93,7 @@ class VendorListScreen extends StatelessWidget {
                                                       )),
                                             );
                                           }
-                                        });
+                                        }, data);
                                       },
                                       child: ListTile(
                                         title: CustomTextStyle.bold(
@@ -135,8 +137,8 @@ class VendorListScreen extends StatelessWidget {
                                               child: Center(
                                                   child: CustomTextStyle.bold(
                                                       color: Colors.white,
-                                                      text:
-                                                          "${data.companyName!.substring(0, 1)}",
+                                                      text: data.companyName!
+                                                          .substring(0, 1),
                                                       fontSize: 20))),
                                         ),
                                       ),
@@ -150,7 +152,7 @@ class VendorListScreen extends StatelessWidget {
                                   );
                                 },
                               )
-                            : Container(
+                            : SizedBox(
                                 width: double.infinity,
                                 height: double.infinity,
                                 child: Center(
@@ -168,7 +170,8 @@ class VendorListScreen extends StatelessWidget {
     );
   }
 
-  Future openBottomSheet(BuildContext context, Function(String key) onClick) {
+  Future openBottomSheet(BuildContext context, Function(String key) onClick,
+      VendorData vendorData) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -176,17 +179,44 @@ class VendorListScreen extends StatelessWidget {
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
-          height: MediaQuery.of(context).size.height * 0.1,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                child: CustomTextStyle.bold(
+                    text: "Vendor: ${vendorData.companyName}",
+                    color: Colors.white,
+                    fontSize: 16),
+              ),
+              Row(
+                children: [
+                  const Spacer(),
+                  CustomTextStyle.regular(text: "Total amount :"),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  CustomTextStyle.bold(
+                      text: double.parse("0").toInt().inRupeesFormat(),
+                      fontSize: 14),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                ],
+              ),
               InkWell(
                 onTap: () {
                   onClick("edit");
                 },
                 child: ListTile(
-                  title: const Text("Edit"),
+                  title: const Text("Edit Vendor"),
                   leading: Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Container(
@@ -200,25 +230,44 @@ class VendorListScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // InkWell(
-              //   onTap: () {
-              //     onClick("delete");
-              //   },
-              //   child: ListTile(
-              //     title: const Text("Details"),
-              //     leading: Padding(
-              //       padding: const EdgeInsets.only(right: 8),
-              //       child: Container(
-              //           width: 40,
-              //           height: 40,
-              //           decoration: BoxDecoration(
-              //               color: Colors.grey.shade300,
-              //               borderRadius:
-              //                   const BorderRadius.all(Radius.circular(20))),
-              //           child: const Icon(Icons.delete)),
-              //     ),
-              //   ),
-              // ),
+              InkWell(
+                onTap: () {
+                  onClick("email");
+                },
+                child: ListTile(
+                  title: const Text("Email"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.email)),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  onClick("call");
+                },
+                child: ListTile(
+                  title: const Text("Call"),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        child: const Icon(Icons.call)),
+                  ),
+                ),
+              ),
             ],
           ),
         );

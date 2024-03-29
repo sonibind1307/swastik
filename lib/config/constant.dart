@@ -19,4 +19,6 @@ class Constant {
       'https://swastik.online/Mobile/invoice_action';
   static const urlUpdateProject = "${baseUrl}update_mobile_projects";
   static const urlAddComments = "${baseUrl}add_comments";
+  static const urlGetComments = "${baseUrl}get_comments";
+  static const urlDashboard = "${baseUrl}get_dashboard";
 }

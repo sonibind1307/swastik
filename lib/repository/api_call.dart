@@ -13,6 +13,9 @@ import '../config/Helper.dart';
 import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
+import '../model/responses/comments_model.dart';
+import '../model/responses/company_model.dart';
+import '../model/responses/dashboard_model.dart';
 import '../model/responses/invoice_summary_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -42,6 +45,27 @@ class ApiRepo {
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
       responseData = ProjectModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
+    }
+    return responseData;
+  }
+
+  static Future<CompanyModel> getCompanyCodeList() async {
+    CompanyModel responseData = CompanyModel();
+
+    var dio = Dio();
+
+    var url = 'https://swastik.online/Mobile/get_companies';
+    var response = await dio.get(
+      url,
+    );
+
+    print("response->${response.data}");
+
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      responseData = CompanyModel.fromJson(res);
     } else {
       print(response.statusMessage);
     }
@@ -139,6 +163,7 @@ class ApiRepo {
         method: 'GET',
       ),
     );
+    print("invoiceDetailResponse - ${response.data}");
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
       invoiceItemModel = InvoiceIDetailModel.fromJson(res);
@@ -220,9 +245,11 @@ class ApiRepo {
       required List<InvoiceItems> itemList,
       required var file,
       required step2_userid,
+      required companyCode,
       required context}) async {
     BaseModel baseModel = BaseModel();
 
+    String userID = await Auth.getUserID() ?? "";
     var url = 'https://swastik.online/Mobile/add_invoice';
 
     // print("soni list => ${jsonEncode(itemList)}");
@@ -254,9 +281,10 @@ class ApiRepo {
         'inv_po': invPo,
         'vendor_id': vendorId,
         'created_date': createdDate,
-        'user_id': "92",
+        'user_id': userID,
         'step2_userid': step2_userid,
         'vendor_linked_ldgr': vendorLinkedLdgr,
+        'company_code': companyCode,
         'file': upload_file == "0" && invoice_id != "0"
             ? file
             : [await MultipartFile.fromFile(path, filename: 'example.pdf')],
@@ -273,6 +301,7 @@ class ApiRepo {
           data: data,
         );
 
+        print("ResponseData ->${response.data}");
         if (response.statusCode == 200) {
           var res = jsonDecode(response.data);
           baseModel = BaseModel.fromJson(res);
@@ -348,6 +377,7 @@ class ApiRepo {
       required List<InvoiceItems> itemList,
       required var file,
       required context}) async {
+    String userID = await Auth.getUserID() ?? "";
     BaseModel baseModel = BaseModel();
 
     var url = 'https://swastik.online/Mobile/add_invoice';
@@ -370,7 +400,7 @@ class ApiRepo {
       'inv_po': invPo,
       'vendor_id': vendorId,
       'created_date': createdDate,
-      'user_id': "92",
+      'user_id': userID,
       'vendor_linked_ldgr': vendorLinkedLdgr,
       'file': upload_file == "0" && invoice_id != "0"
           ? file
@@ -583,6 +613,36 @@ class ApiRepo {
     return responseModel;
   }
 
+  static Future<CommentsModel> getComments({required invoiceId}) async {
+    CommentsModel responseModel = CommentsModel();
+
+    var dio = Dio();
+    var data = FormData.fromMap({
+      'entity': invoiceId,
+      'module': "Invoice Payment",
+      'sub_module': "Mobile"
+    });
+
+    print("request ->${data.fields}");
+
+    var url = Constant.urlGetComments;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      print("response ->${response.data}");
+
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = CommentsModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
   static Future<BaseModel> addComment({
     required invoiceId,
     required comment,
@@ -591,7 +651,7 @@ class ApiRepo {
     BaseModel responseModel = BaseModel();
 
     var dio = Dio();
-    String userName = await Auth.getUserName() ?? "";
+    String userName = await Auth.getName() ?? "";
     var data = FormData.fromMap({
       'entity': invoiceId,
       'module': "Invoice Payment",
@@ -612,6 +672,31 @@ class ApiRepo {
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<DashboardModel> getDashboard() async {
+    DashboardModel responseModel = DashboardModel();
+    var dio = Dio();
+    String userId = await Auth.getUserID() ?? "";
+    // var data = FormData.fromMap({'user_id': userId, 'user_department': "All"});
+    var data = FormData.fromMap({'user_id': "3", 'user_department': "All"});
+
+    print("request ->${data.fields}");
+
+    var url = Constant.urlDashboard;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = DashboardModel.fromJson(res);
       }
     } catch (e) {
       Helper.getToastMsg(e.toString());

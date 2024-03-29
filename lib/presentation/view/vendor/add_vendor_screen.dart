@@ -47,6 +47,7 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                   child: Form(
                     key: avController.addVendorFormKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
                           height: 8,
@@ -59,7 +60,8 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                         ),
                         CustomEditTestWidgets.commonEditText(
                             avController.cPersonNameController,
-                            lable: Constant.cPersonName),
+                            lable: Constant.cPersonName,
+                            isOptional: true),
                         const SizedBox(
                           height: 16,
                         ),
@@ -73,10 +75,10 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                           decoration: CustomTextDecoration.textFieldDecoration(
                               labelText: Constant.mobileNumber),
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return Constant.enterTextError;
-                            } else if (value.length != 10) {
-                              return "Enter a valid mobile number";
+                            if (value != null && value.isNotEmpty) {
+                              if (value.length != 10) {
+                                return "Enter a valid mobile number";
+                              }
                             }
                             return null;
                           },
@@ -135,10 +137,13 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                           decoration: CustomTextDecoration.textFieldDecoration(
                               labelText: Constant.panNumber),
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return Constant.enterTextError;
-                            } else if (!Helper.isPanValidator(value)) {
-                              return "Enter a valid PAN number";
+                            if (avController.selectedVendor != "NA" &&
+                                avController.selectedVendor == "URD") {
+                              if (value == null || value.isEmpty) {
+                                return Constant.enterTextError;
+                              } else if (!Helper.isPanValidator(value)) {
+                                return "Enter a valid PAN number";
+                              }
                             }
                             return null;
                           },
@@ -155,10 +160,13 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                           decoration: CustomTextDecoration.textFieldDecoration(
                               labelText: Constant.gst),
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return Constant.enterTextError;
-                            } else if (!Helper.isGSTValidator(value)) {
-                              return "Enter a valid GST number";
+                            if (avController.selectedVendor != "NA" &&
+                                avController.selectedVendor == "Registered") {
+                              if (value == null || value.isEmpty) {
+                                return Constant.enterTextError;
+                              } else if (!Helper.isGSTValidator(value)) {
+                                return "Enter a valid GST number";
+                              }
                             }
                             return null;
                           },
@@ -194,6 +202,10 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                               if (avController.addVendorFormKey.currentState!
                                   .validate()) {
                                 avController.addVendorApi(context);
+                              } else {
+                                if (avController.selectedVendor == "NA") {
+                                  Helper.getToastMsg("Select type");
+                                }
                               }
                             },
                             child: Padding(

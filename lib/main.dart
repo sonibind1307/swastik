@@ -13,6 +13,7 @@ import 'package:swastik/presentation/view/splash/splash_screen.dart';
 import 'controller/add_invoice_controller.dart';
 import 'controller/add_vendor_controller.dart';
 import 'controller/dashboard_controller.dart';
+import 'controller/invoice_dashboard_controller.dart';
 import 'controller/invoice_details_controller.dart';
 import 'controller/vendor_list_controller.dart';
 
@@ -38,6 +39,7 @@ void main() async {
   Get.put(DashboardController());
   Get.put(ProfileController());
   Get.put(InvoiceDetailsController());
+  Get.put(InvoiceDashboardController());
 
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 

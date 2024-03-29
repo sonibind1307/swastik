@@ -18,6 +18,7 @@ import '../../../config/constant.dart';
 import '../../../config/sharedPreferences.dart';
 import '../../../config/text-style.dart';
 import '../../../model/responses/assign_user_model.dart';
+import '../../../model/responses/company_model.dart';
 import '../../../model/responses/invoice_item_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_date_picker.dart';
@@ -60,7 +61,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     addInvoiceController.clearAllData();
     addInvoiceController.init();
     debugPrint("widget.scheduleId ${widget.scheduleId}");
-
+    addInvoiceController.getAssignUserList();
     if (widget.scheduleId != "") {
       addInvoiceController.onGetInvoiceDetails(widget.scheduleId);
       addInvoiceController.inVoiceId = widget.scheduleId;
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
     addInvoiceController.getAssignUserList();
     addInvoiceController.onGetInvoiceCategoryItem();
     addInvoiceController.onGetProject();
+    addInvoiceController.getCompanyCode();
     setState(() {});
   }
 
@@ -217,9 +219,12 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                       onPressed: () {
                                         // Navigator.pop(context);
 
-                                        if (addInvoiceController
-                                                .selectedUser.value ==
-                                            "") {
+                                        if (addInvoiceController.selectedUser
+                                                    .value.firstName ==
+                                                "" ||
+                                            addInvoiceController.selectedUser
+                                                    .value.firstName ==
+                                                null) {
                                           Helper.getToastMsg("Assign user");
                                         } else {
                                           // Navigator.pop(context);
@@ -445,9 +450,6 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                       ],
                       maxLength: 15,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Constant.enterTextError;
-                        }
                         return null;
                       },
                     ),
@@ -1126,7 +1128,23 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               iconEnabledColor: Colors.black,
               iconDisabledColor: Colors.grey,
             ),
-            dropdownStyleData: Helper.dropdownStyleDataPop(context),
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 250,
+              width: double.infinity - 256,
+              padding: const EdgeInsets.only(left: 14, right: 14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                // color: Colors.redAccent,
+              ),
+              // offset: const Offset(-20, 0),
+              scrollbarTheme: ScrollbarThemeData(
+                  radius: const Radius.circular(40),
+                  thickness: MaterialStateProperty.all<double>(10.0),
+                  thumbVisibility: MaterialStateProperty.all<bool>(true),
+                  trackVisibility: MaterialStateProperty.all(true),
+                  interactive: true,
+                  trackColor: MaterialStateProperty.all(Colors.grey)),
+            ),
             menuItemStyleData: const MenuItemStyleData(
               height: 40,
               padding: EdgeInsets.only(left: 14, right: 14),
@@ -1186,7 +1204,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
         child: DropdownButton2<String>(
           isExpanded: true,
           hint: Text(
-            'Select Item',
+            'Select project',
             style: TextStyle(
               fontSize: 14,
               color: Theme.of(context).hintColor,
@@ -1210,6 +1228,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               if (element.projectname == value) {
                 addInvoiceController.projectId = element.projectcode!;
                 addInvoiceController.onGetBuilding(element.projectcode!);
+                addInvoiceController.onGetCompanyCode(element.projectcode!);
                 // addInvoiceController.onGetVendorPO(element.projectcode!);
               }
             }
@@ -1274,6 +1293,102 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
               // addInvoiceController.searchTextBar.clear();
             }
           },
+        ),
+      ),
+    );
+  }
+
+  Widget companyCodeDropDownList(BuildContext context) {
+    TextEditingController searchBar = TextEditingController();
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.only(),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton2<CompanyData>(
+            isExpanded: true,
+            hint: Text(
+              'Select company code',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            items: addInvoiceController.companyList
+                .map((item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item.companyname!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                .toList(),
+            value: addInvoiceController.selectedCompany.value.companyid == null
+                ? null
+                : addInvoiceController.selectedCompany.value,
+            onChanged: addInvoiceController.isCompanyCode.value == true
+                ? null
+                : (value) {
+                    addInvoiceController.selectedCompany.value = value!;
+                    setState(() {});
+                  },
+            buttonStyleData: Helper.buttonStyleData(context),
+            iconStyleData: const IconStyleData(
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+              ),
+              // iconSize: 14,
+              iconEnabledColor: Colors.black,
+              iconDisabledColor: Colors.grey,
+            ),
+            dropdownStyleData: Helper.dropdownStyleDataPop(context),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+              padding: EdgeInsets.only(left: 14, right: 14),
+            ),
+            dropdownSearchData: DropdownSearchData(
+              searchController: searchBar,
+              searchInnerWidgetHeight: 50,
+              searchInnerWidget: Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 4,
+                  right: 8,
+                  left: 8,
+                ),
+                child: TextFormField(
+                  expands: true,
+                  maxLines: null,
+                  controller: searchBar,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    hintText: 'Search...',
+                    hintStyle: const TextStyle(fontSize: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              searchMatchFn: (item, searchValue) {
+                return item.value!.companyname!
+                    .toLowerCase()
+                    .contains(searchValue.toLowerCase());
+              },
+            ),
+            onMenuStateChange: (isOpen) {
+              if (!isOpen) {
+                searchBar.clear();
+                // addInvoiceController.searchTextBar.clear();
+              }
+            },
+          ),
         ),
       ),
     );
@@ -1667,7 +1782,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                                                   Radius.circular(4))),
                                           child: CustomTextStyle.bold(
                                               text:
-                                                  "Company name: ${addInvoiceController.companyName}",
+                                                  "${addInvoiceController.companyName == "" ? "Company Name: NA" : addInvoiceController.companyName}",
                                               color: Colors.white,
                                               fontSize: 16),
                                         )),
@@ -1956,6 +2071,17 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
                 height: 8,
               ),
               projectDropDownList(context),
+              const SizedBox(
+                height: 16,
+              ),
+              CustomTextStyle.regular(
+                text: "Company Code",
+                fontSize: 12,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              companyCodeDropDownList(context),
               const SizedBox(
                 height: 16,
               ),

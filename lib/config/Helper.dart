@@ -1,5 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'colorConstant.dart';
 
 class Helper {
   static getErrorLog(String error) {
-    log(error);
+    log(error as num);
   }
 
   static getToastMsg(String toastMessage) {
@@ -65,7 +65,7 @@ class Helper {
   static convertDateTime(String date) {
     DateTime parseDate = DateFormat("yyyy-MM-dd' 'hh:mm:ss").parse(date);
     var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('dd-MM-yyyy hh:mm:ss a');
+    var outputFormat = DateFormat('dd-MM-yyyy hh:mm a');
     var outputDate = outputFormat.format(inputDate);
     return outputDate;
   }
@@ -347,14 +347,18 @@ class Helper {
                       const SizedBox(
                         height: 30,
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.signal_wifi_connected_no_internet_4,
-                            color: Colors.red,
-                            size: 30,
-                          )
+                          Container(
+                              width: 40,
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                  color: AppColors.redColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child:
+                                  const Icon(Icons.cancel, color: Colors.white))
                         ],
                       ),
                       Padding(
@@ -375,27 +379,14 @@ class Helper {
                         color: Colors.grey.shade300,
                         thickness: 1,
                       ),
-                      Material(
-                        child: InkWell(
-                          onTap: () async {
-                            callback();
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.only(
-                                left: 12.0, right: 12.0, top: 12.0, bottom: 2),
-                            child: DefaultTextStyle(
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FontStyle.normal),
-                              child: Text(
-                                "Ok",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ),
+                      OutlinedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.red)),
+                        onPressed: () {
+                          callback();
+                        },
+                        child: const Text("Ok"),
                       ),
                     ],
                   ),
@@ -486,15 +477,21 @@ class Helper {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(onPressed: () {
-                          callbackCancel();
-                        }, child: const Text("Cancel")),
-                        ElevatedButton(onPressed: () {
-                          callbackCrop();
-                        }, child: const Text("Crop")),
-                        ElevatedButton(onPressed: () {
-                          callbackOcr();
-                        }, child: const Text("OCR")),
+                        ElevatedButton(
+                            onPressed: () {
+                              callbackCancel();
+                            },
+                            child: const Text("Cancel")),
+                        ElevatedButton(
+                            onPressed: () {
+                              callbackCrop();
+                            },
+                            child: const Text("Crop")),
+                        ElevatedButton(
+                            onPressed: () {
+                              callbackOcr();
+                            },
+                            child: const Text("OCR")),
                       ],
                     )
                   ],
@@ -546,14 +543,17 @@ class Helper {
                     const SizedBox(
                       height: 30,
                     ),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.check,
-                          color: Colors.green,
-                          size: 30,
-                        )
+                        Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                                color: AppColors.primaryColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            child: const Icon(Icons.check, color: Colors.white))
                       ],
                     ),
                     Padding(
@@ -574,30 +574,18 @@ class Helper {
                       color: Colors.grey.shade300,
                       thickness: 1,
                     ),
-                    Spacer(),
-                    Material(
-                      child: InkWell(
-                        onTap: () async {
-                          callback();
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.only(
-                              left: 12.0, right: 12.0, top: 0.0, bottom: 2),
-                          child: DefaultTextStyle(
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FontStyle.normal),
-                            child: Text(
-                              "Ok",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
+                    const Spacer(),
+                    OutlinedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              AppColors.primaryColor)),
+                      onPressed: () {
+                        callback();
+                      },
+                      child:
+                          CustomTextStyle.bold(text: "OK", color: Colors.white),
                     ),
-                    Spacer(),
+                    const Spacer(),
                   ],
                 ),
               ),
@@ -647,22 +635,28 @@ class Helper {
                     letterSpacing: 0.2)),
             actions: <Widget>[
               TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.redAccent)),
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('No',
                     style: TextStyle(
-                        color: Colors.redAccent,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2)),
               ),
               TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(AppColors.primaryColor)),
                 onPressed: () {
                   // StorageUtil.instance.removeAll();
                   exit(0);
                 },
                 child: const Text('Yes',
                     style: TextStyle(
-                        color: AppColors.blueColor,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2)),
@@ -697,15 +691,21 @@ class Helper {
                     letterSpacing: 0.2)),
             actions: <Widget>[
               TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.redAccent)),
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('No',
                     style: TextStyle(
-                        color: Colors.redAccent,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2)),
               ),
               TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(AppColors.primaryColor)),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                   callback();
@@ -714,7 +714,7 @@ class Helper {
                 },
                 child: const Text('Yes',
                     style: TextStyle(
-                        color: AppColors.blueColor,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2)),
@@ -725,14 +725,14 @@ class Helper {
         false;
   }
 
-  static Color getCardColor(String status) {
+  static Color getCardColor2(String status) {
     switch (status) {
       case "a":
-        return Color(0xFFCC0033);
+        return const Color(0xFFCC0033);
       case "b":
-        return Color(0xFFFF0033);
+        return const Color(0xFFFF0033);
       case "c":
-        return Color(0xFFFF3366);
+        return const Color(0xFFFF3366);
       case "d":
         return Color(0xFFCC3300);
       case "e":
@@ -780,8 +780,37 @@ class Helper {
       case "z":
         return Color(0xFF660066);
       default:
-        return Colors.grey;
+        return AppColors.primaryColor;
     }
+  }
+
+  static Color getCardColor(String status) {
+    switch (status) {
+      case "a" || "e" || "i" || "m" || "q" || "u" || "y":
+        return AppColors.bsPrimary;
+      case "b" || "f" || "j" || "n" || "r" || "v" || "z":
+        return AppColors.bsWarning;
+      case "c" || "g" || "k" || "o" || "s" || "w":
+        return AppColors.bsDanger;
+      case "d" || "h" || "l" || "p" || "t" || "x":
+        return AppColors.bsSuccess;
+      default:
+        return AppColors.primaryColor;
+    }
+  }
+
+  static Color getCardColor1(String status) {
+    List<Color> colors = [
+      AppColors.bsPrimary,
+      AppColors.bsWarning,
+      AppColors.bsDanger,
+      AppColors.bsSuccess
+    ];
+    Random random = Random();
+    int index = 0;
+    index = random.nextInt(4);
+
+    return colors[index];
   }
 
   static bool isGSTValidator(String value) {
@@ -858,5 +887,47 @@ extension EmailValidator on String {
     return RegExp(
             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(this);
+  }
+}
+
+class MyDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Popup Title'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              hintText: 'Enter text...',
+            ),
+          ),
+          SizedBox(height: 20),
+          Container(
+            height: 500,
+            child: ListView.builder(
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text('Item $index'),
+                  onTap: () {
+                    // Do something when list item is tapped
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
   }
 }

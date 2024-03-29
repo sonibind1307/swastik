@@ -1,11 +1,13 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:swastik/config/Helper.dart';
 import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/config/colorConstant.dart';
 
+import '../../../controller/invoice_details_controller.dart';
 import '../../../model/responses/invoice_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../bloc/bloc_logic/invoice_bloc.dart';
@@ -21,14 +23,14 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-  String _selectedStatus = "0";
+  String _selectedStatus = "PENDING";
   String? selectedProject;
   List<String> listOfStatus = [
-    "0",
     "PENDING",
+    "VERIFIED",
     "APPROVED",
     "REJECTED",
-    "VERIFIED"
+    "0",
   ];
   Widget appBarTitle = const Text(
     "Invoice",
@@ -41,102 +43,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   bool _IsSearching = false;
   final TextEditingController _searchQuery = TextEditingController();
   final key = GlobalKey<ScaffoldState>();
+  final controller = Get.find<InvoiceDetailsController>();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => InvoiceBloc(),
       child: Scaffold(
-        // drawer: Drawer(
-        //   child: ListView(
-        //     padding: EdgeInsets.zero,
-        //     children: [
-        //       DrawerHeader(
-        //         decoration: BoxDecoration(
-        //           color: Colors.blue,
-        //         ),
-        //         child: UserAccountsDrawerHeader(
-        //           decoration: BoxDecoration(color: Colors.blue),
-        //           accountName: Text(
-        //             "Soni bind",
-        //             style: TextStyle(fontSize: 18),
-        //           ),
-        //           accountEmail: Text("abhishekm977@gmail.com"),
-        //           currentAccountPictureSize: Size.square(50),
-        //           currentAccountPicture: CircleAvatar(
-        //             backgroundColor: Color.fromARGB(255, 165, 255, 137),
-        //             child: Text(
-        //               "A",
-        //               style: TextStyle(fontSize: 30.0, color: Colors.blue),
-        //             ), //Text
-        //           ), //circleAvatar
-        //         ),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.dashboard_customize_outlined),
-        //         title: Text('Dashboard'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.add),
-        //         title: Text('Dashboard'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.ballot_outlined),
-        //         title: Text('Invoice'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.people_alt_rounded),
-        //         title: Text('Vendors'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.fire_truck),
-        //         title: Text('RMS'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.line_style_outlined),
-        //         title: Text('Steel'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.content_paste_sharp),
-        //         title: Text('PO/WO'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.business),
-        //         title: Text('Site Report'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.fingerprint),
-        //         title: Text('Attendance'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.settings),
-        //         title: Text('Setting'),
-        //         trailing: Icon(Icons.arrow_forward_ios_outlined),
-        //       ),
-        //       Container(
-        //         margin: EdgeInsets.all(4),
-        //         child: ElevatedButton(
-        //             onPressed: () {},
-        //             child: Row(
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: [
-        //                 Icon(Icons.logout),
-        //                 Text("Logout"),
-        //               ],
-        //             )),
-        //       )
-        //     ],
-        //   ),
-        // ),
         key: key,
         // appBar: AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
         //   IconButton(
@@ -182,7 +95,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               return RefreshIndicator(
                 onRefresh: () async {
                   // Helper.getToastMsg("toastMessage");
-                  context.read<InvoiceBloc>().getInvoiceList();
+                  context.read<InvoiceBloc>().getInvoiceList("1");
                   return;
                   // return true;
                 },
@@ -564,41 +477,73 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                   text: _getStatusText(invoiceList
                                       .data![index].invoiceStatus
                                       .toString())),
-                              SizedBox(
-                                height: 40,
-                                width: 40,
-                                // color: Colors.green,
-                                child: Stack(
-                                  children: [
-                                    const Positioned(
-                                      top: 20,
-                                      left: 4,
-                                      child: Icon(
-                                        Icons.messenger,
-                                        size: 20,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: 6,
-                                      right: 4,
-                                      child: Container(
-                                        height: 24,
-                                        width: 24,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(12))),
-                                        child: Center(
-                                          child: CustomTextStyle.extraBold(
-                                              text:
-                                                  "${invoiceList.data![index].commentCount.toString().length >= 99 ? invoiceList.data![index].commentCount.toString().length : invoiceList.data![index].commentCount.toString().length}",
-                                              color: Colors.white,
-                                              fontSize: 8),
+                              InkWell(
+                                onTap: () {
+                                  controller.isNoteApiCall = false;
+                                  controller.getComments(invoiceList
+                                      .data![index].invoiceId
+                                      .toString());
+                                  controller.buildShowAddComment(context,
+                                      (value) {
+                                    // Navigator.pop(context);
+                                    controller.addComment(
+                                      context,
+                                      invoiceList.data![index].invoiceId,
+                                      value,
+                                      invoiceList.data![index].cmpId,
+                                    );
+                                  }, (value) {
+                                    Navigator.of(context).pop(false);
+                                    if (value) {
+                                      context
+                                          .read<InvoiceBloc>()
+                                          .getInvoiceList("1");
+                                    }
+                                  },
+                                      invoiceList.data![index].vendorCmpny!,
+                                      invoiceList.data![index].invref!,
+                                      invoiceList.data![index].totalamount!);
+                                },
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  // color: Colors.green,
+                                  child: Stack(
+                                    children: [
+                                      const Positioned(
+                                        top: 20,
+                                        left: 4,
+                                        child: Icon(
+                                          Icons.messenger,
+                                          size: 20,
+                                          color: Colors.grey,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      if (invoiceList
+                                              .data![index].commentCount! >
+                                          0) ...[
+                                        Positioned(
+                                          top: 6,
+                                          right: 4,
+                                          child: Container(
+                                            height: 24,
+                                            width: 24,
+                                            decoration: const BoxDecoration(
+                                                color: Colors.red,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(12))),
+                                            child: Center(
+                                              child: CustomTextStyle.extraBold(
+                                                  text:
+                                                      "${invoiceList.data![index].commentCount! >= 10 ? "10+" : invoiceList.data![index].commentCount!}",
+                                                  color: Colors.white,
+                                                  fontSize: 8),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               // const SizedBox(height: 8),

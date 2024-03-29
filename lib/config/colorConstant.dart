@@ -43,4 +43,11 @@ class AppColors {
   static const Color worningColor = Color(0xFFfbb450);
   static const Color conGrey = Color(0xFFEEEEEE);
   static const t1_view_color = Color(0XFFDADADA);
+
+  static const bsPrimary = Color(0XFF3B71CA);
+  static const bsSecondary = Color(0XFF9FA6B2);
+  static const bsSuccess = Color(0XFF14A44D);
+  static const bsDanger = Color(0XFFDC4C64);
+  static const bsWarning = Color(0XFFE4A11B);
+  static const bsInfo = Color(0XFF54B4D3);
 }

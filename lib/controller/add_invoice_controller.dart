@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:swastik/model/responses/vendor_model.dart';
 import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/build_model.dart';
+import '../model/responses/company_model.dart';
 import '../model/responses/invoice_item_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -26,6 +28,7 @@ class AddInvoiceController extends GetxController {
   var allInvoiceItemList = <InvoiceItems>[].obs;
   var categoryItemList = <CategoryData>[].obs;
   var projectList = <ProjectData>[].obs;
+  var companyList = <CompanyData>[].obs;
   var userList = <UserData>[].obs;
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
@@ -55,6 +58,7 @@ class AddInvoiceController extends GetxController {
   var selectedDate;
   RxBool cgstFlag = true.obs;
   RxBool igstFlag = true.obs;
+  RxBool isCompanyCode = true.obs;
 
   RxString cgstValue1 = "CGST".obs;
   RxString sgstValue1 = "SGST".obs;
@@ -77,6 +81,7 @@ class AddInvoiceController extends GetxController {
   String? selectedPo;
 
   var selectedUser = UserData().obs;
+  var selectedCompany = CompanyData().obs;
 
   List<VendorData> listofVenderData = [];
   List<ProjectData> projectData = [];
@@ -200,6 +205,12 @@ class AddInvoiceController extends GetxController {
     update();
   }
 
+  Future<void> getCompanyCode() async {
+    CompanyModel projectModel = await ApiRepo.getCompanyCodeList();
+    companyList.value = projectModel.data!;
+    update();
+  }
+
   Future<void> onGetBuilding(String projectId) async {
     buildList.clear();
     selectedBuild = null;
@@ -228,16 +239,15 @@ class AddInvoiceController extends GetxController {
     // debugPrint("vendorData 2024 -> ${jsonEncode(invoiceIDetailModel)}");
 
     if (invoiceIDetailModel.data != null) {
-      // debugPrint("vendorData 2024 -> ${invoiceIDetailModel.data!.project}");
       projectId = invoiceIDetailModel.data!.project;
       await onGetBuilding(projectId!);
+      await onGetCompanyCode(projectId!);
 
-      companyName.value = invoiceIDetailModel.data!.companyname!;
+      companyName.value = invoiceIDetailModel.data!.companyname ?? "NA";
       selectedProject = invoiceIDetailModel.data!.projectname;
       selectedCategory = invoiceIDetailModel.data!.invcat;
       selectedBuild = invoiceIDetailModel.data!.building;
-      selectedUser.value.userId = invoiceIDetailModel.data!.current_userid!;
-
+      getUserObject(invoiceIDetailModel.data!.current_userid!);
       selectedDate = invoiceIDetailModel.data!.invDate!;
       invRefController.text = invoiceIDetailModel.data!.invref.toString();
       pdfUrl = invoiceIDetailModel.data!.filename.toString();
@@ -329,6 +339,7 @@ class AddInvoiceController extends GetxController {
           upload_file: isPdfChange.value,
           file: pdfUrl,
           step2_userid: selectedUser.value.userId,
+          companyCode: selectedCompany.value.companyid,
         ))!;
         if (baseModel.status == "true") {
           EasyLoading.dismiss();
@@ -392,7 +403,8 @@ class AddInvoiceController extends GetxController {
           invoice_id: inVoiceId == "" ? "0" : inVoiceId,
           upload_file: isPdfChange.value,
           file: pdfUrl,
-          step2_userid: selectedUser))!;
+          step2_userid: selectedUser,
+          companyCode: selectedCompany.value.companyid))!;
 
       if (baseModel.status == "true") {
         EasyLoading.dismiss();
@@ -421,6 +433,9 @@ class AddInvoiceController extends GetxController {
     bool isValidate = true;
     if (selectedProject == null) {
       Helper.getToastMsg("Select project");
+      isValidate = false;
+    } else if (selectedCompany.value.companyname == null) {
+      Helper.getToastMsg("Select company code");
       isValidate = false;
     } else if (selectedBuild == null) {
       isValidate = false;
@@ -469,6 +484,8 @@ class AddInvoiceController extends GetxController {
 
   clearAllData() {
     vendorList.clear();
+    userList.clear();
+    companyList.clear();
     allInvoiceItemList.clear();
     categoryItemList.clear();
     projectList.clear();
@@ -507,6 +524,7 @@ class AddInvoiceController extends GetxController {
     selectedProject = null;
     selectedBuild = null;
     selectedUser.value = UserData();
+    selectedCompany.value = CompanyData();
     pdfUrl = null;
 
     selectedVendor = null;
@@ -570,6 +588,47 @@ class AddInvoiceController extends GetxController {
   Future<void> getAssignUserList() async {
     ValidateUserModel projectModel = await ApiRepo.getAssignUserList();
     userList.value = projectModel.data!;
+
+    print("userList ->${userList.value.length}");
     update();
+  }
+
+  onGetCompanyCode(String projectCode) {
+    print("projectCode->${projectCode}");
+    selectedCompany.value = CompanyData();
+    String companyCode = "";
+
+    if (projectCode == "" || projectCode == "0") {
+      isCompanyCode.value = false;
+    } else {
+      isCompanyCode.value = true;
+    }
+    for (var value in projectList) {
+      if (projectCode == value.projectcode) {
+        companyCode = value.companycode!;
+      }
+    }
+
+    print("companyCode->${companyCode}");
+
+    if (companyCode != "") {
+      for (var value in companyList) {
+        if (companyCode == value.companyid) {
+          selectedCompany.value = value;
+        }
+      }
+    }
+
+    print("selectedCompany->${jsonEncode(selectedCompany)}");
+  }
+
+  void getUserObject(String userID) {
+    if (userList.isNotEmpty) {
+      for (var element in userList) {
+        if (element.userId == userID) {
+          selectedUser.value = element;
+        }
+      }
+    }
   }
 }

@@ -11,7 +11,7 @@ class ProjectModel {
     if (json['data'] != null) {
       data = <ProjectData>[];
       json['data'].forEach((v) {
-        data!.add(new ProjectData.fromJson(v));
+        data!.add(ProjectData.fromJson(v));
       });
     }
   }
@@ -40,20 +40,23 @@ class ProjectData {
   String? nameofbuilding;
   String? projBuildName;
   String? siteAddress;
+  String? companycode;
 
-  ProjectData(
-      {this.companyid,
-      this.companyname,
-      this.gst,
-      this.pan,
-      this.tan,
-      this.address,
-      this.projectname,
-      this.projectcode,
-      this.buildingcode,
-      this.nameofbuilding,
-      this.projBuildName,
-      this.siteAddress});
+  ProjectData({
+    this.companyid,
+    this.companyname,
+    this.gst,
+    this.pan,
+    this.tan,
+    this.address,
+    this.projectname,
+    this.projectcode,
+    this.buildingcode,
+    this.nameofbuilding,
+    this.projBuildName,
+    this.siteAddress,
+    this.companycode,
+  });
 
   ProjectData.fromJson(Map<String, dynamic> json) {
     companyid = json['companyid'];
@@ -68,6 +71,7 @@ class ProjectData {
     nameofbuilding = json['nameofbuilding'];
     projBuildName = json['proj_build_name'];
     siteAddress = json['site_address'];
+    companycode = json['companycode'];
   }
 
   Map<String, dynamic> toJson() {
@@ -84,6 +88,7 @@ class ProjectData {
     data['nameofbuilding'] = this.nameofbuilding;
     data['proj_build_name'] = this.projBuildName;
     data['site_address'] = this.siteAddress;
+    data['companycode'] = this.companycode;
     return data;
   }
 }

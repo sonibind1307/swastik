@@ -51,6 +51,7 @@ class Data {
   String? gst;
   String? pan;
   String? company_id;
+  int? commentCount;
 
   Data({
     this.invoiceId,
@@ -81,6 +82,7 @@ class Data {
     this.gst,
     this.pan,
     this.company_id,
+    this.commentCount,
   });
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,7 @@ class Data {
     gst = json['gst'];
     pan = json['pan'];
     company_id = json['company_id'];
+    commentCount = json['comment_count'];
   }
 
   Map<String, dynamic> toJson() {
@@ -144,6 +147,7 @@ class Data {
     data['step3_timestamp'] = this.step3Timestamp;
     data['gst'] = this.gst;
     data['pan'] = this.pan;
+    data['comment_count'] = this.commentCount;
     return data;
   }
 }

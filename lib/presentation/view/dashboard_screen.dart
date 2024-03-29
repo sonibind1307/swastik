@@ -9,7 +9,6 @@ import '../../config/Helper.dart';
 import '../../config/sharedPreferences.dart';
 import '../../controller/dashboard_controller.dart';
 import '../../model/DraverItem.dart';
-import '../bloc/bloc_logic/invoice_bloc.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
 import 'task/task_screen.dart';
@@ -54,7 +53,7 @@ class HomePageState extends State<DashBoardScreen> {
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen();
       case 1:
         return InvoiceScreen();
       case 2:
@@ -168,9 +167,7 @@ class HomePageState extends State<DashBoardScreen> {
                         );
                         appBarTitle = TextField(
                           onChanged: (value) {
-                            setState(() {
-                              bloc.onSearchInvoice(value);
-                            });
+                            setState(() {});
                           },
                           controller: _searchQuery,
                           style: const TextStyle(
@@ -197,59 +194,57 @@ class HomePageState extends State<DashBoardScreen> {
                     ? widget.drawerItems[0].title
                     : widget.drawerItems[_selectedDrawerIndex].title),
               ),
-        drawer: Drawer(
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Obx(
-                  () => controller.isLoading.value == true
-                      ? Container(
-                          color: AppColors.primaryColor,
-                          height: 200,
-                          child: const Center(
-                              child: CircularProgressIndicator(
-                            color: Colors.white,
-                          )))
-                      : UserAccountsDrawerHeader(
-                          accountEmail: Text(controller.userMobile.value),
-                          accountName:
-                              Text(controller.userName.value.toUpperCase()),
-                          currentAccountPicture: InkWell(
-                            onTap: () {
-                              setState(() {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProfileScreen()),
-                                );
-                              });
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              child: Text(
-                                controller.userName.value
-                                    .toUpperCase()
-                                    .substring(0, 1),
-                                style: const TextStyle(
-                                    fontSize: 30.0, color: Colors.black),
-                              ), //Text
-                            ),
-                          ),
-                        ),
-                ),
-                Column(children: drawerOptions)
-              ],
-            ),
-          ),
-        ),
-        // body: Obx(() => controller.isLoading.value == true
-        //     ? const Center(
-        //         child: CircularProgressIndicator(),
-        //       )
-        //     : _getDrawerItemWidget(_selectedDrawerIndex)),
-
+        drawer: buildDrawerScreen(context, drawerOptions),
         body: _getDrawerItemWidget(_selectedDrawerIndex),
+      ),
+    );
+  }
+
+  Drawer buildDrawerScreen(BuildContext context, List<Widget> drawerOptions) {
+    return Drawer(
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Obx(
+              () => controller.isLoading.value == true
+                  ? Container(
+                      color: AppColors.primaryColor,
+                      height: 200,
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.white,
+                      )))
+                  : UserAccountsDrawerHeader(
+                      accountEmail: Text(controller.userMobile.value),
+                      accountName:
+                          Text(controller.userName.value.toUpperCase()),
+                      currentAccountPicture: InkWell(
+                        onTap: () {
+                          setState(() {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileScreen()),
+                            );
+                          });
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            controller.userName.value
+                                .toUpperCase()
+                                .substring(0, 1),
+                            style: const TextStyle(
+                                fontSize: 30.0, color: Colors.black),
+                          ), //Text
+                        ),
+                      ),
+                    ),
+            ),
+            Column(children: drawerOptions)
+          ],
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:swastik/config/sharedPreferences.dart';
@@ -52,7 +53,8 @@ class PdfPreviewPage extends StatelessWidget {
               pw.Positioned(
                   bottom: 0,
                   right: 0,
-                  child: pw.Text('Username: $userName, Date: ${DateTime.now()}',
+                  child: pw.Text(
+                      'Username: $userName, Date: ${DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now())}',
                       style: const pw.TextStyle(fontSize: 16)))
             ]); // Center
           },
