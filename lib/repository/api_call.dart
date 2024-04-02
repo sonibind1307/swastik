@@ -683,8 +683,8 @@ class ApiRepo {
     DashboardModel responseModel = DashboardModel();
     var dio = Dio();
     String userId = await Auth.getUserID() ?? "";
-    // var data = FormData.fromMap({'user_id': userId, 'user_department': "All"});
-    var data = FormData.fromMap({'user_id': "3", 'user_department': "All"});
+    var data = FormData.fromMap({'user_id': userId, 'user_department': "All"});
+    // var data = FormData.fromMap({'user_id': "3", 'user_department': "All"});
 
     print("request ->${data.fields}");
 

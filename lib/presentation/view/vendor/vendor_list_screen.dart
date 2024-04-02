@@ -196,21 +196,21 @@ class VendorListScreen extends StatelessWidget {
                     color: Colors.white,
                     fontSize: 16),
               ),
-              Row(
-                children: [
-                  const Spacer(),
-                  CustomTextStyle.regular(text: "Total amount :"),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  CustomTextStyle.bold(
-                      text: double.parse("0").toInt().inRupeesFormat(),
-                      fontSize: 14),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     const Spacer(),
+              //     CustomTextStyle.regular(text: "Total amount :"),
+              //     const SizedBox(
+              //       width: 8,
+              //     ),
+              //     CustomTextStyle.bold(
+              //         text: double.parse("0").toInt().inRupeesFormat(),
+              //         fontSize: 14),
+              //     const SizedBox(
+              //       width: 8,
+              //     ),
+              //   ],
+              // ),
               InkWell(
                 onTap: () {
                   onClick("edit");

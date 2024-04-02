@@ -386,7 +386,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         ),
                       );
                     }
-                  });
+                  }, invoiceList.data![index]);
                 },
                 child: Card(
                   child: Padding(
@@ -674,7 +674,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     });
   }
 
-  Future openBottomSheet(BuildContext context, Function(String key) onClick) {
+  Future openBottomSheet(
+      BuildContext context, Function(String key) onClick, InvoiceData data) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -687,6 +688,35 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                child: CustomTextStyle.bold(
+                    text: "Vendor: ${data.vendorCmpny}",
+                    color: Colors.white,
+                    fontSize: 16),
+              ),
+              Row(
+                children: [
+                  const Spacer(),
+                  CustomTextStyle.regular(text: "Total amount :"),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  CustomTextStyle.bold(
+                      text: double.parse("${data.totalamount}")
+                          .toInt()
+                          .inRupeesFormat(),
+                      fontSize: 14),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                ],
+              ),
               InkWell(
                 onTap: () async {
                   onClick("share");
