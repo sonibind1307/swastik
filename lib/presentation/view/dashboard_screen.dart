@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/authentication/login_screen.dart';
+import 'package:swastik/presentation/view/profile/profile_controller.dart';
 import 'package:swastik/presentation/view/profile/profile_screen.dart';
 import 'package:swastik/presentation/view/vendor/vendor_list_screen.dart';
 
 import '../../config/Helper.dart';
 import '../../config/sharedPreferences.dart';
+import '../../controller/add_invoice_controller.dart';
+import '../../controller/add_vendor_controller.dart';
+import '../../controller/challan_list_controller.dart';
 import '../../controller/dashboard_controller.dart';
-import '../../model/DraverItem.dart';
+import '../../controller/invoice_dashboard_controller.dart';
+import '../../controller/invoice_details_controller.dart';
+import '../../controller/invoice_list_controller.dart';
+import '../../controller/vendor_list_controller.dart';
+import '../bloc/bloc_logic/invoice_bloc.dart';
+import 'challan/Challan_list_screen.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
 import 'task/task_screen.dart';
@@ -16,35 +25,35 @@ import 'task/task_screen.dart';
 class DashBoardScreen extends StatefulWidget {
   final int index;
 
-  DashBoardScreen({super.key, required this.index});
-
-  final drawerItems = [
-    DrawerItem("Dashboard", Icons.home),
-    DrawerItem("Invoices", Icons.ballot_outlined),
-    DrawerItem("Vendors", Icons.people_alt_rounded),
-    DrawerItem("RMS", Icons.fire_truck),
-    DrawerItem("Steel", Icons.line_style_outlined),
-    DrawerItem("PO/WO", Icons.content_paste_sharp),
-    DrawerItem("Site Report", Icons.business),
-    DrawerItem("Attendance", Icons.fingerprint),
-    DrawerItem("Settings", Icons.settings),
-    DrawerItem("Logout", Icons.logout),
-  ];
+  const DashBoardScreen({super.key, required this.index});
 
   @override
   State<StatefulWidget> createState() {
+    Get.put(InvoiceListController());
+    Get.put(InvoiceDetailsController());
+    Get.put(InvoiceDashboardController());
+    Get.put(AddInvoiceController());
+    Get.put(VendorListController());
+    Get.put(AddVendorController());
+    Get.put(DashboardController());
+    Get.put(ProfileController());
+    Get.put(ChallanListController());
     return HomePageState();
   }
 }
 
 class HomePageState extends State<DashBoardScreen> {
-  int _selectedDrawerIndex = 0;
+  int selectedDrawerIndex = 0;
   final controller = Get.put(DashboardController());
+  final challanController = Get.find<ChallanListController>();
+  final invoiceController = Get.find<InvoiceListController>();
   bool _IsSearching = false;
+  InvoiceBloc instance = InvoiceBloc();
+  Helper helper = Helper();
 
   @override
   void initState() {
-    _selectedDrawerIndex = widget.index;
+    selectedDrawerIndex = widget.index;
     // Helper.getToastMsg(_selectedDrawerIndex.toString());
     controller.getUserInfoData();
     super.initState();
@@ -57,9 +66,9 @@ class HomePageState extends State<DashBoardScreen> {
       case 1:
         return InvoiceScreen();
       case 2:
-        return VendorListScreen();
+        return ChallanListScreen();
       case 3:
-      // return ProfileScreen();
+        return VendorListScreen();
       case 6:
         return const TaskListScreen();
       // case 7:
@@ -77,21 +86,16 @@ class HomePageState extends State<DashBoardScreen> {
     });
   }
 
-  _onSelectItem(int index) {
+  onSelectItem(int index) {
     setState(() {
+      _handleSearchEnd();
       Navigator.of(context).pop();
-      _selectedDrawerIndex = index;
-      if (index == 3) {
-        _selectedDrawerIndex = 0;
-        // Navigator.pushNamed(context, routeServiceRequest);
-      } else if (index == 4) {
-        _selectedDrawerIndex = 0;
-        // Navigator.pushNamed(context, route194ND);
-      } else if (index == 9) {
+      selectedDrawerIndex = index;
+      if (index == 9) {
         Helper.deleteDialog(context, "Do you want to logout from App", () {
           Navigator.pop(context);
           Auth.clearUserData();
-          Get.offAll(LoginPage());
+          Get.offAll(const LoginPage());
         });
       }
     });
@@ -103,6 +107,11 @@ class HomePageState extends State<DashBoardScreen> {
   );
 
   Widget appBarTitle = const Text(
+    "Challan",
+    style: TextStyle(color: Colors.white),
+  );
+
+  Widget appBarTitleInvoice = const Text(
     "Invoice",
     style: TextStyle(color: Colors.white),
   );
@@ -114,7 +123,11 @@ class HomePageState extends State<DashBoardScreen> {
         color: Colors.white,
       );
       appBarTitle = const Text(
-        "Search Invoice",
+        "Challan",
+        style: TextStyle(color: Colors.white),
+      );
+      appBarTitleInvoice = const Text(
+        "Invoice",
         style: TextStyle(color: Colors.white),
       );
       _IsSearching = false;
@@ -123,18 +136,19 @@ class HomePageState extends State<DashBoardScreen> {
   }
 
   final TextEditingController _searchQuery = TextEditingController();
+  // final TextEditingController _searchQueryInvioce = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     List<Widget> drawerOptions = [];
-    for (var i = 0; i < widget.drawerItems.length; i++) {
-      var d = widget.drawerItems[i];
+    for (var i = 0; i < helper.drawerItems.length; i++) {
+      var d = helper.drawerItems[i];
       drawerOptions.add(ListTile(
         selectedColor: AppColors.primaryColor,
         leading: Icon(d.icon),
         title: Text(d.title),
-        selected: i == _selectedDrawerIndex,
-        onTap: () => _onSelectItem(i),
+        selected: i == selectedDrawerIndex,
+        onTap: () => onSelectItem(i),
       ));
     }
 
@@ -154,48 +168,88 @@ class HomePageState extends State<DashBoardScreen> {
         return true;
       },
       child: Scaffold(
-        appBar: _selectedDrawerIndex == 1
-            ? AppBar(centerTitle: true, title: appBarTitle, actions: <Widget>[
-                IconButton(
-                  icon: actionIcon,
-                  onPressed: () {
-                    setState(() {
-                      if (actionIcon.icon == Icons.search) {
-                        actionIcon = const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                        );
-                        appBarTitle = TextField(
-                          onChanged: (value) {
-                            setState(() {});
+        appBar: selectedDrawerIndex == 1
+            ? AppBar(
+                centerTitle: true,
+                title: appBarTitleInvoice,
+                actions: <Widget>[
+                    IconButton(
+                      icon: actionIcon,
+                      onPressed: () {
+                        setState(() {
+                          if (actionIcon.icon == Icons.search) {
+                            actionIcon = const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                            );
+                            appBarTitleInvoice = TextField(
+                              onChanged: (value) {
+                                invoiceController.onSearchVendor(value);
+                              },
+                              controller: _searchQuery,
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                              decoration: const InputDecoration(
+                                  prefixIcon:
+                                      Icon(Icons.search, color: Colors.white),
+                                  hintText: "Search...",
+                                  hintStyle: TextStyle(color: Colors.white)),
+                            );
+                            _handleSearchStart();
+                          } else {
+                            _handleSearchEnd();
+                          }
+                        });
+                      },
+                    ),
+                  ])
+            : selectedDrawerIndex == 2
+                ? AppBar(
+                    centerTitle: true,
+                    title: appBarTitle,
+                    actions: <Widget>[
+                        IconButton(
+                          icon: actionIcon,
+                          onPressed: () {
+                            setState(() {
+                              if (actionIcon.icon == Icons.search) {
+                                actionIcon = const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                );
+                                appBarTitle = TextField(
+                                  onChanged: (value) {
+                                    challanController.onSearchVendor(value);
+                                  },
+                                  controller: _searchQuery,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  decoration: const InputDecoration(
+                                      prefixIcon: Icon(Icons.search,
+                                          color: Colors.white),
+                                      hintText: "Search...",
+                                      hintStyle:
+                                          TextStyle(color: Colors.white)),
+                                );
+                                _handleSearchStart();
+                              } else {
+                                _handleSearchEnd();
+                              }
+                            });
                           },
-                          controller: _searchQuery,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                          decoration: const InputDecoration(
-                              prefixIcon:
-                                  Icon(Icons.search, color: Colors.white),
-                              hintText: "Search invoice",
-                              hintStyle: TextStyle(color: Colors.white)),
-                        );
-                        _handleSearchStart();
-                      } else {
-                        _handleSearchEnd();
-                      }
-                    });
-                  },
-                ),
-              ])
-            : AppBar(
-                title: Text(_selectedDrawerIndex == 3 ||
-                        _selectedDrawerIndex == 4 ||
-                        _selectedDrawerIndex == 9
-                    ? widget.drawerItems[0].title
-                    : widget.drawerItems[_selectedDrawerIndex].title),
-              ),
+                        ),
+                      ])
+                : AppBar(
+                    title: Text(selectedDrawerIndex == 3 ||
+                            selectedDrawerIndex == 4 ||
+                            selectedDrawerIndex == 9
+                        ? helper.drawerItems[0].title
+                        : helper.drawerItems[selectedDrawerIndex].title),
+                  ),
         drawer: buildDrawerScreen(context, drawerOptions),
-        body: _getDrawerItemWidget(_selectedDrawerIndex),
+        body: _getDrawerItemWidget(selectedDrawerIndex),
       ),
     );
   }

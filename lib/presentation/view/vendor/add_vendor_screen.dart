@@ -75,6 +75,7 @@ class _AddVendorScreenState extends State<AddVendorScreen> {
                           decoration: CustomTextDecoration.textFieldDecoration(
                               labelText: Constant.mobileNumber),
                           validator: (value) {
+                            print("validator for mobile");
                             if (value != null && value.isNotEmpty) {
                               if (value.length != 10) {
                                 return "Enter a valid mobile number";

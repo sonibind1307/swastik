@@ -37,8 +37,8 @@ class LoginController extends GetxController {
           String? token = await FirebaseMessaging.instance.getToken();
           onUpdateToken(token: token!);
           Helper.getToastMsg(userModel.message!);
-          Get.offAll(DashBoardScreen(
-            index: 1,
+          Get.offAll(const DashBoardScreen(
+            index: 0,
           ));
         } else {
           isLoading.value = false;

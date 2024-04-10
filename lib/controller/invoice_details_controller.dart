@@ -10,7 +10,6 @@ import '../model/responses/assign_user_model.dart';
 import '../model/responses/base_model.dart';
 import '../model/responses/comments_model.dart';
 import '../model/responses/invoice_summary_model.dart';
-import '../presentation/view/dashboard_screen.dart';
 import '../presentation/widget/app_widget.dart';
 import '../presentation/widget/custom_text_style.dart';
 import '../presentation/widget/edit_text_widgets.dart';
@@ -23,6 +22,7 @@ class InvoiceDetailsController extends GetxController {
   RxBool isApiLoading = false.obs;
   RxBool isLoadingComment = false.obs;
   bool isNoteApiCall = false;
+  bool isNoteApiCheck = false;
   var userList = <UserData>[].obs;
   var commentList = <CommentData>[].obs;
   var selectedUser = UserData().obs;
@@ -73,9 +73,11 @@ class InvoiceDetailsController extends GetxController {
           if (currentUserID == dropDownUSerID) {
             onGetInvoiceDetails(invoiceIDetailModel.data!.invoiceId!);
           } else {
-            Get.offAll(DashBoardScreen(
-              index: 1,
-            ));
+            // Get.offAll(DashBoardScreen(
+            //   index: 1,
+            // ));
+
+            onGetInvoiceDetails(invoiceIDetailModel.data!.invoiceId!);
           }
         });
       } else {
@@ -132,25 +134,31 @@ class InvoiceDetailsController extends GetxController {
 
   Future<void> addComment(
       BuildContext context, invoiceId, comment, companyId) async {
-    isNoteApiCall = true;
-    EasyLoading.show(status: 'loading...');
-
-    BaseModel response = await ApiRepo.addComment(
-        invoiceId: invoiceId, comment: comment, companyId: companyId);
-    if (response.status == "true") {
-      Helper.getToastMsg(response.message!);
-      EasyLoading.dismiss();
-      Helper().showServerSuccessDialog(context, response.message!, () async {
-        Navigator.pop(context);
-        getComments(invoiceId);
-      });
-    } else {
-      Helper.getToastMsg("Something went wrong");
-      EasyLoading.dismiss();
-      Helper().showServerErrorDialog(context, "Something went wrong", () async {
-        FocusScope.of(context).unfocus();
-        Navigator.pop(context);
-      });
+    if (isNoteApiCall == false) {
+      isNoteApiCall = true;
+      isNoteApiCheck = true;
+      EasyLoading.show(status: 'loading...');
+      BaseModel response = await ApiRepo.addComment(
+          invoiceId: invoiceId, comment: comment, companyId: companyId);
+      if (response.status == "true") {
+        Helper.getToastMsg(response.message!);
+        EasyLoading.dismiss();
+        isNoteApiCall = false;
+        Helper().showServerSuccessDialog(context, response.message!, () async {
+          Navigator.pop(context);
+          getComments(invoiceId);
+          noteController.text = "";
+        });
+      } else {
+        isNoteApiCall = false;
+        Helper.getToastMsg("Something went wrong");
+        EasyLoading.dismiss();
+        Helper().showServerErrorDialog(context, "Something went wrong",
+            () async {
+          FocusScope.of(context).unfocus();
+          Navigator.pop(context);
+        });
+      }
     }
   }
 
@@ -161,7 +169,7 @@ class InvoiceDetailsController extends GetxController {
       String vendorName,
       String refNumber,
       String amount) {
-    TextEditingController noteController = TextEditingController();
+    // TextEditingController noteController = TextEditingController();
 
     return showDialog(
       barrierDismissible: false,
@@ -201,10 +209,14 @@ class InvoiceDetailsController extends GetxController {
             Align(
                 alignment: Alignment.centerLeft,
                 child: CustomTextStyle.regular(
-                    text: "Inv.Ref:$refNumber", fontSize: 16)),
+                    text: "Inv.Ref:$refNumber",
+                    fontSize: 14,
+                    color: Colors.grey)),
+            const SizedBox(
+              height: 4,
+            ),
             Row(
               children: [
-                const Spacer(),
                 CustomTextStyle.regular(text: "Total amount :"),
                 const SizedBox(
                   width: 8,
@@ -214,13 +226,14 @@ class InvoiceDetailsController extends GetxController {
                         .toInt()
                         .inRupeesFormat(),
                     fontSize: 14),
+                const Spacer(),
               ],
             ),
             const SizedBox(
               height: 8,
             ),
             CustomEditTestWidgets.commonEditText(noteController,
-                lable: "Add Comment here"),
+                isOptional: true, lable: "Add Comment here"),
             const SizedBox(
               height: 8,
             ),
@@ -348,7 +361,7 @@ class InvoiceDetailsController extends GetxController {
           TextButton(
             style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.red)),
-            onPressed: () => closeCallback(isNoteApiCall),
+            onPressed: () => closeCallback(isNoteApiCheck),
             child: const Text('Close',
                 style: TextStyle(
                     color: Colors.white,

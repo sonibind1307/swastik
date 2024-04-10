@@ -13,9 +13,11 @@ import '../config/Helper.dart';
 import '../config/sharedPreferences.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
+import '../model/responses/challan_model.dart';
 import '../model/responses/comments_model.dart';
 import '../model/responses/company_model.dart';
 import '../model/responses/dashboard_model.dart';
+import '../model/responses/invoice_model.dart';
 import '../model/responses/invoice_summary_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
@@ -26,6 +28,30 @@ import '../presentation/view/invoice/list_invoice_screen.dart';
 
 class ApiRepo {
   // static baseUrl = 'https://swastik.online/Mobile/';
+
+  static Future<InvoiceModel> getAllInvoiceList() async {
+    InvoiceModel responseModel = InvoiceModel();
+    try {
+      String? userId = await Auth.getUserID();
+      var dio = Dio();
+
+      var response = await dio.request(
+        'https://swastik.online/Mobile/get_invoice_list/$userId/0',
+        options: Options(
+          method: 'GET',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = InvoiceModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
   static Future<ProjectModel> getProjectList({required String userId}) async {
     ProjectModel responseData = ProjectModel();
 
@@ -133,6 +159,28 @@ class ApiRepo {
       debugPrint("message :-> $e");
     }
     return vendorModel;
+  }
+
+  static Future<ChallanModel> getChallans() async {
+    ChallanModel responsData = ChallanModel();
+    try {
+      var dio = Dio();
+      var response = await dio.request(
+        'https://swastik.online/Mobile/get_challan',
+        options: Options(
+          method: 'GET',
+        ),
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responsData = ChallanModel.fromJson(res);
+      } else {
+        print(response.statusMessage);
+      }
+    } catch (e) {
+      debugPrint("message :-> $e");
+    }
+    return responsData;
   }
 
   static Future<BuildModel> getBuilding(String projectId) async {

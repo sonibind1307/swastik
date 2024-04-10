@@ -328,9 +328,9 @@ class _LoginPageState extends State<LoginPage>
                                                           icon: Icon(
                                                             _obscureText
                                                                 ? Icons
-                                                                    .visibility
+                                                                    .visibility_off
                                                                 : Icons
-                                                                    .visibility_off,
+                                                                    .visibility,
                                                           ),
                                                           onPressed: () {
                                                             setState(() {

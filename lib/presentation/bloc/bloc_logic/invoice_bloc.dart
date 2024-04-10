@@ -10,8 +10,9 @@ import '../../../model/responses/base_model.dart';
 import '../../../model/responses/invoice_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../../repository/api_call.dart';
+import '../../view/invoice/serach_invoice.dart';
 
-class InvoiceBloc extends Cubit<InvoiceState> {
+class InvoiceBloc extends Cubit<InvoiceState> implements SearchClass {
   InvoiceBloc() : super(InitialState()) {
     getProjectList();
     getInvoiceList("1");
@@ -135,8 +136,8 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
-      listInvoice = InvoiceModel.fromJson(res);
-      emit(LoadedState(listProject, listInvoice));
+      InvoiceModel pendingList = InvoiceModel.fromJson(res);
+      emit(LoadedState(listProject, pendingList));
       // chipChoiceCardSelected("PENDING");
     } else {
       print(response.statusMessage);
@@ -144,8 +145,6 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   Future<void> getInvoiceAllList() async {
-    emit(LoadingState());
-
     String? userId = await Auth.getUserID();
     var dio = Dio();
 
@@ -175,6 +174,10 @@ class InvoiceBloc extends Cubit<InvoiceState> {
       Helper.getToastMsg(data.message ?? "Try Again");
     }
   }
-}
 
-var bloc = InvoiceBloc();
+  @override
+  void searchInvoice() {
+    // Helper.getToastMsg("toastMessage");
+    emit(LoadingState());
+  }
+}

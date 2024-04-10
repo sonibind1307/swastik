@@ -25,7 +25,7 @@ class SplashScreen extends StatelessWidget {
             listener: (context, state) {
               // Navigator.of(context).push(
               //   MaterialPageRoute(
-              //     builder: (context) => InvoiceScreen(),
+              //     builder: (context) => VendorListScreen(),
               //   ),
               // );
               // return;
@@ -36,7 +36,7 @@ class SplashScreen extends StatelessWidget {
                   ),
                 );
               } else if (state == SplashScreenState.Dashboard) {
-                Get.offAll(() => DashBoardScreen(
+                Get.offAll(() => const DashBoardScreen(
                       index: 0,
                     ));
 

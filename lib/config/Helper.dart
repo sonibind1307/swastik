@@ -8,10 +8,24 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../model/DraverItem.dart';
 import '../presentation/widget/custom_text_style.dart';
 import 'colorConstant.dart';
 
 class Helper {
+  final drawerItems = [
+    DrawerItem("Dashboard", Icons.home),
+    DrawerItem("Invoices", Icons.ballot_outlined),
+    DrawerItem("RMS Challans", Icons.fire_truck),
+    DrawerItem("Vendors", Icons.people_alt_rounded),
+    DrawerItem("Steel", Icons.line_style_outlined),
+    DrawerItem("PO/WO", Icons.content_paste_sharp),
+    DrawerItem("Site Report", Icons.business),
+    DrawerItem("Attendance", Icons.fingerprint),
+    DrawerItem("Settings", Icons.settings),
+    DrawerItem("Logout", Icons.logout),
+  ];
+
   static getErrorLog(String error) {
     log(error as num);
   }
@@ -831,15 +845,15 @@ class Helper {
 
   static Color getStatusColor(String status) {
     switch (status) {
-      case "0":
+      case "0" || "All":
         return Colors.grey;
-      case "1":
+      case "1" || "PENDING":
         return Colors.orange;
-      case "2":
+      case "2" || "APPROVED":
         return Colors.green;
-      case "3":
+      case "3" || "VERIFIED":
         return Colors.blueAccent;
-      case "4":
+      case "4" || "REJECTED":
         return Colors.redAccent;
       default:
         return Colors.grey;

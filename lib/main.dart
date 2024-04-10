@@ -7,15 +7,7 @@ import 'package:get/get.dart';
 import 'package:material_color_gen/material_color_gen.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/notification/local_notification.dart';
-import 'package:swastik/presentation/view/profile/profile_controller.dart';
 import 'package:swastik/presentation/view/splash/splash_screen.dart';
-
-import 'controller/add_invoice_controller.dart';
-import 'controller/add_vendor_controller.dart';
-import 'controller/dashboard_controller.dart';
-import 'controller/invoice_dashboard_controller.dart';
-import 'controller/invoice_details_controller.dart';
-import 'controller/vendor_list_controller.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
@@ -32,14 +24,6 @@ void main() async {
           storageBucket: "realerp-ba53f.appspot.com"));
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-
-  Get.put(AddInvoiceController());
-  Get.put(VendorListController());
-  Get.put(AddVendorController());
-  Get.put(DashboardController());
-  Get.put(ProfileController());
-  Get.put(InvoiceDetailsController());
-  Get.put(InvoiceDashboardController());
 
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 
