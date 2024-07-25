@@ -71,9 +71,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               Auth.clearUserData();
               Get.offAll(() => LoginPage());
             });
-          } else {
-            Get.offAll(() => DashBoardScreen(index: i));
-          }
+          } else {}
         },
       ));
     }

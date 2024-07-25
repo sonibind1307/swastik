@@ -1,6 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:swastik/config/Helper.dart';
@@ -12,7 +11,6 @@ import '../../../controller/invoice_details_controller.dart';
 import '../../../controller/invoice_list_controller.dart';
 import '../../../model/responses/invoice_model.dart';
 import '../../../model/responses/project_model.dart';
-import '../../bloc/bloc_logic/invoice_bloc.dart';
 import '../../widget/custom_text_style.dart';
 import '../dashboard_screen.dart';
 import '../pdfexport/multipleImageScreen.dart';
@@ -20,6 +18,8 @@ import 'add_invoice_screen.dart';
 import 'invoice_details_screen.dart';
 
 class InvoiceScreen extends StatefulWidget {
+  const InvoiceScreen({super.key});
+
   @override
   _InvoiceScreenState createState() => _InvoiceScreenState();
 }
@@ -31,20 +31,26 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     "PENDING",
     "VERIFIED",
     "APPROVED",
-    "REJECTED",
-    "0",
+    "REJECTED"
+    // ,
+    // "0",
   ];
   final key = GlobalKey<ScaffoldState>();
   final controller = Get.find<InvoiceDetailsController>();
-  final controllerD = Get.put(DashboardController());
-  final controllerI = Get.put(InvoiceListController());
+  final controllerD = Get.find<DashboardController>();
+  final controllerI = Get.find<InvoiceListController>();
+
+  // final controllerD = Get.put(DashboardController());
+  // final controllerI = Get.find(InvoiceListController());
   Helper helper = Helper();
   HomePageState dashBoardScreen = HomePageState();
 
   @override
   void initState() {
     controllerI.clearData();
+    controllerI.showLoading();
     controllerI.chipChoiceCardSelected("PENDING");
+    controllerI.onGetProject();
   }
 
   @override
@@ -53,7 +59,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       key: key,
       body: RefreshIndicator(
         onRefresh: () async {
-          controllerI.getAllInvoiceList();
+          controllerI.getAllInvoiceList(controllerI.apiStatus);
         },
         child: Container(
           color: Colors.white,
@@ -79,7 +85,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         label: Text(_getChipStatusText(status)),
                         selected: controllerI.selectedStatus.value == status,
                         onSelected: (isSelected) {
-                          controllerI.chipChoiceCardSelected(status);
+                          print("isSelected ->$status");
+                          controllerI.selectedStatus.value = status;
+                          if (status == "APPROVED") {
+                            controllerI.getAllInvoiceList("3");
+                          } else if (status == "REJECTED") {
+                            controllerI.getAllInvoiceList("4");
+                          } else {
+                            controllerI.getAllInvoiceList("0");
+                          }
+                          // controllerI.chipChoiceCardSelected(status);
                         },
                       ),
                     );
@@ -130,10 +145,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                           Helper.deleteDialog(context,
                                               "Do you want to delete an invoice no ${controllerI.invoiceList[index].invoiceNo!}",
                                               () {
-                                            context
-                                                .read<InvoiceBloc>()
-                                                .deleteInvoice(controllerI
-                                                    .invoiceList[index]
+                                            controllerI.deleteInvoice(
+                                                controllerI.invoiceList[index]
                                                     .invoiceId!
                                                     .toString());
                                           });
@@ -276,12 +289,24 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                                           .invDate),
                                                   const SizedBox(height: 8),
                                                   CustomTextStyle.regular(
-                                                      text: _getStatusText(
-                                                          controllerI
-                                                              .invoiceList[
-                                                                  index]
-                                                              .invoiceStatus
-                                                              .toString())),
+                                                      text: controllerI
+                                                                  .invoiceList[
+                                                                      index]
+                                                                  .invoiceStatus ==
+                                                              "PENDING"
+                                                          ? controllerI
+                                                                      .invoiceList[
+                                                                          index]
+                                                                      .reVefify ==
+                                                                  "1"
+                                                              ? "Re-verify"
+                                                              : "PENDING"
+                                                          : _getStatusText(
+                                                              controllerI
+                                                                  .invoiceList[
+                                                                      index]
+                                                                  .invoiceStatus
+                                                                  .toString())),
                                                   InkWell(
                                                     onTap: () {
                                                       controller.isNoteApiCall =
@@ -313,7 +338,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                                             .pop(false);
                                                         if (value) {
                                                           controllerI
-                                                              .getAllInvoiceList();
+                                                              .getAllInvoiceList(
+                                                                  controllerI
+                                                                      .apiStatus);
                                                         }
                                                       },
                                                               controllerI
@@ -589,7 +616,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8), topRight: Radius.circular(8))),
-          height: MediaQuery.of(context).size.height * 0.4,
+          height: MediaQuery.of(context).size.height * 0.25,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -623,107 +650,109 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   ),
                 ],
               ),
-              InkWell(
-                onTap: () async {
-                  onClick("share");
-                },
-                child: ListTile(
-                  title: const Text("Share"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(
-                          Icons.share,
-                          color: AppColors.primaryColor,
-                        )),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        onClick("edit");
+                      },
+                      child: ListTile(
+                        title: const Text("Edit"),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20))),
+                              child: const Icon(
+                                Icons.edit,
+                                color: AppColors.primaryColor,
+                              )),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        onClick("share");
+                      },
+                      child: ListTile(
+                        title: const Text("Share"),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20))),
+                              child: const Icon(
+                                Icons.share,
+                                color: AppColors.primaryColor,
+                              )),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              /*ListTile(
-                title: const Text("Get Link"),
-                leading: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
-                      child: const Icon(Icons.link)),
-                ),
-              ),*/
-              InkWell(
-                onTap: () {
-                  onClick("edit");
-                },
-                child: ListTile(
-                  title: const Text("Edit"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(
-                          Icons.edit,
-                          color: AppColors.primaryColor,
-                        )),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        onClick("approve");
+                      },
+                      child: ListTile(
+                        title: const Text("Invoice Status"),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20))),
+                              child: const Icon(
+                                Icons.check_circle_outline,
+                                color: AppColors.primaryColor,
+                              )),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  onClick("delete");
-                },
-                child: ListTile(
-                  title: const Text("Delete"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(
-                          Icons.delete,
-                          color: AppColors.primaryColor,
-                        )),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        onClick("delete");
+                      },
+                      child: ListTile(
+                        title: const Text("Delete"),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20))),
+                              child: const Icon(
+                                Icons.delete,
+                                color: AppColors.primaryColor,
+                              )),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  onClick("approve");
-                },
-                child: ListTile(
-                  title: const Text("Invoice Status"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(
-                          Icons.check_circle_outline,
-                          color: AppColors.primaryColor,
-                        )),
-                  ),
-                ),
+                ],
               ),
             ],
           ),

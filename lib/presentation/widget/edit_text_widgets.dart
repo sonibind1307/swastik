@@ -80,6 +80,23 @@ class CustomEditTestWidgets {
     );
   }
 
+  static Widget dateEditText(TextEditingController controller) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.done,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      maxLines: 1,
+      decoration:
+          CustomTextDecoration.dateFieldDecoration(labelText: "Due Date"),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return Constant.enterTextError;
+        }
+        return null;
+      },
+    );
+  }
+
   static Widget textEditTextLogin(
       {TextEditingController? controller,
       BuildContext? context,

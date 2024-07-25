@@ -29,22 +29,26 @@ import '../presentation/view/invoice/list_invoice_screen.dart';
 class ApiRepo {
   // static baseUrl = 'https://swastik.online/Mobile/';
 
-  static Future<InvoiceModel> getAllInvoiceList() async {
+  static Future<InvoiceModel> getAllInvoiceList(String status) async {
     InvoiceModel responseModel = InvoiceModel();
     try {
       String? userId = await Auth.getUserID();
+      // userId = "3";
       var dio = Dio();
 
+      print("apiCall -> get_invoice_list");
       var response = await dio.request(
-        'https://swastik.online/Mobile/get_invoice_list/$userId/0',
+        'https://swastik.online/Mobile/get_invoice_list/$userId/$status',
         options: Options(
           method: 'GET',
         ),
       );
+      Helper.getErrorLog("get_invoice_list -> ${response.data}");
 
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         responseModel = InvoiceModel.fromJson(res);
+        print("vendor_list -> ${responseModel.data!.length}");
       }
     } catch (e) {
       Helper.getToastMsg(e.toString());
@@ -60,9 +64,8 @@ class ApiRepo {
       'session_user_id': userId,
     });
 
-    print("datais->${data.fields}");
-
     var url = 'https://swastik.online/Mobile/get_projects';
+    print("url->${url}");
     var response = await dio.post(
       url,
       data: data,
@@ -233,6 +236,7 @@ class ApiRepo {
     );
     if (response.statusCode == 200) {
       var res = jsonDecode(response.data);
+      print("summary_detail$res");
       invoiceItemModel = InvoiceSummaryModel.fromJson(res);
     } else {
       print(response.statusMessage);
@@ -504,16 +508,18 @@ class ApiRepo {
   static Future<UserModel> onLogin(
       String option, String mobileNo, String username, String password) async {
     UserModel model = UserModel();
+
     var dio = Dio();
     var data = FormData.fromMap({
       'login_option': option,
       'mobile_no': mobileNo, // 0 - no changes // 1 - new changes
-      // 'mobile_no': "9359309108", // 0 - no changes // 1 - new changes
+      // 'mobile_no': "966489011", // 0 - no changes // 1 - new changes
       'user_name': username,
       'password': password
     });
 
     var url = 'https://swastik.online/Mobile/login';
+
     var response = await dio.post(
       url,
       data: data,
@@ -745,6 +751,39 @@ class ApiRepo {
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         responseModel = DashboardModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<BaseModel> updateChallan(
+      {required String challanStatus, required String challanID}) async {
+    BaseModel responseModel = BaseModel();
+
+    var dio = Dio();
+    String userName = await Auth.getUserName() ?? "";
+    var data = FormData.fromMap({
+      'challan_id': challanID,
+      'challan_status': challanStatus,
+      'updated_by': userName
+    });
+
+    print("request ->${data.fields}");
+    // responseModel.status = "true";
+    // responseModel.message = "true";
+    // return responseModel;
+
+    var url = Constant.urlUpdateChallan;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
       }
     } catch (e) {
       Helper.getToastMsg(e.toString());

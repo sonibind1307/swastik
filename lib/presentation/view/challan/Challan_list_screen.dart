@@ -8,7 +8,6 @@ import '../../../config/colorConstant.dart';
 import '../../../controller/challan_list_controller.dart';
 import '../../../model/responses/challan_model.dart';
 import '../../../model/responses/project_model.dart';
-import '../../../model/responses/vendor_model.dart';
 
 class ChallanListScreen extends StatefulWidget {
   ChallanListScreen({super.key});
@@ -31,7 +30,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
 
   @override
   void initState() {
-    // controller.clear();
+    controller.onGetProject();
   }
 
   @override
@@ -108,53 +107,40 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                     hoverColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
-                                      // await showModalBottomSheet(
-                                      //   isScrollControlled: true,
-                                      //   backgroundColor: Colors.transparent,
-                                      //   enableDrag: false,
-                                      //   useSafeArea: true,
-                                      //   context: context,
-                                      //   builder: (context) {
-                                      //     return GestureDetector(
-                                      //       onTap: () {},
-                                      //       child: Padding(
-                                      //         padding: MediaQuery.viewInsetsOf(
-                                      //             context),
-                                      //         child: Container(
-                                      //           height: 400,
-                                      //
-                                      //         ),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ).then((value) => safeSetState(() {}));
+                                      openBottomSheet(context, (key) {
+                                        if (key == "edit") {}
+                                      }, data);
                                     },
                                     child: Card(
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    10, 0, 0, 0),
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(10, 0, 0, 0),
                                             child: Container(
-                                              width: 32,
-                                              height: 32,
+                                              width: 40,
+                                              height: 40,
                                               decoration: BoxDecoration(
-                                                color: Color(0xFFF1F4F8),
+                                                color: const Color(0xFFF1F4F8),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 border: Border.all(
-                                                  color: Color(0xFFE5E7EB),
+                                                  color:
+                                                      const Color(0xFFE5E7EB),
                                                 ),
                                               ),
                                               child: Align(
                                                 alignment:
-                                                    AlignmentDirectional(0, 0),
-                                                child: Icon(
-                                                  Icons.fire_truck_rounded,
-                                                  color: Color(0xFFE60B0B),
-                                                  size: 24,
+                                                    const AlignmentDirectional(
+                                                        0, 0),
+                                                child: Image(
+                                                  image: const AssetImage(
+                                                      'assets/rms-challan.png'),
+                                                  height: 32,
+                                                  width: 32,
+                                                  color: Helper.getStatusColor(
+                                                      "${data.chlStatus}"),
                                                 ),
                                               ),
                                             ),
@@ -173,13 +159,13 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                 children: [
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             -1, -1),
                                                     child: CustomTextStyle.bold(
                                                         text:
                                                             "${data.companyname}"),
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     height: 4,
                                                   ),
                                                   Align(
@@ -187,8 +173,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                         Alignment.centerLeft,
                                                     child: Container(
                                                       decoration: const BoxDecoration(
-                                                          color: AppColors
-                                                              .worningColor,
+                                                          color: Colors.red,
                                                           borderRadius:
                                                               BorderRadius.all(
                                                                   Radius
@@ -204,16 +189,16 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                                     data.projectname ??
                                                                         "NA",
                                                                 color: Colors
-                                                                    .black),
+                                                                    .white),
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     height: 4,
                                                   ),
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             -1, 0),
                                                     child: CustomTextStyle.regular(
                                                         text:
@@ -222,7 +207,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                   ),
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             -1, 0),
                                                     child: CustomTextStyle.regular(
                                                         text:
@@ -231,13 +216,16 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                   ),
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             -1, 0),
                                                     child: CustomTextStyle.regular(
                                                         text:
                                                             "Date : ${data.challanDt}",
                                                         color: Colors.grey),
                                                   ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  )
                                                 ],
                                               ),
                                             ),
@@ -247,7 +235,8 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                             children: [
                                               Align(
                                                 alignment:
-                                                    AlignmentDirectional(0, -1),
+                                                    const AlignmentDirectional(
+                                                        0, -1),
                                                 child: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.max,
@@ -279,17 +268,19 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                 children: [
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             1, 0),
                                                     child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(5),
-                                                        child: CustomTextStyle
-                                                            .regular(
-                                                                text:
-                                                                    "${int.parse(data.quantity!.split(".")[0])} ${data.unit!.toUpperCase()}",
-                                                                color: Colors
-                                                                    .black)),
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: CustomTextStyle.regular(
+                                                            text: "${data.quantity!
+                                                                /*int.parse(
+                                                      data.quantity!.split(
+                                                          ".")[0])*/
+                                                                } ${data.unit!.toUpperCase()}",
+                                                            color: Colors.black)),
                                                   ),
                                                 ],
                                               ),
@@ -297,6 +288,34 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
                                                   Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Helper
+                                                              .getStatusColor(
+                                                                  "${data.chlStatus}"),
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                      .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          4))),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(4.0),
+                                                        child: CustomTextStyle
+                                                            .regular(
+                                                                text:
+                                                                    data.chlStatus ??
+                                                                        "NA",
+                                                                color: Colors
+                                                                    .white),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  /* Align(
                                                     alignment:
                                                         const AlignmentDirectional(
                                                             1, 0),
@@ -312,26 +331,8 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                                             .getStatusColor(
                                                                 "${data.chlStatus}"),
                                                       ),
-
-                                                      // Text(
-                                                      //   'PENDING',
-                                                      //   textAlign: TextAlign.end,
-                                                      //   style:
-                                                      //       FlutterFlowTheme.of(
-                                                      //               context)
-                                                      //           .labelSmall
-                                                      //           .override(
-                                                      //             fontFamily:
-                                                      //                 'Readex Pro',
-                                                      //             color: FlutterFlowTheme.of(
-                                                      //                     context)
-                                                      //                 .tertiary,
-                                                      //             letterSpacing:
-                                                      //                 0,
-                                                      //           ),
-                                                      // ),
                                                     ),
-                                                  ),
+                                                  ),*/
                                                 ],
                                               ),
                                             ],
@@ -422,8 +423,8 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
     );
   }
 
-  Future openBottomSheet(BuildContext context, Function(String key) onClick,
-      VendorData vendorData) {
+  Future openBottomSheet(
+      BuildContext context, Function(String key) onClick, ChallanData data) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -431,7 +432,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
-          height: MediaQuery.of(context).size.height * 0.4,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,32 +445,105 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                     color: AppColors.primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: CustomTextStyle.bold(
-                    text: "Vendor: ${vendorData.companyName}",
+                    text: "${data.companyname}",
                     color: Colors.white,
                     fontSize: 16),
               ),
-              // Row(
-              //   children: [
-              //     const Spacer(),
-              //     CustomTextStyle.regular(text: "Total amount :"),
-              //     const SizedBox(
-              //       width: 8,
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5))),
+                              child: const Icon(Icons.edit)),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: Colors.red,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: CustomTextStyle.regular(
+                                text: data.projectname ?? "NA",
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional(-1, 0),
+                        child: CustomTextStyle.regular(
+                            text: "Challan No : ${data.challanNo}",
+                            color: Colors.grey),
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional(-1, 0),
+                        child: CustomTextStyle.regular(
+                            text: "Truck No : ${data.vehicleNo}",
+                            color: Colors.grey),
+                      ),
+                      Align(
+                        alignment: const AlignmentDirectional(-1, 0),
+                        child: CustomTextStyle.regular(
+                            text: "Date : ${data.challanDt}",
+                            color: Colors.grey),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              // InkWell(
+              //   onTap: () {
+              //     onClick("edit");
+              //   },
+              //   child: ListTile(
+              //     trailing: Row(
+              //       children: [
+              //         Expanded(child: Text("Edit Challan")),
+              //         Expanded(
+              //           child: Padding(
+              //             padding: const EdgeInsets.only(right: 8),
+              //             child: Container(
+              //                 width: 40,
+              //                 height: 40,
+              //                 decoration: BoxDecoration(
+              //                     color: Colors.grey.shade300,
+              //                     borderRadius: const BorderRadius.all(
+              //                         Radius.circular(20))),
+              //                 child: const Icon(Icons.edit)),
+              //           ),
+              //         )
+              //       ],
               //     ),
-              //     CustomTextStyle.bold(
-              //         text: double.parse("0").toInt().inRupeesFormat(),
-              //         fontSize: 14),
-              //     const SizedBox(
-              //       width: 8,
-              //     ),
-              //   ],
+              //   ),
               // ),
-              InkWell(
-                onTap: () {
-                  onClick("edit");
-                },
-                child: ListTile(
-                  title: const Text("Edit Vendor"),
-                  leading: Padding(
+              /* Row(
+                children: [
+                  Spacer(),
+                  // Text("Edit Challan"),
+                  Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Container(
                         width: 40,
@@ -479,47 +553,101 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(20))),
                         child: const Icon(Icons.edit)),
-                  ),
-                ),
+                  )
+                ],
+              ),*/
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  if (true) ...[
+                    ElevatedButton(
+                      onPressed: data.chlStatus!.toUpperCase() != "PENDING"
+                          ? null
+                          : () {
+                              Helper.deleteDialog(context,
+                                  "Do you want to approve this challan ${data.challanNo}",
+                                  () {
+                                controller.onUpdateChallan(context,
+                                    challanStatus: "2", challanID: data.id!);
+                              });
+                            },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.thumb_up_rounded),
+                          CustomTextStyle.regular(
+                              text: "Approve", color: Colors.white),
+                        ],
+                      ),
+                    )
+                  ],
+                  if (true) ...[
+                    ElevatedButton(
+                      onPressed: data.chlStatus!.toUpperCase() != "PENDING"
+                          ? null
+                          : () {
+                              Helper.deleteDialog(context,
+                                  "Do you want to reject this challan ${data.challanNo}",
+                                  () {
+                                controller.onUpdateChallan(context,
+                                    challanStatus: "1", challanID: data.id!);
+                              });
+                            },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.redColor),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.thumb_down_alt_rounded),
+                          CustomTextStyle.regular(
+                              text: " Reject ", color: Colors.white),
+                        ],
+                      ),
+                    )
+                  ],
+                ],
               ),
-              InkWell(
-                onTap: () {
-                  onClick("email");
-                },
-                child: ListTile(
-                  title: const Text("Email"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(Icons.email)),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  onClick("call");
-                },
-                child: ListTile(
-                  title: const Text("Call"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(Icons.call)),
-                  ),
-                ),
-              ),
+              const SizedBox(
+                height: 8,
+              )
+              // InkWell(
+              //   onTap: () {
+              //     onClick("email");
+              //   },
+              //   child: ListTile(
+              //     title: const Text("Email"),
+              //     leading: Padding(
+              //       padding: const EdgeInsets.only(right: 8),
+              //       child: Container(
+              //           width: 40,
+              //           height: 40,
+              //           decoration: BoxDecoration(
+              //               color: Colors.grey.shade300,
+              //               borderRadius:
+              //                   const BorderRadius.all(Radius.circular(20))),
+              //           child: const Icon(Icons.email)),
+              //     ),
+              //   ),
+              // ),
+              // InkWell(
+              //   onTap: () {
+              //     onClick("call");
+              //   },
+              //   child: ListTile(
+              //     title: const Text("Call"),
+              //     leading: Padding(
+              //       padding: const EdgeInsets.only(right: 8),
+              //       child: Container(
+              //           width: 40,
+              //           height: 40,
+              //           decoration: BoxDecoration(
+              //               color: Colors.grey.shade300,
+              //               borderRadius:
+              //                   const BorderRadius.all(Radius.circular(20))),
+              //           child: const Icon(Icons.call)),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );

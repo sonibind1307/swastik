@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/profile/profile_controller.dart';
 
+import '../../../config/constant.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/app_widget.dart';
 import '../../widget/custom_text_style.dart';
@@ -90,9 +91,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Profile"),
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 0, left: 2, right: 2),
         physics: const ScrollPhysics(),
@@ -156,6 +157,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         : controller.designation.value),
                               ),
                               const SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        decoration: boxDecoration(
+                            bgColor: Colors.white,
+                            radius: 10,
+                            showShadow: true),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 8),
+                              rowHeading("App Version"),
+                              const SizedBox(height: 16),
+                              profileText(Constant.appVersion),
+                              // Padding(
+                              //   padding:
+                              //       const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                              //   child: view(),
+                              // ),
                             ],
                           ),
                         ),

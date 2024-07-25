@@ -61,6 +61,9 @@ dependencies:
   flutter_local_notifications: ^16.3.3
   flutter_local_notifications_platform_interface: ^7.0.0
   flutter_local_notifications_linux: ^4.0.0
+  url_launcher: ^6.1.14
+  flutter_email_sender: ^6.0.3
+  table_calendar: ^3.0.9
 
 
 
@@ -104,6 +107,7 @@ flutter:
   assets:
     - assets/technical_logo.png
     - assets/logo.png
+    - assets/rms-challan.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

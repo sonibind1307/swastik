@@ -8,8 +8,10 @@ class InvoiceDashboardController extends GetxController {
   RxInt verifiedCount = 0.obs;
   RxInt approvedCount = 0.obs;
   RxInt rejectedCount = 0.obs;
+  RxBool isLoading = false.obs;
 
   Future<void> onGetInvoiceDetails() async {
+    isLoading.value = true;
     DashboardModel response = await ApiRepo.getDashboard();
     if (response.data != null) {
       if (response.data!.invoiceStatusData != null &&
@@ -27,6 +29,7 @@ class InvoiceDashboardController extends GetxController {
         }
       }
     }
+    isLoading.value = false;
     print("PendingCount->${pendingCount.value}");
     update();
   }

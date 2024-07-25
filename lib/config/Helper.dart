@@ -4,9 +4,11 @@ import 'dart:math';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../model/DraverItem.dart';
 import '../presentation/widget/custom_text_style.dart';
@@ -16,9 +18,9 @@ class Helper {
   final drawerItems = [
     DrawerItem("Dashboard", Icons.home),
     DrawerItem("Invoices", Icons.ballot_outlined),
-    DrawerItem("RMS Challans", Icons.fire_truck),
+    DrawerItem("RMC Challans", Icons.fire_truck),
     DrawerItem("Vendors", Icons.people_alt_rounded),
-    DrawerItem("Steel", Icons.line_style_outlined),
+    DrawerItem("Task", Icons.line_style_outlined),
     DrawerItem("PO/WO", Icons.content_paste_sharp),
     DrawerItem("Site Report", Icons.business),
     DrawerItem("Attendance", Icons.fingerprint),
@@ -27,7 +29,9 @@ class Helper {
   ];
 
   static getErrorLog(String error) {
-    log(error as num);
+    // log(error as num);
+    final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+    pattern.allMatches(error).forEach((match) => print(match.group(0)));
   }
 
   static getToastMsg(String toastMessage) {
@@ -52,17 +56,19 @@ class Helper {
           )));
   }
 
-  /*static Future<void> makePhoneCall(String phoneNo) async {
+  static Future<void> makePhoneCall(String phoneNo) async {
     getErrorLog(phoneNo);
-    final Uri url = Uri.parse('tel:$phoneNo');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+
+    launchUrlString("tel://$phoneNo");
+    // final Uri url = Uri.parse('tel:$phoneNo');
+    // if (await canLaunchUrl(url)) {
+    //   await launchUrl(url);
+    // } else {
+    //   throw 'Could not launch $url';
+    // }
   }
 
-  static Future<void> urlLaunch(String link, BuildContext context) async {
+  /*static Future<void> urlLaunch(String link, BuildContext context) async {
     final Uri url = Uri.parse(link);
 
     if (await canLaunchUrl(url)) {
@@ -198,11 +204,11 @@ class Helper {
 
   static ButtonStyleData buttonStyleData(BuildContext context) {
     return ButtonStyleData(
-      height: 45,
+      height: 48,
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(left: 16, right: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: Colors.grey,
         ),
@@ -534,6 +540,23 @@ class Helper {
     );
   }
 
+  static void sendEmail(String sendTo) async {
+    final Email email = Email(
+      body: 'Add body here.',
+      subject: 'Email subject',
+      recipients: [sendTo],
+      // cc: ['cc@example.com'],
+      // bcc: ['bcc@example.com'],
+      isHTML: false,
+    );
+
+    try {
+      await FlutterEmailSender.send(email);
+    } catch (error) {
+      print(error);
+    }
+  }
+
   void showServerSuccessDialog(
       BuildContext context, String error, VoidCallback callback) {
     showGeneralDialog(
@@ -844,13 +867,14 @@ class Helper {
   }
 
   static Color getStatusColor(String status) {
+    print("object - > $status");
     switch (status) {
       case "0" || "All":
         return Colors.grey;
       case "1" || "PENDING":
         return Colors.orange;
       case "2" || "APPROVED":
-        return Colors.green;
+        return AppColors.bsSuccess;
       case "3" || "VERIFIED":
         return Colors.blueAccent;
       case "4" || "REJECTED":

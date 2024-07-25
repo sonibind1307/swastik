@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
-import 'package:swastik/config/RupeesConverter.dart';
 import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../../config/colorConstant.dart';
@@ -23,7 +22,8 @@ class VendorListScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddVendorScreen(
+                  builder: (context) =>
+                      AddVendorScreen(
                         vendorData: null,
                       )),
             );
@@ -47,7 +47,7 @@ class VendorListScreen extends StatelessWidget {
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                           borderRadius:
-                              BorderRadius.all(Radius.circular(8.0)))),
+                          BorderRadius.all(Radius.circular(8.0)))),
                 ),
               ),
             ),
@@ -55,8 +55,9 @@ class VendorListScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Obx(
-                  () => CustomTextStyle.regular(
-                      text: "Count : ${controller.vendorList.length}"),
+                      () =>
+                      CustomTextStyle.regular(
+                          text: "Count : ${controller.vendorList.length}"),
                 ),
                 const SizedBox(
                   width: 16,
@@ -64,105 +65,123 @@ class VendorListScreen extends StatelessWidget {
               ],
             ),
             Obx(
-              () => controller.isLoading.value == false
+                  () =>
+              controller.isLoading.value == false
                   ? Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          controller.getAllVendorList();
-                        },
-                        child: controller.vendorList.isNotEmpty
-                            ? ListView.separated(
-                                itemCount: controller.vendorList.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  VendorData data =
-                                      controller.vendorList[index];
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    controller.getAllVendorList();
+                  },
+                  child: controller.vendorList.isNotEmpty
+                      ? ListView.separated(
+                    itemCount: controller.vendorList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      VendorData data =
+                      controller.vendorList[index];
 
-                                  return Card(
-                                    child: InkWell(
-                                      onTap: () {
-                                        openBottomSheet(context, (key) {
-                                          if (key == "edit") {
-                                            Navigator.of(context).pop();
+                      return Card(
+                        child: InkWell(
+                          onTap: () {
+                            openBottomSheet(context, (key) async {
+                              if (key == "edit") {
+                                Navigator.of(context).pop();
 
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddVendorScreen(
-                                                        vendorData: data,
-                                                      )),
-                                            );
-                                          }
-                                        }, data);
-                                      },
-                                      child: ListTile(
-                                        title: CustomTextStyle.bold(
-                                            text:
-                                                data.companyName!.toUpperCase(),
-                                            fontSize: 14),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              height: 8,
-                                            ),
-                                            CustomTextStyle.regular(
-                                                text:
-                                                    "${data.email == "" ? "NA" : data.email}",
-                                                fontSize: 12),
-                                            const SizedBox(
-                                              height: 4,
-                                            ),
-                                            CustomTextStyle.regular(
-                                                text:
-                                                    "${data.contactNo == "" ? "NA" : data.contactNo}",
-                                                fontSize: 12),
-                                          ],
-                                        ),
-                                        leading: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 8),
-                                          child: Container(
-                                              width: 48,
-                                              height: 48,
-                                              decoration: BoxDecoration(
-                                                  color: Helper.getCardColor(
-                                                      data.companyName!
-                                                          .substring(0, 1)
-                                                          .toLowerCase()),
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(24))),
-                                              child: Center(
-                                                  child: CustomTextStyle.bold(
-                                                      color: Colors.white,
-                                                      text: data.companyName!
-                                                          .substring(0, 1),
-                                                      fontSize: 20))),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return const SizedBox(
-                                    height: 4,
-                                  );
-                                },
-                              )
-                            : SizedBox(
-                                width: double.infinity,
-                                height: double.infinity,
-                                child: Center(
-                                    child: CustomTextStyle.regular(
-                                        text: "No data found")),
-                              ),
-                      ),
-                    )
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          AddVendorScreen(
+                                            vendorData: data,
+                                          )),
+                                );
+                              } else if (key == "call") {
+                                if (data.contactNo != null &&
+                                    data.contactNo! != "") {
+                                  Helper.makePhoneCall(
+                                      data.contactNo!);
+                                }
+                              } else if (key == "email") {
+                                if (data.email != null &&
+                                    data.email! != "" &&
+                                    data.email!.toLowerCase() !=
+                                        "na") {
+                                  Helper.sendEmail(data.email!);
+                                } else {
+                                  Helper.getToastMsg(
+                                      "Email not found");
+                                }
+                              }
+                            }, data);
+                          },
+                          child: ListTile(
+                            title: CustomTextStyle.bold(
+                                text:
+                                data.companyName!.toUpperCase(),
+                                fontSize: 14),
+                            subtitle: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                CustomTextStyle.regular(
+                                    text:
+                                    "${data.email == "" ? "NA" : data.email}",
+                                    fontSize: 12),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                CustomTextStyle.regular(
+                                    text:
+                                    "${data.contactNo == "" ? "NA" : data
+                                        .contactNo}",
+                                    fontSize: 12),
+                              ],
+                            ),
+                            leading: Padding(
+                              padding:
+                              const EdgeInsets.only(right: 8),
+                              child: Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                      color: Helper.getCardColor(
+                                          data.companyName!
+                                              .substring(0, 1)
+                                              .toLowerCase()),
+                                      borderRadius:
+                                      const BorderRadius.all(
+                                          Radius.circular(24))),
+                                  child: Center(
+                                      child: CustomTextStyle.bold(
+                                          color: Colors.white,
+                                          text: data.companyName!
+                                              .substring(0, 1),
+                                          fontSize: 20))),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder:
+                        (BuildContext context, int index) {
+                      return const SizedBox(
+                        height: 4,
+                      );
+                    },
+                  )
+                      : SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Center(
+                        child: CustomTextStyle.regular(
+                            text: "No data found")),
+                  ),
+                ),
+              )
                   : const Expanded(
-                      child: Center(child: CircularProgressIndicator())),
+                  child: Center(child: CircularProgressIndicator())),
             ),
           ],
         ),
@@ -179,7 +198,10 @@ class VendorListScreen extends StatelessWidget {
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
-          height: MediaQuery.of(context).size.height * 0.4,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height * 0.4,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +209,10 @@ class VendorListScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 decoration: const BoxDecoration(
                     color: AppColors.primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(4))),
@@ -225,7 +250,7 @@ class VendorListScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: Colors.grey.shade300,
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
+                            const BorderRadius.all(Radius.circular(20))),
                         child: const Icon(Icons.edit)),
                   ),
                 ),
@@ -244,7 +269,7 @@ class VendorListScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: Colors.grey.shade300,
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
+                            const BorderRadius.all(Radius.circular(20))),
                         child: const Icon(Icons.email)),
                   ),
                 ),
@@ -263,7 +288,7 @@ class VendorListScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: Colors.grey.shade300,
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
+                            const BorderRadius.all(Radius.circular(20))),
                         child: const Icon(Icons.call)),
                   ),
                 ),

@@ -1,10 +1,13 @@
 class Constant {
   static const enterTextError = "Please enter some text";
+  static const appVersion = "v1.0.2";
   static const project = "Project";
   static const invoiceCategory = "Invoice Category";
   static const txtRemarks = "Remarks";
   static const amount = "Amount";
   static const cName = "Company Name";
+  static const cTask = "Task Title";
+  static const description = "Description";
   static const cPersonName = "Contact Person Name";
   static const mobileNumber = "Mobile No";
   static const address = "Address";
@@ -21,4 +24,5 @@ class Constant {
   static const urlAddComments = "${baseUrl}add_comments";
   static const urlGetComments = "${baseUrl}get_comments";
   static const urlDashboard = "${baseUrl}get_dashboard";
+  static const urlUpdateChallan = "${baseUrl}update_challan";
 }

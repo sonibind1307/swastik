@@ -19,10 +19,12 @@ class InvoiceDetailsController extends GetxController {
   InvoiceSummaryModel invoiceIDetailModel = InvoiceSummaryModel();
   TextEditingController noteController = TextEditingController();
   RxBool isLoading = false.obs;
+  RxBool isShowButton = false.obs;
   RxBool isApiLoading = false.obs;
   RxBool isLoadingComment = false.obs;
   bool isNoteApiCall = false;
   bool isNoteApiCheck = false;
+  bool isActionTaken = false;
   var userList = <UserData>[].obs;
   var commentList = <CommentData>[].obs;
   var selectedUser = UserData().obs;
@@ -33,6 +35,7 @@ class InvoiceDetailsController extends GetxController {
     isLoading.value = true;
     invoiceIDetailModel = await ApiRepo.getInvoiceSummaryDetails(invoiceId);
     isLoading.value = false;
+    checkApprovalStatus();
   }
 
   Future<void> getAssignUserList() async {
@@ -65,6 +68,7 @@ class InvoiceDetailsController extends GetxController {
           dropDownUser: dropDownUSerID);
 
       if (data.status == "true") {
+        isActionTaken = true;
         isApiLoading.value = false;
         EasyLoading.dismiss();
         Helper.getToastMsg(data.message ?? "Invoice Updated");
@@ -101,6 +105,7 @@ class InvoiceDetailsController extends GetxController {
         comment: noteController.text.trim(),
         companyId: invoiceIDetailModel.data!.company_id!);
     if (response.status == "true") {
+      isActionTaken = true;
       Helper.getToastMsg(response.message!);
       EasyLoading.dismiss();
       Helper().showServerSuccessDialog(context, response.message!, () async {
@@ -141,6 +146,7 @@ class InvoiceDetailsController extends GetxController {
       BaseModel response = await ApiRepo.addComment(
           invoiceId: invoiceId, comment: comment, companyId: companyId);
       if (response.status == "true") {
+        isActionTaken = true;
         Helper.getToastMsg(response.message!);
         EasyLoading.dismiss();
         isNoteApiCall = false;
@@ -372,5 +378,17 @@ class InvoiceDetailsController extends GetxController {
         ],
       ),
     );
+  }
+
+  Future<void> checkApprovalStatus() async {
+    String userID = await Auth.getUserID() ?? "";
+    // print("userID $userID");
+    if (userID == invoiceIDetailModel.data!.updated_for) {
+      isShowButton.value = true;
+    } else {
+      isShowButton.value = false;
+    }
+
+    update();
   }
 }

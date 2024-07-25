@@ -87,7 +87,7 @@ class _MyHomePageState extends State<AddInvoiceScreen> {
             widget.scheduleId == ""
                 ? "Add Vendor Invoice"
                 : "Update Vendor Invoice",
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
         // Here we have initialized the stepper widget

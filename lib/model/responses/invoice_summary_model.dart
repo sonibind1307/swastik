@@ -51,6 +51,7 @@ class Data {
   String? gst;
   String? pan;
   String? company_id;
+  String? updated_for;
   int? commentCount;
 
   Data({
@@ -83,6 +84,7 @@ class Data {
     this.pan,
     this.company_id,
     this.commentCount,
+    this.updated_for,
   });
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -115,6 +117,7 @@ class Data {
     pan = json['pan'];
     company_id = json['company_id'];
     commentCount = json['comment_count'];
+    updated_for = json['updated_for'];
   }
 
   Map<String, dynamic> toJson() {
@@ -148,6 +151,7 @@ class Data {
     data['gst'] = this.gst;
     data['pan'] = this.pan;
     data['comment_count'] = this.commentCount;
+    data['updated_for'] = this.updated_for;
     return data;
   }
 }

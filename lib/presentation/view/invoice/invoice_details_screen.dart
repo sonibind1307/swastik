@@ -37,7 +37,12 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
-        controllerI.getAllInvoiceList();
+
+        if (controller.isActionTaken) {
+          controller.isActionTaken = false;
+          controllerI.getAllInvoiceList(controllerI.apiStatus);
+        }
+
         // Get.offAll(() => const DashBoardScreen(index: 1));
         return false;
       },
@@ -1115,114 +1120,132 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                       ],
                     )),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                    child: Container(
-                      height: 50,
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          if (controller.invoiceIDetailModel.data!.status ==
-                              "2") ...[
-                            ElevatedButton(
-                              onPressed: () {
-                                Helper.deleteDialog(context,
-                                    "Do you want to approve this invoice", () {
-                                  controller.approveInvoice(
-                                      status_button: '3',
-                                      reAssign: '0',
-                                      context: context);
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.thumb_up_rounded),
-                                  CustomTextStyle.regular(
-                                      text: "Approve", color: Colors.white),
+                  Obx(() => controller.isShowButton.value == true
+                      ? Positioned(
+                          bottom: 0,
+                          right: 0,
+                          left: 0,
+                          child: Container(
+                            height: 50,
+                            color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                if (controller
+                                        .invoiceIDetailModel.data!.status ==
+                                    "2") ...[
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Helper.deleteDialog(context,
+                                          "Do you want to approve this invoice",
+                                          () {
+                                        controller.approveInvoice(
+                                            status_button: '3',
+                                            reAssign: '0',
+                                            context: context);
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.thumb_up_rounded),
+                                        CustomTextStyle.regular(
+                                            text: "Approve",
+                                            color: Colors.white),
+                                      ],
+                                    ),
+                                  )
                                 ],
-                              ),
-                            )
-                          ],
-                          if (controller.invoiceIDetailModel.data!.status ==
-                              "1") ...[
-                            ElevatedButton(
-                              onPressed: () {
-                                buildShowDialog(context, () {
-                                  controller.approveInvoice(
-                                      status_button: '2',
-                                      reAssign: '0',
-                                      context: context);
-                                }, label: 'Assign user for approval.');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryColor),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.verified),
-                                  CustomTextStyle.regular(
-                                      text: "Verify", color: Colors.white),
+                                if (controller
+                                        .invoiceIDetailModel.data!.status ==
+                                    "1") ...[
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      buildShowDialog(context, () {
+                                        controller.approveInvoice(
+                                            status_button: '2',
+                                            reAssign: '0',
+                                            context: context);
+                                      }, label: 'Assign user for approval.');
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            AppColors.primaryColor),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.verified),
+                                        CustomTextStyle.regular(
+                                            text: "Verify",
+                                            color: Colors.white),
+                                      ],
+                                    ),
+                                  ),
                                 ],
-                              ),
+                                if (controller
+                                            .invoiceIDetailModel.data!.status ==
+                                        "1" ||
+                                    controller
+                                            .invoiceIDetailModel.data!.status ==
+                                        "2") ...[
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      buildShowDialog(context, () {
+                                        controller.approveInvoice(
+                                            status_button: '0',
+                                            reAssign: '1',
+                                            context: context);
+                                      },
+                                          label:
+                                              'Re-Assign user for verification');
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orange),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.recycling),
+                                        CustomTextStyle.regular(
+                                            text: "Re-Assign ",
+                                            color: Colors.white),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                if (controller
+                                            .invoiceIDetailModel.data!.status !=
+                                        "4" &&
+                                    controller
+                                            .invoiceIDetailModel.data!.status !=
+                                        "3") ...[
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Helper.deleteDialog(context,
+                                          "Do you want to reject this invoice",
+                                          () {
+                                        controller.approveInvoice(
+                                            status_button: '4',
+                                            reAssign: '0',
+                                            context: context);
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.redColor),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                            Icons.thumb_down_alt_rounded),
+                                        CustomTextStyle.regular(
+                                            text: " Reject ",
+                                            color: Colors.white),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ],
                             ),
-                          ],
-                          if (controller.invoiceIDetailModel.data!.status ==
-                                  "1" ||
-                              controller.invoiceIDetailModel.data!.status ==
-                                  "2") ...[
-                            ElevatedButton(
-                              onPressed: () {
-                                buildShowDialog(context, () {
-                                  controller.approveInvoice(
-                                      status_button: '0',
-                                      reAssign: '1',
-                                      context: context);
-                                }, label: 'Re-Assign user for verification');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.recycling),
-                                  CustomTextStyle.regular(
-                                      text: "Re-Assign ", color: Colors.white),
-                                ],
-                              ),
-                            ),
-                          ],
-                          if (controller.invoiceIDetailModel.data!.status !=
-                                  "4" &&
-                              controller.invoiceIDetailModel.data!.status !=
-                                  "3") ...[
-                            ElevatedButton(
-                              onPressed: () {
-                                Helper.deleteDialog(context,
-                                    "Do you want to reject this invoice", () {
-                                  controller.approveInvoice(
-                                      status_button: '4',
-                                      reAssign: '0',
-                                      context: context);
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.redColor),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.thumb_down_alt_rounded),
-                                  CustomTextStyle.regular(
-                                      text: " Reject ", color: Colors.white),
-                                ],
-                              ),
-                            )
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
+                          ),
+                        )
+                      : Container()),
                 ],
               )
             : const Center(child: CircularProgressIndicator())),

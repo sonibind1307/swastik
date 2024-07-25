@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/Helper.dart';
 
+import '../config/internet_conectivity.dart';
 import '../config/sharedPreferences.dart';
 import '../model/responses/user_info_model.dart';
 import '../presentation/view/dashboard_screen.dart';
@@ -23,6 +24,15 @@ class LoginController extends GetxController {
       errorUser.value = "";
       isLoading.value = true;
       UserModel userModel = UserModel();
+
+      if (await InternetConnectivityCheck.getInstance()
+              .chkInternetConnectivity() ==
+          false) {
+        Helper.getToastMsg("No internet connection");
+        isLoading.value = false;
+        return;
+      }
+
       try {
         userModel = await ApiRepo.onLogin(option, phoneController.text,
             userNameController.text, passwordController.text);
@@ -61,6 +71,8 @@ class LoginController extends GetxController {
   }
 
   bool checkValidation(String option) {
+    // phoneController.text = "9359309108";
+
     if (option == "1") {
       if (_validateMobile(phoneController.text.trim().toString())) {
         errorMsg.value = "";

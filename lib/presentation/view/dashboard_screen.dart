@@ -4,9 +4,12 @@ import 'package:swastik/config/colorConstant.dart';
 import 'package:swastik/presentation/view/authentication/login_screen.dart';
 import 'package:swastik/presentation/view/profile/profile_controller.dart';
 import 'package:swastik/presentation/view/profile/profile_screen.dart';
+import 'package:swastik/presentation/view/task/task_list_screen.dart';
 import 'package:swastik/presentation/view/vendor/vendor_list_screen.dart';
+import 'package:swastik/presentation/widget/custom_text_style.dart';
 
 import '../../config/Helper.dart';
+import '../../config/constant.dart';
 import '../../config/sharedPreferences.dart';
 import '../../controller/add_invoice_controller.dart';
 import '../../controller/add_vendor_controller.dart';
@@ -15,12 +18,12 @@ import '../../controller/dashboard_controller.dart';
 import '../../controller/invoice_dashboard_controller.dart';
 import '../../controller/invoice_details_controller.dart';
 import '../../controller/invoice_list_controller.dart';
+import '../../controller/task_list_controller.dart';
 import '../../controller/vendor_list_controller.dart';
 import '../bloc/bloc_logic/invoice_bloc.dart';
 import 'challan/Challan_list_screen.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
-import 'task/task_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final int index;
@@ -38,6 +41,7 @@ class DashBoardScreen extends StatefulWidget {
     Get.put(DashboardController());
     Get.put(ProfileController());
     Get.put(ChallanListController());
+    Get.put(TaskListController());
     return HomePageState();
   }
 }
@@ -50,12 +54,14 @@ class HomePageState extends State<DashBoardScreen> {
   bool _IsSearching = false;
   InvoiceBloc instance = InvoiceBloc();
   Helper helper = Helper();
+  Color rmsColor = Colors.grey;
 
   @override
   void initState() {
     selectedDrawerIndex = widget.index;
     // Helper.getToastMsg(_selectedDrawerIndex.toString());
     controller.getUserInfoData();
+    // invoiceController.getAllInvoiceList();
     super.initState();
   }
 
@@ -69,8 +75,10 @@ class HomePageState extends State<DashBoardScreen> {
         return ChallanListScreen();
       case 3:
         return VendorListScreen();
+      case 4:
+        return TaskListScreen();
       case 6:
-        return const TaskListScreen();
+        return TaskListScreen();
       // case 7:
       //   return ProfileScreen();
       case 8:
@@ -91,6 +99,11 @@ class HomePageState extends State<DashBoardScreen> {
       _handleSearchEnd();
       Navigator.of(context).pop();
       selectedDrawerIndex = index;
+      if (index == 2) {
+        rmsColor = AppColors.primaryColor;
+      } else {
+        rmsColor = Colors.grey;
+      }
       if (index == 9) {
         Helper.deleteDialog(context, "Do you want to logout from App", () {
           Navigator.pop(context);
@@ -136,6 +149,7 @@ class HomePageState extends State<DashBoardScreen> {
   }
 
   final TextEditingController _searchQuery = TextEditingController();
+
   // final TextEditingController _searchQueryInvioce = TextEditingController();
 
   @override
@@ -145,7 +159,14 @@ class HomePageState extends State<DashBoardScreen> {
       var d = helper.drawerItems[i];
       drawerOptions.add(ListTile(
         selectedColor: AppColors.primaryColor,
-        leading: Icon(d.icon),
+        leading: i == 2
+            ? Image(
+                image: const AssetImage('assets/rms-challan.png'),
+                height: 24,
+                width: 24,
+                color: rmsColor,
+              )
+            : Icon(d.icon),
         title: Text(d.title),
         selected: i == selectedDrawerIndex,
         onTap: () => onSelectItem(i),
@@ -183,6 +204,7 @@ class HomePageState extends State<DashBoardScreen> {
                               color: Colors.white,
                             );
                             appBarTitleInvoice = TextField(
+                              cursorColor: AppColors.white200,
                               onChanged: (value) {
                                 invoiceController.onSearchVendor(value);
                               },
@@ -198,6 +220,7 @@ class HomePageState extends State<DashBoardScreen> {
                             );
                             _handleSearchStart();
                           } else {
+                            invoiceController.onSearchVendor("");
                             _handleSearchEnd();
                           }
                         });
@@ -219,6 +242,7 @@ class HomePageState extends State<DashBoardScreen> {
                                   color: Colors.white,
                                 );
                                 appBarTitle = TextField(
+                                  cursorColor: AppColors.white200,
                                   onChanged: (value) {
                                     challanController.onSearchVendor(value);
                                   },
@@ -235,6 +259,7 @@ class HomePageState extends State<DashBoardScreen> {
                                 );
                                 _handleSearchStart();
                               } else {
+                                challanController.onSearchVendor("");
                                 _handleSearchEnd();
                               }
                             });
@@ -242,9 +267,7 @@ class HomePageState extends State<DashBoardScreen> {
                         ),
                       ])
                 : AppBar(
-                    title: Text(selectedDrawerIndex == 3 ||
-                            selectedDrawerIndex == 4 ||
-                            selectedDrawerIndex == 9
+                    title: Text(selectedDrawerIndex == 9
                         ? helper.drawerItems[0].title
                         : helper.drawerItems[selectedDrawerIndex].title),
                   ),
@@ -296,7 +319,12 @@ class HomePageState extends State<DashBoardScreen> {
                       ),
                     ),
             ),
-            Column(children: drawerOptions)
+            Column(children: drawerOptions),
+            Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.centerRight,
+              child: CustomTextStyle.regular(text: Constant.appVersion),
+            )
           ],
         ),
       ),
