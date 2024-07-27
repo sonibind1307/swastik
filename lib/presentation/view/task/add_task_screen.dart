@@ -6,8 +6,10 @@ import '../../../config/Helper.dart';
 import '../../../config/colorConstant.dart';
 import '../../../config/constant.dart';
 import '../../../config/text-style.dart';
+import '../../../controller/add_invoice_controller.dart';
 import '../../../controller/add_task_controller.dart';
 import '../../../controller/invoice_list_controller.dart';
+import '../../../model/responses/assign_user_model.dart';
 import '../../../model/responses/project_model.dart';
 import '../../widget/custom_text_style.dart';
 import '../../widget/edit_text_widgets.dart';
@@ -15,8 +17,9 @@ import '../../widget/edit_text_widgets.dart';
 class AddTaskScreen extends StatelessWidget {
   AddTaskScreen({super.key});
 
-  final aTController = Get.put(AddTaskController());
+  final aTController = Get.find<AddTaskController>();
   final controllerI = Get.find<InvoiceListController>();
+  final addInvoiceController = Get.find<AddInvoiceController>();
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +184,8 @@ class AddTaskScreen extends StatelessWidget {
                                   .validate()) {
                                 aTController.addVendorApi(context);
                               } else {
-                                if (aTController.selectedVendor == "NA") {
+                                if (aTController.selectedUser.userName ==
+                                    null) {
                                   Helper.getToastMsg("Select type");
                                 }
                               }
@@ -208,7 +212,7 @@ class AddTaskScreen extends StatelessWidget {
       () => Padding(
         padding: const EdgeInsets.only(),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton2<String>(
+          child: DropdownButton2<UserData>(
             isExpanded: true,
             hint: Text(
               'Select user',
@@ -217,22 +221,20 @@ class AddTaskScreen extends StatelessWidget {
                 color: Theme.of(context).hintColor,
               ),
             ),
-            items: aTController.vendorList
+            items: addInvoiceController.userList
                 .map((item) => DropdownMenuItem(
                       value: item,
                       child: Text(
-                        item,
+                        item.userName!,
                         style: const TextStyle(
                           fontSize: 14,
                         ),
                       ),
                     ))
                 .toList(),
-            value: aTController.selectedVendor,
+            value: aTController.selectedUser,
             onChanged: (value) {
-              // setState(() {
-              //   avController.selectedVendor = value!;
-              // });
+              aTController.onUserSelected(value);
             },
             buttonStyleData: Helper.buttonStyleData(context),
             iconStyleData: const IconStyleData(
@@ -278,7 +280,7 @@ class AddTaskScreen extends StatelessWidget {
                 ),
               ),
               searchMatchFn: (item, searchValue) {
-                return item.value!
+                return item.value!.userName!
                     .toLowerCase()
                     .contains(searchValue.toLowerCase());
               },

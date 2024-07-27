@@ -11,6 +11,7 @@ import 'package:swastik/model/responses/invoice_item_model.dart';
 
 import '../config/Helper.dart';
 import '../config/sharedPreferences.dart';
+import '../model/add_task_model.dart';
 import '../model/responses/assign_user_model.dart';
 import '../model/responses/category_model.dart';
 import '../model/responses/challan_model.dart';
@@ -21,6 +22,7 @@ import '../model/responses/invoice_model.dart';
 import '../model/responses/invoice_summary_model.dart';
 import '../model/responses/po_model.dart';
 import '../model/responses/project_model.dart';
+import '../model/responses/task_list_model.dart';
 import '../model/responses/user_info_model.dart';
 import '../model/responses/vendor_model.dart';
 import '../presentation/view/invoice/add_invoice_screen.dart';
@@ -787,6 +789,61 @@ class ApiRepo {
       }
     } catch (e) {
       Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<BaseModel> addTask({required AddTaskModel addTaskModel}) async {
+    BaseModel responseModel = BaseModel();
+
+    var dio = Dio();
+    String userName = await Auth.getUserName() ?? "";
+    var data = FormData.fromMap({
+      "project_id": addTaskModel.projectId,
+      "building_id": addTaskModel.buildingId,
+      "task_title": addTaskModel.taskTitle,
+      "task_desc": addTaskModel.taskDesc,
+      "priority": addTaskModel.priority,
+      "status": addTaskModel.status,
+      "assigned_by": addTaskModel.assignedBy,
+      "assigned_to": addTaskModel.assignedTo,
+      "target_date": addTaskModel.targetDate,
+      "closed_date": addTaskModel.closedDate,
+      "userid": addTaskModel.userid,
+    });
+
+    print("request ->${data.fields}");
+    var url = Constant.urlAddTask;
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = BaseModel.fromJson(res);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
+    }
+    return responseModel;
+  }
+
+  static Future<TaskListModel> getAllTask(String projectId) async {
+    TaskListModel responseModel = TaskListModel();
+    var dio = Dio();
+    var url = Constant.urlGetTask;
+    var response = await dio.request(
+      url,
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.data);
+      responseModel = TaskListModel.fromJson(res);
+    } else {
+      print(response.statusMessage);
     }
     return responseModel;
   }

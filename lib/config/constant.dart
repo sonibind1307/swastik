@@ -25,4 +25,6 @@ class Constant {
   static const urlGetComments = "${baseUrl}get_comments";
   static const urlDashboard = "${baseUrl}get_dashboard";
   static const urlUpdateChallan = "${baseUrl}update_challan";
+  static const urlAddTask = "${baseUrl}add_task";
+  static const urlGetTask = "${baseUrl}get_task_list";
 }
