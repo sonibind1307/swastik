@@ -918,6 +918,46 @@ class Helper {
         );
     }
   }
+
+  static DateTime selectedDate = DateTime.now();
+
+  static Future<void> selectDate({
+    required Function(String selectedDate) callBack,
+    required BuildContext context,
+  }) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate) {
+      callBack(picked.toString());
+    }
+  }
+
+  static String convertDate(DateTime dateTime) {
+    String formattedDate = DateFormat('EEE, d\'th\' MMM yyyy').format(dateTime);
+
+    return formattedDate;
+  }
+
+  static String getConvertTime(String key, String inputTime) {
+    print(inputTime);
+    String time = "";
+
+    if (key == "1") {
+      // String timeString = "16:20:00";
+      DateTime inputFormat = DateFormat("HH:mm:ss").parse(inputTime);
+      String formattedTime = DateFormat.jm().format(inputFormat);
+      time = formattedTime;
+    } else if (key == "2") {
+      // String timeString = "16:20:00";
+      DateTime inputFormat = DateFormat("HH:mm").parse(inputTime);
+      String formattedTime = DateFormat.jm().format(inputFormat);
+      time = formattedTime;
+    }
+    return time;
+  }
 }
 
 extension EmailValidator on String {

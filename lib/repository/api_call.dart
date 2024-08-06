@@ -29,8 +29,6 @@ import '../presentation/view/invoice/add_invoice_screen.dart';
 import '../presentation/view/invoice/list_invoice_screen.dart';
 
 class ApiRepo {
-  // static baseUrl = 'https://swastik.online/Mobile/';
-
   static Future<InvoiceModel> getAllInvoiceList(String status) async {
     InvoiceModel responseModel = InvoiceModel();
     try {
@@ -678,17 +676,12 @@ class ApiRepo {
       'module': "Invoice Payment",
       'sub_module': "Mobile"
     });
-
-    print("request ->${data.fields}");
-
     var url = Constant.urlGetComments;
     try {
       var response = await dio.post(
         url,
         data: data,
       );
-      print("response ->${response.data}");
-
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         responseModel = CommentsModel.fromJson(res);
@@ -797,7 +790,6 @@ class ApiRepo {
     BaseModel responseModel = BaseModel();
 
     var dio = Dio();
-    String userName = await Auth.getUserName() ?? "";
     var data = FormData.fromMap({
       "project_id": addTaskModel.projectId,
       "building_id": addTaskModel.buildingId,
@@ -806,45 +798,62 @@ class ApiRepo {
       "priority": addTaskModel.priority,
       "status": addTaskModel.status,
       "assigned_by": addTaskModel.assignedBy,
-      "assigned_to": addTaskModel.assignedTo,
+      "user_list": addTaskModel.assignedTo,
       "target_date": addTaskModel.targetDate,
       "closed_date": addTaskModel.closedDate,
       "userid": addTaskModel.userid,
+      "session_user_id": addTaskModel.userid,
     });
 
-    print("request ->${data.fields}");
+    print("add_task_request ->${data.fields}");
+
     var url = Constant.urlAddTask;
+    print("add_task_url ->${url}");
     try {
       var response = await dio.post(
         url,
         data: data,
       );
+
+      print("response_task_data - > ${response.data}");
       if (response.statusCode == 200) {
         var res = jsonDecode(response.data);
         responseModel = BaseModel.fromJson(res);
       }
     } catch (e) {
+      print("response_exception_data - > ${e}");
       Helper.getToastMsg(e.toString());
     }
     return responseModel;
   }
 
-  static Future<TaskListModel> getAllTask(String projectId) async {
+  static Future<TaskListModel> getAllTask(String month, String year) async {
     TaskListModel responseModel = TaskListModel();
+    String userId = await Auth.getUserID() ?? "";
+    var data = FormData.fromMap(
+        {'session_user_id': userId, "month": month, "year": year});
     var dio = Dio();
     var url = Constant.urlGetTask;
-    var response = await dio.request(
-      url,
-      options: Options(
-        method: 'GET',
-      ),
-    );
-    if (response.statusCode == 200) {
-      var res = jsonDecode(response.data);
-      responseModel = TaskListModel.fromJson(res);
-    } else {
-      print(response.statusMessage);
+
+    print("task_url ->$data");
+
+    try {
+      var response = await dio.post(
+        url,
+        data: data,
+      );
+
+      print("task_response ->${response.data}");
+      if (response.statusCode == 200) {
+        var res = jsonDecode(response.data);
+        responseModel = TaskListModel.fromJson(res);
+      } else {
+        print(response.statusMessage);
+      }
+    } catch (e) {
+      Helper.getToastMsg(e.toString());
     }
+
     return responseModel;
   }
 }

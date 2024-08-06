@@ -6,7 +6,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../config/colorConstant.dart';
 import '../../../controller/task_list_controller.dart';
-import '../../../model/responses/vendor_model.dart';
+import '../../../model/responses/task_list_model.dart';
+import '../../widget/app_widget.dart';
 import 'add_task_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -21,15 +22,55 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.week;
-
-  DateTime _focusedDay = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   DateTime? _selectedDay;
 
   final reasonController = TextEditingController();
 
   final controller = Get.find<TaskListController>();
+
+  Widget _buildEventsMarker(DateTime date, List value) {
+    List<Event> events = value as List<Event>;
+    return true
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: events.map((item) {
+              return Container(
+                margin: const EdgeInsets.all(1),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: item.color,
+                ),
+                width: 8.0,
+                height: 8.0,
+              );
+            }).toList(),
+          )
+        : Container(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.blue,
+            ),
+            width: 16.0,
+            height: 16.0,
+            child: Center(
+              child: Text(
+                '${events.length}',
+                style: const TextStyle()
+                    .copyWith(color: Colors.white, fontSize: 12.0),
+              ),
+            ),
+          );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedDay = controller.focusedDay;
+    controller.getTaskBasedOnDate(controller.focusedDay);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,45 +80,82 @@ class _TaskListScreenState extends State<TaskListScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddTaskScreen()),
+              MaterialPageRoute(builder: (context) => const AddTaskScreen()),
             );
           },
           label: const Text("Create Task")),
       body: Container(
-        color: Colors.white,
+        color: Colors.grey.withOpacity(0.01),
         child: Column(
           children: [
-            TableCalendar(
-              calendarFormat: _calendarFormat,
-              focusedDay: _focusedDay,
-              firstDay: TaskListScreen.kFirstDay,
-              lastDay: TaskListScreen.kLastDay,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                if (!isSameDay(_selectedDay, selectedDay)) {
-                  // Call `setState()` when updating the selected day
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                  setState(() {});
-                  // context
-                  //     .read<DocHomeScreenBloc>()
+            Obx(
+              () => controller.isCalendar.value == true
+                  ? TableCalendar(
+                      weekendDays: const [DateTime.saturday, DateTime.sunday],
+                      calendarFormat: _calendarFormat,
+                      focusedDay: controller.focusedDay,
+                      firstDay: TaskListScreen.kFirstDay,
+                      lastDay: TaskListScreen.kLastDay,
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDay, day);
+                      },
+                      onDaySelected: (selectedDay, focusedDay) {
+                        if (!isSameDay(_selectedDay, selectedDay)) {
+                          // Call `setState()` when updating the selected day
+                          _selectedDay = selectedDay;
+                          controller.focusedDay = focusedDay;
+                          setState(() {
+                            controller
+                                .getTaskBasedOnDate(controller.focusedDay);
+                          });
+                        }
+                      },
+                      onFormatChanged: (format) {
+                        if (_calendarFormat != format) {
+                          // Call `setState()` when updating calendar format
 
-                  
-                  //     .dateWiseAppointments(_focusedDay);
-                }
-              },
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  // Call `setState()` when updating calendar format
-                  _calendarFormat = format;
-                }
-              },
-              onPageChanged: (focusedDay) {
-                // No need to call `setState()` here
-                _focusedDay = focusedDay;
-              },
+                          setState(() {
+                            _calendarFormat = format;
+                            print("onPageChanges --- ");
+                          });
+                        }
+                      },
+                      onPageChanged: (focusedDay) {
+                        // No need to call `setState()` here
+
+                        setState(() {
+                          controller.focusedDay = focusedDay;
+                          print("onPageChanges1 --- ");
+                          controller.getAllVendorList(controller.focusedDay);
+                        });
+                      },
+                      eventLoader: controller.getEventsForDay,
+                      calendarBuilders: CalendarBuilders(
+                        markerBuilder: (context, date, events) {
+                          if (events.isNotEmpty) {
+                            return Positioned(
+                              right: 1,
+                              bottom: 1,
+                              child: _buildEventsMarker(date, events),
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      ),
+                      calendarStyle: CalendarStyle(
+                        selectedDecoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          // Change this color to your desired color
+                          shape: BoxShape.circle,
+                        ),
+                        todayDecoration: BoxDecoration(
+                          color: AppColors.bsWarning,
+                          // Change this color to your desired color
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    )
+                  : const CircularProgressIndicator(),
             ),
             // Padding(
             //   padding: const EdgeInsets.all(8.0),
@@ -97,12 +175,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
             //     ),
             //   ),
             // ),
+
+            SizedBox(
+              height: 4,
+            ),
+            Divider(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const SizedBox(
+                  width: 16,
+                ),
+                CustomTextStyle.bold(
+                    text: Helper.convertDate(controller.focusedDay!),
+                    fontSize: 18),
+                Spacer(),
                 Obx(
                   () => CustomTextStyle.regular(
-                      text: "Count : ${controller.vendorList.length}"),
+                      text: "Count : ${controller.taskList.length}"),
                 ),
                 const SizedBox(
                   width: 16,
@@ -111,276 +201,146 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
             Obx(
               () => controller.isLoading.value == false
-                  ? Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          controller.getAllVendorList();
-                        },
-                        child: controller.vendorList.isNotEmpty
-                            ? ListView.separated(
-                                itemCount: controller.vendorList.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  VendorData data =
-                                      controller.vendorList[index];
-
-                                  return Card(
-                                    child: InkWell(
-                                      onTap: () {
-                                        openBottomSheet(context, (key) async {
-                                          if (key == "edit") {
-                                            Navigator.of(context).pop();
-
-                                            // Navigator.push(
-                                            //   context,
-                                            //   MaterialPageRoute(
-                                            //       builder: (context) =>
-                                            //           AddVendorScreen(
-                                            //             vendorData: data,
-                                            //           )),
-                                            // );
-                                          } else if (key == "call") {
-                                            if (data.contactNo != null &&
-                                                data.contactNo! != "") {
-                                              Helper.makePhoneCall(
-                                                  data.contactNo!);
-                                            }
-                                          } else if (key == "email") {
-                                            if (data.email != null &&
-                                                data.email! != "" &&
-                                                data.email!.toLowerCase() !=
-                                                    "na") {
-                                              Helper.sendEmail(data.email!);
-                                            } else {
-                                              Helper.getToastMsg(
-                                                  "Email not found");
-                                            }
-                                          }
-                                        }, data);
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsetsDirectional
-                                                .fromSTEB(10, 0, 0, 0),
-                                            child: Container(
-                                              width: 40,
-                                              height: 40,
+                  ? controller.taskList.isNotEmpty
+                      ? Expanded(
+                          child: ListView.separated(
+                            itemCount: controller.taskList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              TaskData data = controller.taskList[index];
+                              return InkWell(
+                                onTap: () {
+                                  openBottomSheet(context, (key) {}, data);
+                                },
+                                child: Container(
+                                    margin: const EdgeInsets.all(8),
+                                    decoration:
+                                        boxDecoration(showShadow: false),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.all(1),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFFF1F4F8),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                  color:
-                                                      const Color(0xFFE5E7EB),
-                                                ),
-                                              ),
-                                              child: Align(
-                                                alignment:
-                                                    const AlignmentDirectional(
-                                                        0, 0),
-                                                child: Icon(Icons.task_alt),
-                                              ),
+                                                  shape: BoxShape.circle,
+                                                  color: controller
+                                                      .getTaskCardColor(
+                                                          data.priority!,
+                                                          data.status!)),
+                                              width: 8.0,
+                                              height: 8.0,
                                             ),
-                                          ),
-                                          Flexible(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .fromSTEB(12, 0, 0, 0),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            -1, -1),
-                                                    child: CustomTextStyle.bold(
-                                                        text: "Task Title"),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Container(
-                                                      decoration: const BoxDecoration(
-                                                          color: Colors.red,
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          4))),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(4.0),
-                                                        child: CustomTextStyle
-                                                            .regular(
-                                                                text:
-                                                                    "Projet Name",
-                                                                color: Colors
-                                                                    .white),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            -1, 0),
-                                                    child:
-                                                        CustomTextStyle.regular(
-                                                            text: "Description",
-                                                            color: Colors.grey),
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            -1, 0),
-                                                    child:
-                                                        CustomTextStyle.regular(
-                                                            text:
-                                                                "Date : 20-07-24",
-                                                            color: Colors.grey),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  )
-                                                ],
-                                              ),
+                                            const SizedBox(
+                                              width: 4,
                                             ),
-                                          ),
-                                          Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Align(
-                                                alignment:
-                                                    const AlignmentDirectional(
-                                                        0, -1),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Align(
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              1, 0),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5),
-                                                        child: CustomTextStyle
-                                                            .regular(
-                                                                text: "High",
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 16),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            1, 0),
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5),
-                                                        child: CustomTextStyle
-                                                            .regular(
-                                                                text: "",
-                                                                color: Colors
-                                                                    .black)),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                          color: Helper
-                                                              .getStatusColor(
-                                                                  "2"),
-                                                          borderRadius:
-                                                              const BorderRadius
-                                                                      .all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          4))),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(4.0),
-                                                        child: CustomTextStyle
-                                                            .regular(
-                                                                text: "Status",
-                                                                color: Colors
-                                                                    .white),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  /* Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            1, 0),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8),
-                                                      child: CustomTextStyle
-                                                          .regular(
-                                                        text:
-                                                            "${data.chlStatus}",
-                                                        color: Helper
-                                                            .getStatusColor(
-                                                                "${data.chlStatus}"),
-                                                      ),
-                                                    ),
-                                                  ),*/
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return const SizedBox(
-                                    height: 4,
-                                  );
-                                },
-                              )
-                            : SizedBox(
-                                width: double.infinity,
-                                height: double.infinity,
-                                child: Center(
-                                    child: CustomTextStyle.regular(
-                                        text: "No data found")),
-                              ),
-                      ),
-                    )
+                                            CustomTextStyle.regular(
+                                                text: data.priority!
+                                                    .toUpperCase(),
+                                                color:
+                                                    controller.getTaskCardColor(
+                                                        data.priority!,
+                                                        data.status!),
+                                                fontSize: 16),
+                                            const Spacer(),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    color: controller
+                                                        .getTaskCardColor(
+                                                            data.priority!,
+                                                            data.status!),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                4))),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child:
+                                                      CustomTextStyle.regular(
+                                                          text: data.status!
+                                                              .toUpperCase(),
+                                                          color: Colors.white),
+                                                )),
+                                          ],
+                                        ),
+                                        const Divider(
+                                          thickness: 1.5,
+                                        ),
+                                        buildStatusContainer(
+                                            context,
+                                            data.taskTitle!,
+                                            controller.getTaskCardColor(
+                                                data.priority!, data.status!),
+                                            data.projectname!,
+                                            data.assignedByNames!,
+                                            Icons.watch_later),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            const SizedBox(
+                                              width: 16,
+                                            ),
+                                            const Icon(
+                                              Icons.watch_later_outlined,
+                                              color: Colors.grey,
+                                            ),
+                                            const SizedBox(
+                                              width: 4,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text: Helper.getConvertTime(
+                                                    "1",
+                                                    data.targetDate!
+                                                        .substring(11, 19))),
+                                            const SizedBox(
+                                              width: 32,
+                                            ),
+                                            const Icon(
+                                              Icons.people_alt_outlined,
+                                              color: Colors.grey,
+                                            ),
+                                            const SizedBox(
+                                              width: 4,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text:
+                                                    "${data.assignedTo!.split(',').length} Person"),
+                                            const SizedBox(
+                                              width: 32,
+                                            ),
+                                            const Icon(
+                                              Icons.attach_file,
+                                              color: Colors.grey,
+                                            ),
+                                            const SizedBox(
+                                              width: 4,
+                                            ),
+                                            CustomTextStyle.regular(
+                                                text: "Attachment"),
+                                          ],
+                                        )
+                                      ],
+                                    )),
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return const SizedBox(
+                                height: 2,
+                              );
+                            },
+                          ),
+                        )
+                      : Expanded(
+                          child: Container(
+                          margin: EdgeInsets.only(top: 50),
+                          child: CustomTextStyle.regular(
+                              text: "No task available for selected date"),
+                        ))
                   : const Expanded(
                       child: Center(child: CircularProgressIndicator())),
             ),
@@ -390,8 +350,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Future openBottomSheet(BuildContext context, Function(String key) onClick,
-      VendorData vendorData) {
+  Future openBottomSheet(
+      BuildContext context, Function(String key) onClick, TaskData rowData) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -401,7 +361,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
           height: MediaQuery.of(context).size.height * 0.4,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -412,86 +372,101 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     color: AppColors.primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: CustomTextStyle.bold(
-                    text: "Vendor: ${vendorData.companyName}",
+                    text: "Title: ${rowData.taskTitle}",
                     color: Colors.white,
                     fontSize: 16),
               ),
-              // Row(
-              //   children: [
-              //     const Spacer(),
-              //     CustomTextStyle.regular(text: "Total amount :"),
-              //     const SizedBox(
-              //       width: 8,
-              //     ),
-              //     CustomTextStyle.bold(
-              //         text: double.parse("0").toInt().inRupeesFormat(),
-              //         fontSize: 14),
-              //     const SizedBox(
-              //       width: 8,
-              //     ),
-              //   ],
-              // ),
-              InkWell(
-                onTap: () {
-                  onClick("edit");
-                },
-                child: ListTile(
-                  title: const Text("Edit Vendor"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(Icons.edit)),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  onClick("email");
-                },
-                child: ListTile(
-                  title: const Text("Email"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(Icons.email)),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  onClick("call");
-                },
-                child: ListTile(
-                  title: const Text("Call"),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        child: const Icon(Icons.call)),
-                  ),
-                ),
-              ),
+              Container(
+                  padding: const EdgeInsets.all(8),
+                  child: CustomTextStyle.regular(text: rowData.taskDesc))
             ],
           ),
         );
       },
+    );
+  }
+
+  Container buildStatusContainer(BuildContext context, String title,
+      Color color, String pName, String assignBy, IconData icon) {
+    return Container(
+      // width: MediaQuery.sizeOf(context).width * 0.45,
+      height: 100,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        // boxShadow: const [
+        //   BoxShadow(
+        //     blurRadius: 12,
+        //     color: Color(0x34000000),
+        //     offset: Offset(-2, 5),
+        //   )
+        // ],
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 12, 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              width: 5,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                      child: CustomTextStyle.bold(text: title, fontSize: 16),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    CustomTextStyle.regular(text: pName),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    CustomTextStyle.regular(
+                        text: "Assign by: $assignBy", color: Colors.grey),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Icon(
+                        //   icon,
+                        //   color: color,
+                        //   size: 24,
+                        // ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

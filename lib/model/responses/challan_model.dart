@@ -45,27 +45,30 @@ class ChallanData {
   String? projectname;
   String? invoiceId;
   String? invoiceNo;
+  String? approveTime;
   String? chlStatus;
 
-  ChallanData(
-      {this.id,
-      this.cmpnyId,
-      this.challanStatus,
-      this.projectId,
-      this.challanDt,
-      this.challanNo,
-      this.vehicleNo,
-      this.grade,
-      this.quantity,
-      this.unit,
-      this.rate,
-      this.challanAppBy,
-      this.profCode,
-      this.companyname,
-      this.projectname,
-      this.invoiceId,
-      this.invoiceNo,
-      this.chlStatus});
+  ChallanData({
+    this.id,
+    this.cmpnyId,
+    this.challanStatus,
+    this.projectId,
+    this.challanDt,
+    this.challanNo,
+    this.vehicleNo,
+    this.grade,
+    this.quantity,
+    this.unit,
+    this.rate,
+    this.challanAppBy,
+    this.profCode,
+    this.companyname,
+    this.projectname,
+    this.invoiceId,
+    this.invoiceNo,
+    this.chlStatus,
+    this.approveTime,
+  });
 
   ChallanData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -86,6 +89,7 @@ class ChallanData {
     invoiceId = json['invoice_id'];
     invoiceNo = json['invoice_no'];
     chlStatus = json['chl_status'];
+    approveTime = json['approve_time'];
   }
 
   Map<String, dynamic> toJson() {
@@ -108,6 +112,7 @@ class ChallanData {
     data['invoice_id'] = this.invoiceId;
     data['invoice_no'] = this.invoiceNo;
     data['chl_status'] = this.chlStatus;
+    data['approve_time'] = this.approveTime;
     return data;
   }
 }

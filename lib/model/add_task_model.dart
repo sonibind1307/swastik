@@ -6,7 +6,7 @@ class AddTaskModel {
   String? priority;
   String? status;
   String? assignedBy;
-  List<String>? assignedTo;
+  String? assignedTo;
   String? targetDate;
   String? closedDate;
   String? userid;

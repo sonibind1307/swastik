@@ -42,22 +42,27 @@ class TaskData {
   String? closedDate;
   String? delayId;
   String? uploads;
+  String? projectname;
+  String? assignedByNames;
 
-  TaskData(
-      {this.id,
-      this.userId,
-      this.projectId,
-      this.buildingId,
-      this.taskTitle,
-      this.taskDesc,
-      this.priority,
-      this.status,
-      this.assignedBy,
-      this.assignedTo,
-      this.targetDate,
-      this.closedDate,
-      this.delayId,
-      this.uploads});
+  TaskData({
+    this.id,
+    this.userId,
+    this.projectId,
+    this.buildingId,
+    this.taskTitle,
+    this.taskDesc,
+    this.priority,
+    this.status,
+    this.assignedBy,
+    this.assignedTo,
+    this.targetDate,
+    this.closedDate,
+    this.delayId,
+    this.uploads,
+    this.projectname,
+    this.assignedByNames,
+  });
 
   TaskData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -74,6 +79,8 @@ class TaskData {
     closedDate = json['closed_date'];
     delayId = json['delay_id'];
     uploads = json['uploads'];
+    projectname = json['projectname'];
+    assignedByNames = json['assigned_by_names'];
   }
 
   Map<String, dynamic> toJson() {
@@ -92,6 +99,8 @@ class TaskData {
     data['closed_date'] = this.closedDate;
     data['delay_id'] = this.delayId;
     data['uploads'] = this.uploads;
+    data['projectname'] = this.projectname;
+    data['assigned_by_names'] = this.assignedByNames;
     return data;
   }
 }

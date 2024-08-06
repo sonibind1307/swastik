@@ -29,11 +29,50 @@ class CustomTextDecoration {
         suffixIcon: suffixIcon);
   }
 
-  static InputDecoration dateFieldDecoration({String? labelText}) {
+  static InputDecoration dateFieldDecoration(
+      {String? labelText,
+      BuildContext? context,
+      required Function(String value) callBack}) {
     return InputDecoration(
       suffixIcon: IconButton(
         icon: const Icon(Icons.calendar_month),
-        onPressed: () {},
+        onPressed: () {
+          // Helper.selectDate(
+          //     callBack: (String selectedDate) {
+          //       callBack(selectedDate);
+          //     },
+          //     context: context!);
+
+          showDatePicker(
+            context: context!,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101),
+          ).then((selectedDate) {
+            // After selecting the date, display the time picker.
+            if (selectedDate != null) {
+              showTimePicker(
+                context: context!,
+                initialTime: TimeOfDay.now(),
+              ).then((selectedTime) {
+                // Handle the selected date and time here.
+                if (selectedTime != null) {
+                  DateTime selectedDateTime = DateTime(
+                    selectedDate.year,
+                    selectedDate.month,
+                    selectedDate.day,
+                    selectedTime.hour,
+                    selectedTime.minute,
+                  );
+                  print(
+                      selectedDateTime); // You can use the selectedDateTime as needed.
+
+                  callBack(selectedDateTime.toString());
+                }
+              });
+            }
+          });
+        },
       ),
       border: const OutlineInputBorder(
         borderSide: BorderSide(color: AppColors.primaryColor),

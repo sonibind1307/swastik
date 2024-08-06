@@ -30,6 +30,7 @@ class AddInvoiceController extends GetxController {
   var projectList = <ProjectData>[].obs;
   var companyList = <CompanyData>[].obs;
   var userList = <UserData>[].obs;
+  var selectedUserList = <UserData>[].obs;
   var buildList = <BuildData>[].obs;
   var poList = <PoList>[].obs;
   var vendorData = <VendorData>[].obs;

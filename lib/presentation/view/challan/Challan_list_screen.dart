@@ -434,7 +434,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
           height: MediaQuery.of(context).size.height * 0.3,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -449,69 +449,117 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                     color: Colors.white,
                     fontSize: 16),
               ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(5))),
-                              child: const Icon(Icons.edit)),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
                         child: Container(
-                          decoration: const BoxDecoration(
-                              color: Colors.red,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: CustomTextStyle.regular(
-                                text: data.projectname ?? "NA",
-                                color: Colors.white),
-                          ),
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(5))),
+                            child: const Icon(Icons.edit)),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.all(Radius.circular(4))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: CustomTextStyle.regular(
+                              text: data.projectname ?? "NA",
+                              color: Colors.white),
                         ),
                       ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional(-1, 0),
-                        child: CustomTextStyle.regular(
-                            text: "Challan No : ${data.challanNo}",
-                            color: Colors.grey),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional(-1, 0),
-                        child: CustomTextStyle.regular(
-                            text: "Truck No : ${data.vehicleNo}",
-                            color: Colors.grey),
-                      ),
-                      Align(
-                        alignment: const AlignmentDirectional(-1, 0),
-                        child: CustomTextStyle.regular(
-                            text: "Date : ${data.challanDt}",
-                            color: Colors.grey),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      )
-                    ],
-                  ),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: AlignmentDirectional(-1, 0),
+                              child: CustomTextStyle.regular(
+                                  text: "Challan No : ${data.challanNo}",
+                                  color: Colors.grey),
+                            ),
+                            Align(
+                              alignment: AlignmentDirectional(-1, 0),
+                              child: CustomTextStyle.regular(
+                                  text: "Truck No : ${data.vehicleNo}",
+                                  color: Colors.grey),
+                            ),
+                            Align(
+                              alignment: const AlignmentDirectional(-1, 0),
+                              child: CustomTextStyle.regular(
+                                  text: "Date : ${data.challanDt}",
+                                  color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        data.challanAppBy == "NA"
+                            ? Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    CustomTextStyle.regular(
+                                        text: "Approval pending"),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Icon(
+                                      Icons.watch_later_rounded,
+                                      color: AppColors.bsWarning,
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                      ),
+                                      CustomTextStyle.regular(
+                                          text:
+                                              "Approved by : ${data.challanAppBy}"),
+                                    ],
+                                  ),
+                                  CustomTextStyle.regular(
+                                      text: "Time : ${data.approveTime}")
+                                ],
+                              )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    )
+                  ],
                 ),
               ),
               // InkWell(
@@ -556,6 +604,8 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                   )
                 ],
               ),*/
+
+              Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [

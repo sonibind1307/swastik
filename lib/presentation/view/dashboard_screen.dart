@@ -12,6 +12,7 @@ import '../../config/Helper.dart';
 import '../../config/constant.dart';
 import '../../config/sharedPreferences.dart';
 import '../../controller/add_invoice_controller.dart';
+import '../../controller/add_task_controller.dart';
 import '../../controller/add_vendor_controller.dart';
 import '../../controller/challan_list_controller.dart';
 import '../../controller/dashboard_controller.dart';
@@ -42,6 +43,7 @@ class DashBoardScreen extends StatefulWidget {
     Get.put(ProfileController());
     Get.put(ChallanListController());
     Get.put(TaskListController());
+    Get.put(AddTaskController());
     return HomePageState();
   }
 }

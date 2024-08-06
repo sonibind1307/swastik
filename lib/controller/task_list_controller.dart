@@ -1,38 +1,45 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../model/responses/vendor_model.dart';
+import '../model/responses/task_list_model.dart';
 import '../repository/api_call.dart';
 
 class TaskListController extends GetxController {
-  var vendorList = <VendorData>[].obs;
-  var apiVendorList = <VendorData>[].obs;
+  var taskList = <TaskData>[].obs;
+  var apiTaskList = <TaskData>[].obs;
   RxBool isLoading = false.obs;
+  RxBool isCalendar = true.obs;
+  DateTime focusedDay = DateTime.now();
 
   @override
   void onInit() {
-    getAllVendorList();
+    getAllVendorList(DateTime.now());
   }
 
-  Future<void> getAllVendorList() async {
+  Future<void> getAllVendorList(DateTime? selectedDay) async {
+    print("date ---------------> ${selectedDay!.month}");
+    print("date ---------------> ${selectedDay!.year}");
     isLoading.value = true;
-    apiVendorList.value.clear();
-    VendorModel vendorModel = await ApiRepo.getVendors();
+    apiTaskList.value.clear();
+    TaskListModel vendorModel = await ApiRepo.getAllTask(
+        selectedDay.month.toString(), selectedDay.year.toString());
     if (vendorModel.data != null) {
-      apiVendorList.value = vendorModel.data!;
-      vendorList.value = apiVendorList.value;
+      apiTaskList.value = vendorModel.data!;
+      taskList.value = apiTaskList.value;
     }
     isLoading.value = false;
+    getTaskBasedOnDate(focusedDay);
   }
 
-  Future<void> onSearchVendor(String companyname) async {
-    List<VendorData> filterList = [];
-    filterList = apiVendorList!
-        .where((data) => data.companyName!
+  Future<void> onSearchVendor(String searchKey) async {
+    List<TaskData> filterList = [];
+    filterList = apiTaskList!
+        .where((data) => data.taskTitle!
             .toString()
             .toLowerCase()
-            .contains(companyname.toLowerCase()))
+            .contains(searchKey.toLowerCase()))
         .toList();
-    vendorList.value = filterList;
+    taskList.value = filterList;
   }
 
   void dateWiseAppointments(DateTime now) async {
@@ -98,4 +105,74 @@ class TaskListController extends GetxController {
     //   }
     // });
   }
+
+  void getTaskBasedOnDate(DateTime focusedDay) {
+    print("selectedDate ---------------> ${focusedDay}");
+    isCalendar.value = false;
+    isLoading.value = true;
+    List<TaskData> filterList = [];
+    filterList = apiTaskList
+        .where((data) => data.targetDate
+            .toString()
+            .toLowerCase()
+            .contains(focusedDay.toString().substring(0, 10).toLowerCase()))
+        .toList();
+    taskList.value = filterList;
+
+    isLoading.value = false;
+    isCalendar.value = true;
+    update();
+  }
+
+  List<Event> getEventsForDay(DateTime day) {
+    Map<DateTime, List<String>> _selectedEvents = {
+      DateTime.utc(2023, 7, 29): [
+        'Event 1',
+        'Event 2',
+        'Event 3',
+        'Event 4',
+        'Event 5'
+      ],
+      // Add more events here
+    };
+
+    List<Event> events = [];
+
+    List<TaskData> filterList = [];
+    filterList = apiTaskList!
+        .where((data) => data.targetDate
+            .toString()
+            .toLowerCase()
+            .contains(day.toString().substring(0, 10).toLowerCase()))
+        .toList();
+
+    for (var element in filterList) {
+      events.add(Event(element.taskTitle!,
+          getTaskCardColor(element.priority!, element.status!)));
+    }
+    return events;
+  }
+
+  Color getTaskCardColor(String priority, String status) {
+    print("priority - > $priority status -> $status");
+    if (status == "Open") {
+      if (priority == "High") {
+        return Colors.red;
+      } else {
+        return Colors.blue;
+      }
+    } else {
+      return Colors.grey;
+    }
+  }
+}
+
+class Event {
+  final String title;
+  final Color color;
+
+  const Event(this.title, this.color);
+
+  @override
+  String toString() => title;
 }
