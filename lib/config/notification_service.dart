@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -8,9 +9,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class PushNotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
   Future<void> setupInteractedMessage() async {
     await Firebase.initializeApp();
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("soni44444444444444444444444");
+      print(jsonEncode(message));
+    });
     await PushNotificationService().setupInteractedMessage();
     await _isAndroidPermissionGranted();
     await _requestPermissions();
@@ -79,6 +84,8 @@ class PushNotificationService {
     });*/
 
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+      print("soni33333333333333");
+      print(jsonEncode(message));
       RemoteNotification? notification = message!.notification;
       AndroidNotification? android = message.notification?.android!;
       if (notification != null && android != null) {

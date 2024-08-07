@@ -1,3 +1,4 @@
+import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
   SystemChannels.textInput.invokeMethod('TextInput.hide');
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await Alarm.init();
 
   runApp(const MyApp());
 }

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swastik/config/colorConstant.dart';
@@ -25,6 +28,7 @@ import '../bloc/bloc_logic/invoice_bloc.dart';
 import 'challan/Challan_list_screen.dart';
 import 'home/home_screen.dart';
 import 'invoice/list_invoice_screen.dart';
+import 'task/ring.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final int index;
@@ -57,14 +61,46 @@ class HomePageState extends State<DashBoardScreen> {
   InvoiceBloc instance = InvoiceBloc();
   Helper helper = Helper();
   Color rmsColor = Colors.grey;
+  static StreamSubscription<AlarmSettings>? subscription;
+  late List<AlarmSettings> alarms;
 
   @override
   void initState() {
     selectedDrawerIndex = widget.index;
-    // Helper.getToastMsg(_selectedDrawerIndex.toString());
     controller.getUserInfoData();
-    // invoiceController.getAllInvoiceList();
+
+    if (Alarm.android) {
+      Helper.checkAndroidNotificationPermission();
+      Helper.checkAndroidScheduleExactAlarmPermission();
+    }
+
+    loadAlarms();
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
+
+  void loadAlarms() {
+    setState(() {
+      alarms = Alarm.getAlarms();
+      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ExampleAlarmRingScreen(alarmSettings: alarmSettings),
+      ),
+    );
+    loadAlarms();
   }
 
   _getDrawerItemWidget(int pos) {

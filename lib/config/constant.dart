@@ -1,6 +1,6 @@
 class Constant {
   static const enterTextError = "Please enter some text";
-  static const appVersion = "v1.0.4";
+  static const appVersion = "v1.0.5";
   static const project = "Project";
   static const invoiceCategory = "Invoice Category";
   static const txtRemarks = "Remarks";

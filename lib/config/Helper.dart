@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:alarm/alarm.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../model/DraverItem.dart';
@@ -957,6 +959,59 @@ class Helper {
       time = formattedTime;
     }
     return time;
+  }
+
+  static Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting notification permission...');
+      final res = await Permission.notification.request();
+      alarmPrint(
+        'Notification permission ${res.isGranted ? '' : 'not '}granted',
+      );
+    }
+  }
+
+  static Future<void> checkAndroidExternalStoragePermission() async {
+    final status = await Permission.storage.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting external storage permission...');
+      final res = await Permission.storage.request();
+      alarmPrint(
+        'External storage permission ${res.isGranted ? '' : 'not'} granted',
+      );
+    }
+  }
+
+  static Future<void> checkAndroidScheduleExactAlarmPermission() async {
+    final status = await Permission.scheduleExactAlarm.status;
+    alarmPrint('Schedule exact alarm permission: $status.');
+    if (status.isDenied) {
+      alarmPrint('Requesting schedule exact alarm permission...');
+      final res = await Permission.scheduleExactAlarm.request();
+      alarmPrint(
+        'Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted',
+      );
+    }
+  }
+
+  static AlarmSettings buildAlarmSettings(DateTime selectedDateTime) {
+    // String dateString = "2024-08-07 08:18:00";
+
+    final id = DateTime.now().millisecondsSinceEpoch % 10000 + 1;
+
+    final alarmSettings = AlarmSettings(
+      id: id,
+      dateTime: selectedDateTime,
+      loopAudio: true,
+      vibrate: true,
+      volume: null,
+      assetAudioPath: "assets/marimba.mp3",
+      notificationTitle: 'Alarm from RealERP',
+      notificationBody: 'Your alarm ($id) is ringing',
+      enableNotificationOnKill: Platform.isIOS,
+    );
+    return alarmSettings;
   }
 }
 

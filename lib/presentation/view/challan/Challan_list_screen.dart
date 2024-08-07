@@ -470,20 +470,6 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                             child: const Icon(Icons.edit)),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.all(Radius.circular(4))),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: CustomTextStyle.regular(
-                              text: data.projectname ?? "NA",
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
                     const SizedBox(
                       height: 4,
                     ),
@@ -494,6 +480,24 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(4))),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: CustomTextStyle.regular(
+                                      text: data.projectname ?? "NA",
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
                             Align(
                               alignment: AlignmentDirectional(-1, 0),
                               child: CustomTextStyle.regular(
@@ -514,7 +518,7 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 8,
                         ),
                         data.challanAppBy == "NA"
@@ -523,35 +527,35 @@ class _ChallanListScreenState extends State<ChallanListScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    CustomTextStyle.regular(
-                                        text: "Approval pending"),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Icon(
+                                    const Icon(
                                       Icons.watch_later_rounded,
                                       color: AppColors.bsWarning,
-                                    )
+                                      size: 48,
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    CustomTextStyle.regular(
+                                        text: "Approval pending"),
                                   ],
                                 ),
                               )
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                      ),
-                                      CustomTextStyle.regular(
-                                          text:
-                                              "Approved by : ${data.challanAppBy}"),
-                                    ],
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 48,
                                   ),
                                   CustomTextStyle.regular(
-                                      text: "Time : ${data.approveTime}")
+                                      text:
+                                          "Approved by : ${data.challanAppBy}",
+                                      fontSize: 12),
+                                  CustomTextStyle.regular(
+                                      text: "Time : ${data.approveTime}",
+                                      fontSize: 12)
                                 ],
                               )
                       ],

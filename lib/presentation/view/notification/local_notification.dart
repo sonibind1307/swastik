@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:alarm/alarm.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+
+import '../../../config/Helper.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -20,9 +24,34 @@ class LocalNotificationService {
 
     _notificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (messageData) async {
-      var jsonData = jsonDecode(messageData.toString());
+      var jsonData = jsonEncode(messageData.toString());
       print("notification $jsonData");
     });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+      print("soni33333333333333");
+      handleRemoteMessage(message!);
+      RemoteNotification? notification = message!.notification;
+      AndroidNotification? android = message.notification?.android!;
+    });
+  }
+
+  static handleRemoteMessage(RemoteMessage message) {
+    if (message.data.containsKey('alarm_data')) {
+      String alarmDataString = message.data['alarm_data'];
+      List<dynamic> alarmData = jsonDecode(alarmDataString);
+
+      // Process the alarm data
+      for (var alarm in alarmData) {
+        try {
+          DateTime dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(alarm);
+          Alarm.set(alarmSettings: Helper.buildAlarmSettings(dateTime))
+              .then((res) {});
+        } catch (e) {
+          print("error_message" + e.toString());
+        }
+      }
+    }
   }
 
   static void display(RemoteMessage message) async {

@@ -66,6 +66,8 @@ dependencies:
   table_calendar: ^3.0.9
   alarm: ^3.1.5
   file_picker: ^7.0.2
+  audioplayers: ^5.2.1
+  record: any
 
 dev_dependencies:
   flutter_test:
@@ -104,6 +106,7 @@ flutter:
     - assets/technical_logo.png
     - assets/logo.png
     - assets/rms-challan.png
+    - assets/marimba.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
